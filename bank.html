@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8"/>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="container-fluid">
+      <h1>管理フォーム</h1>
+
+      <div class="card bg-light mb-3" style="max-width: 40rem;">
+        <div class="card-header">
+	      <h4>保有量／総発行数</h4>
+        </div>
+        <div class="card-body">
+          <div class="float-right">
+            <h5><span id=carried>---</span> / <span id=published>---</span> selan</h5>
+          </div>
+          <form action="publish" method="post">
+            <div class="form-group">
+              <input class="form-control text-right" type="number" name="amount" min="1000" value="1000" />
+              <input class="btn btn-primary" type="submit" value="新規発行">
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card bg-warning mb-3" style="max-width: 40rem;">
+        <div class="card-header">
+	      <h4>ユーザー</h4>
+        </div>
+        <div class="card-body">
+          <form id="edit-account" action="account" method="delete">
+            <div class="form-group">
+              <select class="form-control" id="user-list"></select>
+              <input class="btn btn-danger" type="submit" value="削除">
+            </div>
+          </form>
+          <form id="create-account" action="account" method="put">
+            <div class="form-group">
+              <input class="form-control text-left" type="text" name="name" />
+              <input class="btn btn-primary" type="button" value="作成" onClick="createUser()" />
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">
+	      <h4>Selanを送る</h4>
+        </div>
+        <div class="card-body">
+          <form class="form-horizontal" id="send-selan">
+            <div class="row">
+              <div class="col form-group">
+                <label>送金先</label>
+                <input class="form-control" type="text" name="to_account" />
+              </div>
+              <div class="col form-group">
+                <label>金額</label>
+                <input class="form-control" type="number" min="1" name="amount" value='1000'/>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-5">
+              </div>
+              <div class="col-2">
+                <input class="btn-block btn-primary" type="button" value="送金" onClick="sendSelan()" />
+              </div>
+              <div class="col-5">
+              </div>
+            </div>
+          </form>
+          <br>
+          <p class="text-center text-danger" id="send-selan-message">送金後の取り消しはできませんのでご注意ください</p>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <h4>取引履歴</h4>
+        </div>
+        <div class="card-body">
+          <table class="table mb-0" id="history">
+            <thead>
+              <tr>
+                <th scope="col" class="text-right">取引ID</th>
+                <th scope="col">取引日時</th>
+                <th scope="col">FROM</th>
+                <th scope="col">TO</th>
+                <th scope="col" class="text-right">金額(selan)</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="row"></div>
+   </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.224.1.min.js"></script>
+    <script src="https://s3.us-east-2.amazonaws.com/gtgtzoo/aws-cognito-sdk.min.js"></script>
+    <script src="https://s3.us-east-2.amazonaws.com/gtgtzoo/amazon-cognito-identity.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script>
+      function createUser() {
+        let data = {};
+        $('#create-account').find('input').each((index, input) => {
+          if(input.name){
+            data[input.name] = input.value;
+          }
+        });
+ 
+        $.ajax({
+          url: 'account',
+          type: 'put',
+          dataType: 'json',
+          data: JSON.stringify(data),
+          timeout: 10000
+        }).done(data => {
+            $("#carried").text(data.carried);
+            $("#published").text(data.published);
+            data.history.Items.forEach(record => {
+              $('<tr>')
+                .append($('<th scope="row">').text(record.transaction_id))
+                .append($('<td>').text(record.timestamp))
+                .append($('<td>').text(record.from_account))
+                .append($('<td>').text(record.to_account))
+                .append($('<td>').text(record.type))
+                .append($('<td>').text(record.amount))
+                .appendTo('#history')
+            });
+        }).fail(e => {
+            alert('Error');
+        })
+
+      }
+
+      function getAccount() {
+        return 'sla_bank';
+      }
+
+      function sendSelan() {
+        let data = {};
+        $('#send-selan').find('input').each((index, input) => {
+          if(input.name){
+            data[input.name] = input.value;
+          }
+        });
+        data['from_account'] = getAccount();
+
+        $('#send-selan-message').text('送金中');
+        $.ajax({
+          url: 'transaction',
+          type: 'post',
+          dataType: 'json',
+          data: JSON.stringify(data),
+          timeout: 10000
+        }).done(data => {
+          $('#send-selan-message').text('送金が完了しました');
+          loadTransactions();
+        }).fail((xhr, textStatus, errorThrown) => {
+          if(xhr.responseJSON.message) {
+            $('#send-selan-message').text(xhr.responseJSON.message);
+          } else {
+            $('#send-selan-message').text('ERROR: 送金中に不明なエラーが発生しました！');
+          }
+        })
+      }
+
+      $(function() {
+          $('<option>')
+              .val('unselected')
+              .text('選択してください')
+              .prop('selected', true)
+              .prop('disabled', true)
+              .appendTo('#user-list');
+          $.ajax({
+              url: 'account',
+              type: 'get'
+          }).done(data => {
+              data.forEach(account => {
+                  $('<option>')
+                      .val(account)
+                      .text(account)
+                      .prop('selected', false)
+                      .appendTo('#user-list');
+              });
+          }).fail(e => {
+              alert('Error');
+          })
+ 
+          $.ajax({
+              url: 'bank',
+              type: 'get'
+          }).done(data => {
+              $("#carried").text(data.carried);
+              $("#published").text(data.published);
+              data.history.Items.forEach(record => {
+                $('<tr>')
+                  .append($('<th scope="row">').text(record.transaction_id))
+                  .append($('<td>').text(record.timestamp))
+                  .append($('<td>').text(record.from_account))
+                  .append($('<td>').text(record.to_account))
+                  .append($('<td>').text(record.type))
+                  .append($('<td>').text(record.amount))
+                  .appendTo('#history')
+              });
+ 
+          }).fail(e => {
+              alert('Error');
+          })
+      });
+    </script>
+  </body>
+</html>
