@@ -1,0 +1,35 @@
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>user pool sapmle</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css'>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css'>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+
+    <script src="dist/aws-cognito-sdk.min.js"></script>
+    <script src="dist/amazon-cognito-identity.min.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.263.1.min.js"></script>
+
+    <script src='auth.js'></script>
+</head>
+
+<body>
+    <div class="container">
+        <form class="login">
+            <h2 class="login-heading">ログイン</h2>
+            <div id="message" style="display:none"></div>
+            <label for="inputUserName">ユーザー名</label>
+            <input type="text" id="inputUserName" placeholder="User Name" required autofocus></input>
+            <label for="intpuPassword">パスワード</label>
+            <input type="password" id="inputPassword" placeholder="Password" required></input>
+            <br/>
+            <input type="button" id="loginButton" class="button-primary" value="ログイン"></input>
+        </form>
+    </div>
+    <script type='text/javascript'>
+        $('#loginButton').click(upsample.login);
+    </script>
+</body>
+
+</html>

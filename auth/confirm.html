@@ -1,0 +1,35 @@
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>user pool sapmle</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css'>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css'>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+
+    <script src="dist/aws-cognito-sdk.min.js"></script>
+    <script src="dist/amazon-cognito-identity.min.js"></script>
+
+    <script src='auth.js'></script>
+</head>
+
+<body>
+    <div class="container">
+        <form class="confirm">
+            <h2 class="confirm-heading">サインアップの確認</h2>
+            <div id="message" style="display:none"></div>
+            <label for="inputUserName">ユーザー名</label>
+            <input type="text" id="inputUserName" placeholder="User Name" required autofocus></input>
+            <label for="inputVerificationCode">確認コード</label>
+            <input type="text" id="inputVerificationCode" placeholder="Verification code" required></input>
+            <br/>
+            <input type="button" id="verifyButton" class="button-primary" value="確認する"></input>
+        </form>
+    </div>
+    <script type='text/javascript'>
+        $('#verifyButton').click(upsample.verify);
+    </script>
+</body>
+
+</html>

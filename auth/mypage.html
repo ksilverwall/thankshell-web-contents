@@ -1,0 +1,36 @@
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>user pool sapmle</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css'>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css'>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+
+    <script src="dist/aws-cognito-sdk.min.js"></script>
+    <script src="dist/amazon-cognito-identity.min.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.263.1.min.js"></script>
+
+    <script src='auth.js'></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="mypage">
+            <h2 class="mypage-heading">マイページ</h2>
+            <div id="username"></div>
+            <div id="email"></div>
+        </div>
+        <br/>
+        <form class="logout">
+            <input type="button" id="logoutButton" class="button-primary" value="ログアウト"></input>
+        </form>
+    </div>
+    <script type='text/javascript'>
+        $('#logoutButton').click(upsample.logout);
+        $(window).ready(upsample.checkSession);
+    </script>
+</body>
+
+</html>
