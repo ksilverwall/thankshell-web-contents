@@ -140,35 +140,29 @@ upsample.login = function() {
 
 }
 
-upsample.checkSession = function () {
+upsample.checkSession = function (callback) {
 
     var cognitoUser = upsample.UserPool.getCurrentUser();
     if (cognitoUser != null) {
         cognitoUser.getSession(function (err, sessionResult) {
             if (sessionResult) {
-                var attrs;
                 cognitoUser.getUserAttributes(function (err, attrs) {
                     if (err) {
-                        console.log(err);
-                        return;
-                    }
-                    $('#username').text('Username:' + cognitoUser.getUsername());
-
-                    for (var i = 0; i < attrs.length; i++) {
-                        console.log('name:' + attrs[i].getName() + ", value: " + attrs[i].getValue() );
-                        if (attrs[i].getName() == 'email') {
-                            $('#email').text('Email: ' + attrs[i].getValue());
+                        callback(err, null);
+                    } else {
+                        const data = {
+                            user: cognitoUser.getUsername(),
+                            attributes: attrs
                         }
+                        callback(null, data);
                     }
                 });
             } else {
-                console.log("session is invalid");
-                $(location).attr('href', upsample.LoginPath);
+                callback('session is invalid', null);
             }
         });
     } else {
-        console.log("no user");
-        $(location).attr('href', upsample.LoginPath);
+        callback('no user', null);
     }
 }
 
