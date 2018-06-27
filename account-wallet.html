@@ -7,6 +7,17 @@
   </head>
   <body>
     <div class="container-fluid bg-info">
+      <!-- merged by mypages -->
+      <div class="mypage">
+        <h2 class="mypage-heading">マイページ</h2>
+        <div id="username"></div>
+        <div id="email"></div>
+      </div>
+      <br/>
+      <form class="logout">
+        <input type="button" id="logoutButton" class="button-primary" value="ログアウト"></input>
+      </form>
+
       <div class="mx-auto" style="width: 200px;">
         <img src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/selan_logo.png" class="img-circle" alt="selan-logo">
       </div>
@@ -21,7 +32,7 @@
 
       <div class="card mb-3">
         <div class="card-header">
-	      <h4>Selanを送る</h4>
+	  <h4>Selanを送る</h4>
         </div>
         <div class="card-body">
           <form class="form-horizontal" id="send-selan">
@@ -78,14 +89,18 @@
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.224.1.min.js"></script>
-    <script src="https://s3.us-east-2.amazonaws.com/gtgtzoo/aws-cognito-sdk.min.js"></script>
-    <script src="https://s3.us-east-2.amazonaws.com/gtgtzoo/amazon-cognito-identity.min.js"></script>
-
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.263.1.min.js"></script>
+
+    <script src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/dist/aws-cognito-sdk.min.js"></script>
+    <script src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/dist/amazon-cognito-identity.min.js"></script>
+    <script src='https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/auth.js'></script>
+
+    <!--
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    -->
 
     <script>
       function getAccount() {
@@ -174,6 +189,9 @@
       $(function() {
         loadTransactions();
       });
+
+      $('#logoutButton').click(upsample.logout);
+      $(window).ready(upsample.checkSession);
     </script>
   </body>
 </html>
