@@ -5,7 +5,10 @@ upsample.poolData = {
     UserPoolId: 'ap-northeast-1_WEGpvJz9M',
     ClientId: 'dnjrhu35ok1pren744jvjq28e'
 };
+
 upsample.UserPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool(upsample.poolData);
+
+upsample.LoginPath = 'login';
 
 upsample.signup = function() {
     var email = $('#inputEmail').val();
@@ -90,6 +93,7 @@ upsample.resend = function() {
 upsample.login = function() {
     var username = $('#inputUserName').val();
     var password = $('#inputPassword').val();
+    var redirect = $('#redirectPath').val();
     if (!username | !password) { return false; }
 
     var authenticationData = {
@@ -125,7 +129,7 @@ upsample.login = function() {
                     console.log("id:" + AWS.config.credentials.identityId);                    
                 }
 
-                $(location).attr('href', 'mypage.html');
+                $(location).attr('href', redirect);
             });
         },
 
@@ -159,13 +163,12 @@ upsample.checkSession = function () {
                 });
             } else {
                 console.log("session is invalid");
-                $(location).attr('href', 'login.html');
+                $(location).attr('href', upsample.LoginPath);
             }
-
         });
     } else {
         console.log("no user");
-        $(location).attr('href', 'login.html');
+        $(location).attr('href', upsample.LoginPath);
     }
 }
 
