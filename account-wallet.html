@@ -2,37 +2,36 @@
 <html lang="ja">
   <head>
     <meta charset="utf-8"/>
+    <title>SLA Wallet</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   </head>
   <body>
-    <div class="container-fluid bg-info">
-      <!-- merged by mypages -->
-      <div class="mypage">
-        <h2 class="mypage-heading">マイページ</h2>
-        <div id="username"></div>
-        <div id="email"></div>
-      </div>
-      <br/>
-      <form class="logout">
-        <input type="button" id="logoutButton" class="button-primary" value="ログアウト"></input>
-      </form>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">SLA Wallet</a>
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#Navber" aria-controls="Navber" aria-expanded="false" aria-label="ナビゲーションの切替">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
+      <div class="collapse navbar-collapse" id="Navber">
+        <ul class="navbar-nav mr-auto">
+            <a class="nav-item">残高<u><span id=carried>---</span> Selan</u></a>
+        </ul>
+        <ul class="my-2 my-lg-0">
+          <a><span id='user-name'>---</span> さん</a>
+          <button type="submit" id="logoutButton" class="btn btn-outline-success my-2 my-sm-0">ログアウト</button>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container-fluid bg-info">
       <div class="mx-auto" style="width: 200px;">
         <img src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/selan_logo.png" class="img-circle" alt="selan-logo">
-      </div>
-      <div class="row">
-        <div class="col">
-          <h1><span id='user-name'>---</span> さんの口座</h1>
-        </div>
-        <div class="col text-right">
-          <h2>残高:<u><span id=carried>---</span> Selan</h2></u>
-        </div>
       </div>
 
       <div class="card mb-3">
         <div class="card-header">
-	  <h4>Selanを送る</h4>
+          <h4>Selanを送る</h4>
         </div>
         <div class="card-body">
           <form class="form-horizontal" id="send-selan">
@@ -103,13 +102,15 @@
     -->
 
     <script>
+      let UserData;
+
       function getAccount() {
         var account = getParams().account;
         return (typeof account === "undefined") ? null : account;
       }
 
       function loadTransactions() {
-        let account = getAccount();
+        let account = UserData.user;
         $("#user-name").text(account ? account : '---');
         $.ajax({
           url: 'account/' + account,
@@ -187,21 +188,13 @@
       }
 
       $(function() {
-        loadTransactions();
         upsample.checkSession( (err, data) => {
           if(err) {
             console.log(err);
             $(location).attr('href', upsample.LoginPath);
-          }
-
-          $('#username').text('Username:' + data.user);
-          let attrs = data.attributes;
-
-          for (var i = 0; i < attrs.length; i++) {
-            console.log('name:' + attrs[i].getName() + ", value: " + attrs[i].getValue() );
-            if (attrs[i].getName() == 'email') {
-              $('#email').text('Email: ' + attrs[i].getValue());
-            }
+          } else {
+            UserData = data;
+            loadTransactions();
           }
         });
       });
