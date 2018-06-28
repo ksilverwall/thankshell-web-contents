@@ -6,17 +6,38 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   </head>
   <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">SLA Bank Management</a>
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#Navber" aria-controls="Navber" aria-expanded="false" aria-label="ナビゲーションの切替">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="Navber">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link">銀行残高<u><span id=carried>---</span> Selan</u></a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link">総発行量<u><span id=published>---</span> Selan</u></a>
+          </li>
+        </ul>
+        <ul class="navbar-nav mr-auto">
+        </ul>
+        <ul class="my-2 my-lg-0">
+          <a><span id='user-name'>---</span> さん</a>
+          <button type="submit" id="logoutButton" class="btn btn-outline-success my-2 my-sm-0">ログアウト</button>
+        </ul>
+      </div>
+    </nav>
+
     <div class="container-fluid">
       <h1>管理フォーム</h1>
 
       <div class="card bg-light mb-3" style="max-width: 40rem;">
         <div class="card-header">
-	      <h4>保有量／総発行数</h4>
+	      <h4>Selanを増刷する</h4>
         </div>
         <div class="card-body">
-          <div class="float-right">
-            <h5><span id=carried>---</span> / <span id=published>---</span> selan</h5>
-          </div>
           <form action="publish" method="post">
             <div class="form-group">
               <input class="form-control text-right" type="number" name="amount" min="1000" value="1000" />
@@ -28,7 +49,7 @@
 
       <div class="card bg-warning mb-3" style="max-width: 40rem;">
         <div class="card-header">
-	      <h4>ユーザー</h4>
+	      <h4>ユーザー(未実装)</h4>
         </div>
         <div class="card-body">
           <form id="edit-account" action="account" method="delete">
