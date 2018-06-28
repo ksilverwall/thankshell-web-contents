@@ -8,8 +8,6 @@ upsample.poolData = {
 
 upsample.UserPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool(upsample.poolData);
 
-upsample.LoginPath = '/develop/view/login';
-
 upsample.signup = function() {
     var email = $('#inputEmail').val();
     var username = $('#inputUserName').val();

@@ -191,7 +191,7 @@
         upsample.checkSession( (err, data) => {
           if(err) {
             console.log(err);
-            $(location).attr('href', upsample.LoginPath);
+            $(location).attr('href', '/develop/view/login');
           } else {
             UserData = data;
             loadTransactions();
