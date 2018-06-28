@@ -122,7 +122,7 @@
         });
  
         $.ajax({
-          url: 'account',
+          url: '../account',
           type: 'put',
           dataType: 'json',
           data: JSON.stringify(data),
@@ -161,7 +161,7 @@
 
         $('#send-selan-message').text('送金中');
         $.ajax({
-          url: 'transaction',
+          url: '../transaction',
           type: 'post',
           dataType: 'json',
           data: JSON.stringify(data),
@@ -186,7 +186,7 @@
               .prop('disabled', true)
               .appendTo('#user-list');
           $.ajax({
-              url: 'account',
+              url: '../account',
               type: 'get'
           }).done(data => {
               data.forEach(account => {
@@ -201,7 +201,7 @@
           })
  
           $.ajax({
-              url: 'bank',
+              url: '../bank',
               type: 'get'
           }).done(data => {
               $("#carried").text(data.carried);
