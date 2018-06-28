@@ -104,11 +104,6 @@
     <script>
       let UserData;
 
-      function getAccount() {
-        var account = getParams().account;
-        return (typeof account === "undefined") ? null : account;
-      }
-
       function loadTransactions() {
         let account = UserData.user;
         $("#user-name").text(account ? account : '---');
@@ -143,7 +138,7 @@
             data[input.name] = input.value;
           }
         });
-        data['from_account'] = getAccount();
+        data['from_account'] = UserData.user;
 
         $('#send-selan-message').text('送金中');
         $.ajax({
@@ -162,18 +157,6 @@
             $('#send-selan-message').text('ERROR: 送金中に不明なエラーが発生しました！');
           }
         })
-      }
-
-      function getParams() {
-        var arg  = new Object;
-        url = location.search.substring(1).split('&');
- 
-        for(i=0; url[i]; i++) {
-          var k = url[i].split('=');
-          arg[k[0]] = k[1];
-        }
- 
-        return arg;
       }
 
       function getTimeString(timestamp) {
