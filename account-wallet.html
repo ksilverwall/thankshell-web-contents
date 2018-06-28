@@ -128,7 +128,7 @@
               .appendTo('#history')
           });
         }).fail((xhr, textStatus, errorThrown) => {
-          if(xhr.responseJSON && exhr.responseJSON.message) {
+          if(xhr.responseJSON && xhr.responseJSON.message) {
             $('#history-message').text(xhr.responseJSON.message);
           } else {
             $('#history-message').text('ERROR: 取得中に不明なエラーが発生しました！');
