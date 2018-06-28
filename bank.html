@@ -124,16 +124,17 @@
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.224.1.min.js"></script>
-    <script src="https://s3.us-east-2.amazonaws.com/gtgtzoo/aws-cognito-sdk.min.js"></script>
-    <script src="https://s3.us-east-2.amazonaws.com/gtgtzoo/amazon-cognito-identity.min.js"></script>
-
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.224.1.min.js"></script>
+
+    <script src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/dist/aws-cognito-sdk.min.js"></script>
+    <script src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/dist/amazon-cognito-identity.min.js"></script>
+    <script src='https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/auth.js'></script>
 
     <script>
+      let UserData;
+
       function createUser() {
         let data = {};
         $('#create-account').find('input').each((index, input) => {
@@ -199,48 +200,72 @@
         })
       }
 
-      $(function() {
-          $('<option>')
-              .val('unselected')
-              .text('選択してください')
-              .prop('selected', true)
-              .prop('disabled', true)
+      function getTimeString(timestamp) {
+        let d = new Date(1529478245926);
+        let year  = d.getFullYear();
+        let month = d.getMonth() + 1;
+        let day  = d.getDate();
+        let hour = ( d.getHours()   < 10 ) ? '0' + d.getHours()   : d.getHours();
+        let min  = ( d.getMinutes() < 10 ) ? '0' + d.getMinutes() : d.getMinutes();
+        let sec   = ( d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
+        return ( year + '年' + month + '月' + day + '日' + hour + ':' + min + ':' + sec );
+      }
+
+      function initialize() {
+        $('<option>')
+          .val('unselected')
+          .text('選択してください')
+          .prop('selected', true)
+          .prop('disabled', true)
+          .appendTo('#user-list');
+        $.ajax({
+          url: '../account',
+          type: 'get'
+        }).done(data => {
+          data.forEach(account => {
+            $('<option>')
+              .val(account)
+              .text(account)
+              .prop('selected', false)
               .appendTo('#user-list');
-          $.ajax({
-              url: '../account',
-              type: 'get'
-          }).done(data => {
-              data.forEach(account => {
-                  $('<option>')
-                      .val(account)
-                      .text(account)
-                      .prop('selected', false)
-                      .appendTo('#user-list');
-              });
-          }).fail(e => {
-              alert('Error');
-          })
- 
-          $.ajax({
-              url: '../bank',
-              type: 'get'
-          }).done(data => {
-              $("#carried").text(data.carried);
-              $("#published").text(data.published);
-              data.history.Items.forEach(record => {
-                $('<tr>')
-                  .append($('<th scope="row">').text(record.transaction_id))
-                  .append($('<td>').text(record.timestamp))
-                  .append($('<td>').text(record.from_account))
-                  .append($('<td>').text(record.to_account))
-                  .append($('<td>').text(record.type))
-                  .append($('<td>').text(record.amount))
-                  .appendTo('#history')
-              });
- 
-          }).fail(e => {
-              alert('Error');
-          })
+          });
+        }).fail(e => {
+          alert('Error');
+        })
+   
+        $.ajax({
+          url: '../bank',
+          type: 'get'
+        }).done(data => {
+          $("#carried").text(data.carried);
+          $("#published").text(data.published);
+          data.history.Items.forEach(record => {
+          $('<tr>')
+            .append($('<th scope="row" class="text-right">').text(record.transaction_id))
+            .append($('<td>').text(getTimeString(record.timestamp)))
+            .append($('<td>').text(record.from_account))
+            .append($('<td>').text(record.to_account))
+            .append($('<td class="text-right">').text(record.amount.toLocaleString()))
+            .appendTo('#history')
+          });
+   
+        }).fail(e => {
+          alert('Error');
+        })
+      }
+
+      $(function() {
+        upsample.checkSession( (err, data) => {
+          if(err) {
+            console.log(err);
+            $(location).attr('href', 'login');
+          } else {
+            UserData = data;
+            $("#user-name").text(UserData.user);
+            initialize();
+          }
+        });
+
       });
     </script>
   </body>
