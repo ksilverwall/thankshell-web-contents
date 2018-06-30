@@ -104,12 +104,26 @@
     <script>
       let UserData;
 
+      function getErrorMessage(xhr) {
+        if(xhr.responseJSON && xhr.responseJSON.message) {
+          switch (xhr.responseJSON.message) {
+          case 'Unauthorized': '認証エラー'
+          default:
+            return xhr.responseJSON.message;
+          }
+        } else {
+          return '取得中に不明なエラーが発生しました！';
+        }
+      }
+
       function loadTransactions() {
         let account = UserData.user;
-        $("#user-name").text(account ? account : '---');
         $.ajax({
           url: '../account/' + account,
-          type: 'get'
+          type: 'get',
+          headers: {
+            Authorization: UserData.token
+          }
         }).done(data => {
           $("#carried").text(data.carried);
           $('#history').empty()
@@ -123,11 +137,7 @@
               .appendTo('#history')
           });
         }).fail((xhr, textStatus, errorThrown) => {
-          if(xhr.responseJSON && xhr.responseJSON.message) {
-            $('#history-message').text(xhr.responseJSON.message);
-          } else {
-            $('#history-message').text('ERROR: 取得中に不明なエラーが発生しました！');
-          }
+          $('#history-message').text('ERROR: ' + getErrorMessage(xhr));
         })
       }
 
@@ -146,16 +156,15 @@
           type: 'post',
           dataType: 'json',
           data: JSON.stringify(data),
-          timeout: 10000
+          timeout: 10000,
+          headers: {
+            Authorization: UserData.token
+          }
         }).done(data => {
           loadTransactions();
           $('#send-selan-message').text('送金が完了しました');
         }).fail((xhr, textStatus, errorThrown) => {
-          if(xhr.responseJSON.message) {
-            $('#send-selan-message').text(xhr.responseJSON.message);
-          } else {
-            $('#send-selan-message').text('ERROR: 送金中に不明なエラーが発生しました！');
-          }
+          $('#send-selan-message').text('ERROR: ' + getErrorMessage(xhr));
         })
       }
 
@@ -177,6 +186,7 @@
             $(location).attr('href', 'login');
           } else {
             UserData = data;
+            $("#user-name").text(UserData.user ? UserData.user : '---');
             loadTransactions();
           }
         });
