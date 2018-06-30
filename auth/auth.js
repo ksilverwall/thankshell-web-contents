@@ -142,15 +142,16 @@ upsample.checkSession = function (callback) {
 
     var cognitoUser = upsample.UserPool.getCurrentUser();
     if (cognitoUser != null) {
-        cognitoUser.getSession(function (err, sessionResult) {
-            if (sessionResult) {
+        cognitoUser.getSession(function (err, session) {
+            if (session) {
                 cognitoUser.getUserAttributes(function (err, attrs) {
                     if (err) {
                         callback(err, null);
                     } else {
                         const data = {
                             user: cognitoUser.getUsername(),
-                            attributes: attrs
+                            attributes: attrs,
+                            token: session.getIdToken().jwtToken
                         }
                         callback(null, data);
                     }
