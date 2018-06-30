@@ -113,9 +113,9 @@ upsample.login = function() {
 
             AWS.config.region = 'ap-northeast-1';
             AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-                IdentityPoolId: 'Identity Pool の ID',
+                IdentityPoolId: 'ap-northeast-1:8dc6d009-5c99-41fd-8119-e734643b2e21',
                 Logins: {
-                    'cognito-idp.リージョン名.amazonaws.com/ユーザープールID': result.getIdToken().getJwtToken()
+                    'cognito-idp.ap-northeast-1.amazonaws.com/ap-northeast-1_WEGpvJz9M': result.getIdToken().getJwtToken()
                 }
             });
             
