@@ -151,7 +151,7 @@ upsample.checkSession = function (callback) {
                         const data = {
                             user: cognitoUser.getUsername(),
                             attributes: attrs,
-                            token: session.getIdToken().jwtToken
+                            session: session
                         }
                         callback(null, data);
                     }
