@@ -154,6 +154,7 @@
         $.ajax({
           url: '../transaction',
           type: 'post',
+          contentType: 'application/json',
           dataType: 'json',
           data: JSON.stringify(data),
           timeout: 10000,
