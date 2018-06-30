@@ -149,6 +149,9 @@
           dataType: 'json',
           data: JSON.stringify(data),
           timeout: 10000
+          headers: {
+            Authorization: UserData.session.getIdToken().jwtToken
+          }
         }).done(data => {
             $("#carried").text(data.carried);
             $("#published").text(data.published);
@@ -220,7 +223,10 @@
           .appendTo('#user-list');
         $.ajax({
           url: '../account',
-          type: 'get'
+          type: 'get',
+          headers: {
+            Authorization: UserData.session.getIdToken().jwtToken
+          }
         }).done(data => {
           data.forEach(account => {
             $('<option>')
@@ -232,10 +238,15 @@
         }).fail(e => {
           alert('Error');
         })
-   
+      } 
+
+      function loadTransactions() {
         $.ajax({
           url: '../bank',
-          type: 'get'
+          type: 'get',
+          headers: {
+            Authorization: UserData.session.getIdToken().jwtToken
+          }
         }).done(data => {
           $("#carried").text(data.carried);
           $("#published").text(data.published);
@@ -261,8 +272,14 @@
             $(location).attr('href', 'login');
           } else {
             UserData = data;
-            $("#user-name").text(UserData.user);
-            initialize();
+            if (UserData.session.idToken.payload['cognito:groups'].indexOf('admin') === -1) {
+                alert('You are not admin');
+                $(location).attr('href', 'login');
+            }else{
+                $("#user-name").text(UserData.user);
+                initialize();
+                loadTransactions();
+            }
           }
         });
 
