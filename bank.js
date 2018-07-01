@@ -39,7 +39,10 @@ controller.loadTransactions = function(token) {
         }
     }).done(data => {
         $("#carried").text(data.carried);
-        $('#history').empty()
+        if(data.published) {
+            $("#published").text(data.published);
+        }
+        $('#history').empty();
         data.history.Items.forEach(record => {
             $('<tr>')
                 .append($('<th scope="row" class="text-right">').text(record.transaction_id))
@@ -54,16 +57,8 @@ controller.loadTransactions = function(token) {
     })
 };
 
-controller.sendSelan = function() {
-    let data = {};
-    $('#send-selan').find('input').each((index, input) => {
-        if(input.name){
-            data[input.name] = input.value;
-        }
-    });
-    data['from_account'] = this.account;
-    
-    $('#send-selan-message').text('送金中');
+
+controller.createTransaction = function(data, callback) {
     $.ajax({
         url: '../transaction',
         type: 'post',
@@ -76,8 +71,48 @@ controller.sendSelan = function() {
         }
     }).done(data => {
         this.loadTransactions();
-        $('#send-selan-message').text('送金が完了しました');
+        callback(null);
     }).fail((xhr, textStatus, errorThrown) => {
-        $('#send-selan-message').text('ERROR: ' + getErrorMessage(xhr));
+        callback(getErrorMessage(xhr));
     })
+
+}
+
+controller.publish = function() {
+    let data = {};
+    $('#publish').find('input').each((index, input) => {
+        if(input.name){
+            data[input.name] = input.value;
+        }
+    });
+    data['from_account'] = '--';
+    data['to_account'] = 'sla_bank';
+    
+    $('#publish-message').text('送金中');
+    this.createTransaction(data, (err, data) => {
+        if(err) {
+            $('#publish-message').text('ERROR: ' + err);
+        } else {
+            $('#publish-message').text('送金が完了しました');
+        }
+    });
+}
+
+controller.sendSelan = function() {
+    let data = {};
+    $('#send-selan').find('input').each((index, input) => {
+        if(input.name){
+            data[input.name] = input.value;
+        }
+    });
+    data['from_account'] = this.account;
+    
+    $('#send-selan-message').text('送金中');
+    this.createTransaction(data, (err, data) => {
+        if(err) {
+            $('#send-selan-message').text('ERROR: ' + err);
+        } else {
+            $('#send-selan-message').text('送金が完了しました');
+        }
+    });
 }
