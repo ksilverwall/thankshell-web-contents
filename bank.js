@@ -88,12 +88,12 @@ controller.publish = function() {
     data['from_account'] = '--';
     data['to_account'] = 'sla_bank';
     
-    $('#publish-message').text('送金中');
+    $('#publish-message').text('発行中');
     this.createTransaction(data, (err, data) => {
         if(err) {
             $('#publish-message').text('ERROR: ' + err);
         } else {
-            $('#publish-message').text('送金が完了しました');
+            $('#publish-message').text('発行しました');
         }
     });
 }
