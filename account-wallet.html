@@ -50,7 +50,7 @@
               <div class="col-5">
               </div>
               <div class="col-2">
-                <input class="btn-block btn-primary" type="button" value="送金" onClick="sendSelan()" />
+                <input class="btn-block btn-primary" type="button" value="送金" onClick="controller.sendSelan()" />
               </div>
               <div class="col-5">
               </div>
@@ -89,106 +89,23 @@
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
-
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.263.1.min.js"></script>
-
     <script src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/dist/aws-cognito-sdk.min.js"></script>
     <script src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/dist/amazon-cognito-identity.min.js"></script>
     <script src='https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/auth.js'></script>
-
-    <!--
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    -->
+    <script src='https://s3-ap-northeast-1.amazonaws.com/sla-bank/bank.js'></script>
 
     <script>
-      let UserData;
-
-      function getErrorMessage(xhr) {
-        if(xhr.responseJSON && xhr.responseJSON.message) {
-          switch (xhr.responseJSON.message) {
-          case 'Unauthorized': '認証エラー'
-          default:
-            return xhr.responseJSON.message;
-          }
-        } else {
-          return '取得中に不明なエラーが発生しました！';
-        }
-      }
-
-      function loadTransactions() {
-        let account = UserData.user;
-        $.ajax({
-          url: '../account/' + account,
-          type: 'get',
-          headers: {
-            Authorization: UserData.session.getIdToken().jwtToken
-          }
-        }).done(data => {
-          $("#carried").text(data.carried);
-          $('#history').empty()
-          data.history.Items.forEach(record => {
-            $('<tr>')
-              .append($('<th scope="row" class="text-right">').text(record.transaction_id))
-              .append($('<td>').text(getTimeString(record.timestamp)))
-              .append($('<td>').text(record.from_account))
-              .append($('<td>').text(record.to_account))
-              .append($('<td class="text-right">').text(record.amount.toLocaleString()))
-              .appendTo('#history')
-          });
-        }).fail((xhr, textStatus, errorThrown) => {
-          $('#history-message').text('ERROR: ' + getErrorMessage(xhr));
-        })
-      }
-
-      function sendSelan() {
-        let data = {};
-        $('#send-selan').find('input').each((index, input) => {
-          if(input.name){
-            data[input.name] = input.value;
-          }
-        });
-        data['from_account'] = UserData.user;
-
-        $('#send-selan-message').text('送金中');
-        $.ajax({
-          url: '../transaction',
-          type: 'post',
-          contentType: 'application/json',
-          dataType: 'json',
-          data: JSON.stringify(data),
-          timeout: 10000,
-          headers: {
-            Authorization: UserData.session.getIdToken().jwtToken
-          }
-        }).done(data => {
-          loadTransactions();
-          $('#send-selan-message').text('送金が完了しました');
-        }).fail((xhr, textStatus, errorThrown) => {
-          $('#send-selan-message').text('ERROR: ' + getErrorMessage(xhr));
-        })
-      }
-
-      function getTimeString(timestamp) {
-        let d = new Date(1529478245926);
-        let year  = d.getFullYear();
-        let month = d.getMonth() + 1;
-        let day  = d.getDate();
-        let hour = ( d.getHours()   < 10 ) ? '0' + d.getHours()   : d.getHours();
-        let min  = ( d.getMinutes() < 10 ) ? '0' + d.getMinutes() : d.getMinutes();
-        let sec   = ( d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
-        return ( year + '年' + month + '月' + day + '日' + hour + ':' + min + ':' + sec );
-      }
-
-      $(function() {
+     $(function() {
         upsample.checkSession( (err, data) => {
           if(err) {
             console.log(err);
             $(location).attr('href', 'login');
           } else {
-            UserData = data;
-            $("#user-name").text(UserData.user ? UserData.user : '---');
-            loadTransactions();
+            $("#user-name").text(data.user ? data.user : '---');
+            controller.account = data.user;
+            controller.session = data.session;
+            controller.loadTransactions();
           }
         });
       });
