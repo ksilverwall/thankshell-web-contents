@@ -40,8 +40,8 @@
         <div class="card-body">
           <form id='publish'>
             <div class="form-group">
-              <input class="form-control text-right" type="number" name="amount" min="1000" value="1000" />
-              <input class="btn btn-primary" type="button" value="新規発行" onClick="controller.publish()" />
+              <input id='publish-amount'class="form-control text-right" type="number" name="amount" min="1000" value="1000" />
+              <input id='publish-button' class="btn btn-primary" type="button" value="新規発行" />
             </div>
           </form>
           <br/>
@@ -78,7 +78,7 @@
               <div class="col-5">
               </div>
               <div class="col-2">
-                <input class="btn-block btn-primary" type="button" value="送金" onClick="controller.sendSelan()" />
+                <input id='send-selan-button' class="btn-block btn-primary" type="button" value="送金" />
               </div>
               <div class="col-5">
               </div>
@@ -137,10 +137,14 @@
                 controller.account = 'sla_bank';
                 controller.session = data.session;
                 controller.loadTransactions();
+                $('#publish-button').click(function(){ controller.publish(); });
+                $('#send-selan-button').click(function() { controller.sendSelan(); });
             }
           }
         });
       });
+
+      $('#logoutButton').click(upsample.logout);
     </script>
   </body>
 </html>
