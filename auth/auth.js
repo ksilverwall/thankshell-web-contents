@@ -89,53 +89,80 @@ upsample.resend = function() {
 }
 
 upsample.login = function() {
-    var username = $('#inputUserName').val();
-    var password = $('#inputPassword').val();
-    var redirect = $('#redirectPath').val();
-    if (!username | !password) { return false; }
+    try {
+        var username = $('#inputUserName').val();
+        var password = $('#inputPassword').val();
+        var redirect = $('#redirectPath').val();
+        var newPassword1 = $('#inputNewPassword1').val();
+        var newPassword2 = $('#inputNewPassword2').val();
+        if (!username | !password) { return false; }
 
-    var authenticationData = {
-        Username: username,
-        Password: password
-    };
-    var authenticationDetails = new AWSCognito.CognitoIdentityServiceProvider.AuthenticationDetails(authenticationData);
+        var authenticationData = {
+            Username: username,
+            Password: password
+        };
+        var authenticationDetails = new AWSCognito.CognitoIdentityServiceProvider.AuthenticationDetails(authenticationData);
 
-    var userData = {
-        Username: username,
-        Pool: upsample.UserPool
-    };
+        var userData = {
+            Username: username,
+            Pool: upsample.UserPool
+        };
 
-    var message_text;
-    var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser(userData);
-    cognitoUser.authenticateUser(authenticationDetails, {
-        onSuccess: function(result) {
-            console.log('access token + ' + result.getAccessToken().getJwtToken());
+        var message_text;
+        var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser(userData);
+        cognitoUser.authenticateUser(authenticationDetails, {
+            onSuccess: function(result) {
+                console.log('access token + ' + result.getAccessToken().getJwtToken());
 
-            AWS.config.region = 'ap-northeast-1';
-            AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-                IdentityPoolId: 'ap-northeast-1:8dc6d009-5c99-41fd-8119-e734643b2e21',
-                Logins: {
-                    'cognito-idp.ap-northeast-1.amazonaws.com/ap-northeast-1_WEGpvJz9M': result.getIdToken().getJwtToken()
-                }
-            });
-            
-            AWS.config.credentials.refresh(function(err) {
-                if (err) {
-                    console.log(err);
+                AWS.config.region = 'ap-northeast-1';
+                AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                    IdentityPoolId: 'ap-northeast-1:8dc6d009-5c99-41fd-8119-e734643b2e21',
+                    Logins: {
+                        'cognito-idp.ap-northeast-1.amazonaws.com/ap-northeast-1_WEGpvJz9M': result.getIdToken().getJwtToken()
+                    }
+                });
+
+                AWS.config.credentials.refresh(function(err) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log("success");
+                        console.log("id:" + AWS.config.credentials.identityId);
+                    }
+
+                    $(location).attr('href', redirect);
+                });
+            },
+
+            onFailure: function(err) {
+                console.log(err);
+                $('#message').text('Error: サーバーとの接続に失敗しました');
+            },
+
+            mfaRequired: function(codeDeliveryDetails) {
+                console.log(codeDeliveryDetails);
+                $('#message').text('Error: MFA機能は非対応です');
+            },
+
+            newPasswordRequired: function(userAttributes, requiredAttributes) {
+                if ($('#new-password-form-body').is(':visible')) {
+                    if(newPassword1 === newPassword2) {
+                        cognitoUser.completeNewPasswordChallenge(newPassword1, {}, this);
+                    } else {
+                        alert('同じパスワードを入力してください');
+                    }
                 } else {
-                    console.log("success");
-                    console.log("id:" + AWS.config.credentials.identityId);                    
+                    $('#login-form-body').hide();
+                    $('#new-password-form-body').show();
+                    $('#message').text('パスワードを設定してください');
                 }
-
-                $(location).attr('href', redirect);
-            });
-        },
-
-        onFailure: function(err) {
-            alert(err);
-        }
-    });
-
+            }
+        });
+    } catch(e) {
+        console.log(e);
+        alert(e);
+        $('#message').text('ERROR: 異常終了しました');
+    }
 }
 
 upsample.checkSession = function (callback) {
