@@ -30,7 +30,7 @@
       </div>
     </nav>
 
-    <div class="container-fluid">
+    <div id='admin-only' class="container-fluid" style='display:none'>
       <h1>管理フォーム</h1>
 
       <div class="card bg-light mb-3" style="max-width: 40rem;">
@@ -94,6 +94,7 @@
           <h4>取引履歴</h4>
         </div>
         <div class="card-body">
+          <p class="text-center text-danger" id="history-message"></p>
           <table class="table mb-0">
             <thead>
               <tr>
@@ -129,11 +130,12 @@
             console.log(err);
             $(location).attr('href', 'login');
           } else {
-            if (data.session.idToken.payload['cognito:groups'].indexOf('admin') === -1) {
+            if (!data.session.idToken.payload['cognito:groups'] || data.session.idToken.payload['cognito:groups'].indexOf('admin') === -1) {
                 alert('You are not admin');
-                $(location).attr('href', 'login');
+                $(location).attr('href', 'wallet');
             }else{
                 $("#user-name").text(data.user ? data.user : '---');
+                $("#admin-only").show();
                 controller.account = 'sla_bank';
                 controller.session = data.session;
                 controller.loadTransactions();
