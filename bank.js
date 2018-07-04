@@ -1,7 +1,7 @@
 "use strict";
 
 function getTimeString(timestamp) {
-    let d = new Date(1529478245926);
+    let d = new Date(timestamp);
     let year  = d.getFullYear();
     let month = d.getMonth() + 1;
     let day   = d.getDate();
