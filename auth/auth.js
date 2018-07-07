@@ -1,6 +1,8 @@
 'use strict'
 var upsample = {};
 
+upsample.state = 'login';
+
 upsample.poolData = {
     UserPoolId: 'ap-northeast-1_WEGpvJz9M',
     ClientId: 'dnjrhu35ok1pren744jvjq28e'
@@ -88,6 +90,16 @@ upsample.resend = function() {
     });
 }
 
+upsample.setState = function(state) {
+    switch(state) {
+    case 'ResetPassword':
+        $('#login-form-body').hide();
+        $('#new-password-form-body').show();
+    default:
+    }
+    upsample.state = state;
+}
+
 upsample.login = function() {
     try {
         var username = $('#inputUserName').val();
@@ -136,7 +148,19 @@ upsample.login = function() {
 
             onFailure: function(err) {
                 console.log(err);
-                $('#message').text('Error: サーバーとの接続に失敗しました');
+                switch(err.code) {
+                case 'PasswordResetRequiredException':
+                    $('#message').text('Error: パスワードを初期化してください');
+                    upsample.setState('ResetPassword');
+                    break;
+                case 'UserNotFoundException':
+                case 'NotAuthorizedException':
+                    $('#message').text('Error: アカウント名もしくはパスワードが誤っています');
+                    break;
+                default:
+                    $('#message').text('Error: ' + err.message);
+                    break;
+                }
             },
 
             mfaRequired: function(codeDeliveryDetails) {
