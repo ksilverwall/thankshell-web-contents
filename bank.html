@@ -20,6 +20,9 @@
           <li class="nav-item active">
             <a class="nav-link">総発行量<u><span id=published>---</span> Selan</u></a>
           </li>
+          <li class="nav-item active">
+            <a class="nav-link">総流通量<u><span id=currency>---</span> Selan</u></a>
+          </li>
         </ul>
         <ul class="navbar-nav mr-auto">
         </ul>
@@ -86,6 +89,25 @@
           </form>
           <br/>
           <p class="text-center text-danger" id="send-selan-message">送金後の取り消しはできませんのでご注意ください</p>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <h4>保有状況</h4>
+        </div>
+        <div class="card-body">
+          <p class="text-center text-danger" id="history-message"></p>
+          <table class="table mb-0">
+            <thead>
+              <tr>
+                <th scope="col" class="text-right">アカウント</th>
+                <th scope="col" class="text-right">金額(selan)</th>
+              </tr>
+            </thead>
+            <tbody id="carried-list">
+            </tbody>
+          </table>
         </div>
       </div>
 

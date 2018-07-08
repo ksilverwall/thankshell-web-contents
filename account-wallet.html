@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8"/>
     <title>SLA Wallet</title>
+    <link rel="shortcut icon" href="https://s3-ap-northeast-1.amazonaws.com/sla-bank/selan.ico" type="image/vnd.microsoft.icon">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   </head>
@@ -11,16 +12,22 @@
       <a class="navbar-brand" href="#">SLA Wallet</a>
       <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#Navber" aria-controls="Navber" aria-expanded="false" aria-label="ナビゲーションの切替">
         <span class="navbar-toggler-icon"></span>
+        <span class="sr-only">メニュー</span>
       </button>
 
-      <div class="collapse navbar-collapse" id="Navber">
+      <div id="Navber" class="collapse navbar-collapse">
         <ul class="navbar-nav mr-auto">
-            <a class="nav-item">残高<u><span id=carried>---</span> Selan</u></a>
+          <li class="nav-item active">
+            <a class="nav-link" href="https://sketch-life-academy.com/selan-help/">ヘルプ</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link">残高<u><span id=carried>---</span> Selan</u></a>
+          </li>
         </ul>
-        <ul class="my-2 my-lg-0">
-          <a><span id='user-name'>---</span> さん</a>
+        <form class="form-inline my-2 my-lg-0">
+          <label><span id='user-name'>---</span> さん</label>
           <button type="submit" id="logoutButton" class="btn btn-outline-success my-2 my-sm-0">ログアウト</button>
-        </ul>
+        </form>
       </div>
     </nav>
 

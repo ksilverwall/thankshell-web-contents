@@ -39,9 +39,6 @@ controller.loadTransactions = function(token) {
         }
     }).done(data => {
         $("#carried").text(data.carried);
-        if(data.published) {
-            $("#published").text(data.published);
-        }
         $('#history').empty();
         data.history.Items.forEach(record => {
             $('<tr>')
@@ -50,8 +47,20 @@ controller.loadTransactions = function(token) {
                 .append($('<td>').text(record.from_account))
                 .append($('<td>').text(record.to_account))
                 .append($('<td class="text-right">').text(record.amount.toLocaleString()))
-                .appendTo('#history')
+                .appendTo('#history');
         });
+
+        if(data.bank) {
+            $("#published").text(data.bank.published);
+            $("#currency").text(data.bank.published - data.carried);
+            $('#carried-list').empty();
+            for(let key in data.bank.account) {
+                $('<tr>')
+                    .append($('<th scope="row" class="text-right">').text(key))
+                    .append($('<td class="text-right">').text(data.bank.account[key].toLocaleString()))
+                    .appendTo('#carried-list');
+            };
+        }
     }).fail((xhr, textStatus, errorThrown) => {
         $('#history-message').text('ERROR: ' + getErrorMessage(xhr));
     })
