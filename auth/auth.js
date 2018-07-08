@@ -90,13 +90,101 @@ upsample.resend = function() {
     });
 }
 
-upsample.setState = function(state) {
-    switch(state) {
-    case 'ResetPassword':
-        $('#login-form-body').hide();
-        $('#new-password-form-body').show();
-    default:
+upsample.sendResetCode = function() {
+    try {
+        var username = $('#reset-user-name').val();
+
+        var userData = {
+            Username: username,
+            Pool: upsample.UserPool
+        };
+
+        var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser(userData);
+        cognitoUser.forgotPassword({
+            getResetCode: function(continuation) {
+                alert(continuation);
+            },
+            onFailure: function(err) {
+                switch(err.code){
+                case 'UserNotFoundException':
+                    $('#message').text('指定のユーザーは登録されていません');
+                    break;
+                case "LimitExceededException":
+                    $('#message').text('ロックされました。しばらく待ってやり直してください');
+                    break;
+                default:
+                    console.log(err);
+                    alert(err);
+                }
+            },
+            onSuccess: function() {
+                upsample.setState('Login');
+            },
+        });
+    } catch(e) {
+        console.log(e);
+        alert(e);
+        $('#message').text('ERROR: 異常終了しました');
     }
+}
+
+upsample.resetPassword = function() {
+    try {
+        var username = $('#reset-user-name').val();
+        var authCode = $('#auth-code').val();
+        var newPassword1 = $('#inputNewPassword1').val();
+        var newPassword2 = $('#inputNewPassword2').val();
+
+        if(newPassword1 !== newPassword2) {
+            $('#message').text('同じパスワードが一致しません');
+            return;
+        }
+
+        var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
+            Username: username,
+            Pool: upsample.UserPool
+        });
+
+        cognitoUser.confirmPassword(authCode, newPassword1, {
+            getResetCode: function(continuation) {
+                alert(continuation);
+            },
+            onFailure: function(err) {
+                console.log(err);
+                switch(err.code){
+                case 'CodeMismatchException':
+                    alert('認証コードが一致しません');
+                    break;
+                case 'MultipleValidationErrors':
+                    alert(err.errors);
+                    break;
+                default:
+                    $('#message').text('指定のユーザーは登録されていません');
+                    alert(err);
+                }
+            },
+            onSuccess: function() {
+                upsample.setState('ResetPassword');
+            },
+        });
+    } catch(e) {
+        console.log(e);
+        alert(e);
+        $('#message').text('ERROR: 異常終了しました');
+    }
+}
+
+upsample.setState = function(state) {
+    var formList = {
+        'Login': '#login-form-body',
+        'SendResetCode': '#send-reset-code-body',
+        'ResetPassword': '#new-password-form-body',
+    };
+    for(let key in formList) {
+        $(formList[key]).hide();
+    }
+
+    $(formList[state]).show();
     upsample.state = state;
 }
 
@@ -151,7 +239,7 @@ upsample.login = function() {
                 switch(err.code) {
                 case 'PasswordResetRequiredException':
                     $('#message').text('Error: パスワードを初期化してください');
-                    upsample.setState('ResetPassword');
+                    upsample.setState('SendResetCode');
                     break;
                 case 'UserNotFoundException':
                 case 'NotAuthorizedException':
