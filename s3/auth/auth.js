@@ -118,7 +118,8 @@ upsample.sendResetCode = function() {
                 }
             },
             onSuccess: function() {
-                upsample.setState('Login');
+                $('#message').text('登録メールアドレスに認証コードを送りました');
+                upsample.setState('ResetPassword');
             },
         });
     } catch(e) {
@@ -164,7 +165,7 @@ upsample.resetPassword = function() {
                 }
             },
             onSuccess: function() {
-                upsample.setState('ResetPassword');
+                upsample.setState('Login');
             },
         });
     } catch(e) {
