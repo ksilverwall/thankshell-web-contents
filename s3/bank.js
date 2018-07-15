@@ -125,3 +125,34 @@ controller.sendSelan = function() {
         }
     });
 }
+
+controller.importTransaction = function(csvFile) {
+    $('#send-selan-message').text('インポート中');
+
+    Promise.all(csvFile.split('\n').map(record => {
+        return new Promise((resolve, reject) => { 
+            let csv = record.split(',');
+            if (!csv || csv.length !== 3) {
+                resolve();
+            }
+
+            let data = {
+                'from_account': csv[0],
+                'to_account': csv[1],
+                'amount': csv[2],
+            }
+
+            this.createTransaction(data, (err, data) => {
+                if(err) {
+                    console.log('ERROR: ' + err);
+                    resolve();
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }))
+    .then(function() {
+        $('#send-selan-message').text('送金が完了しました');
+    });
+}
