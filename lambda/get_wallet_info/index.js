@@ -5,6 +5,10 @@ var cognito = new AWS.CognitoIdentityServiceProvider({
     region: 'ap-northeast-1'
 });
 
+const poolId = 'ap-northeast-1_WEGpvJz9M';
+const publishAccount = "--";
+const reservedAccounts = ['sla_bank', publishAccount];
+
 function responseSuccess(data, callback){
     var response = {
         statusCode: 200,
@@ -23,22 +27,56 @@ function responseError(errCode, data, callback){
     callback(null, response);
 }
 
-async function isAdmin(user) {
-    let ctrlUser = await cognito.adminListGroupsForUser({
-        UserPoolId: poolId,
-        Username: user
-    }).promise();
+async function getHistory(account, adminMode) {
+    let history = {
+        Count: 0,
+        Items: []
+    };
 
-    let adminFlag = false;
-    ctrlUser.Groups.forEach(value => {
-        if (value.GroupName === 'admin') adminFlag = true;
-    }, adminFlag);
+    let maxBlockId = Math.floor((await dynamo.get({
+        TableName: 'table_info',
+        Key:{
+            'name': 'remittance_transactions',
+        }
+    }).promise()).Item.current_id_sequence / 1000);
 
-    return adminFlag;
+    for (let blockId=maxBlockId; blockId >= 0; --blockId) {
+        let params;
+        if(adminMode) {
+            params = {
+                TableName: "remittance_transactions",
+                KeyConditionExpression: "block_id = :block",
+                ExpressionAttributeValues: {
+                    ":block": blockId
+                }
+            };
+        } else {
+            params = {
+                TableName: "remittance_transactions",
+                KeyConditionExpression: "block_id = :block",
+                FilterExpression: "from_account = :account or to_account = :account",
+                ExpressionAttributeValues: {
+                    ":block": blockId,
+                    ":account": account
+                }
+            };
+        }
+
+        var data = await dynamo.query(params).promise();
+        history.Items = history.Items.concat(data.Items);
+        history.Count += data.Count;
+    }
+
+    return history;
 }
 
-const reservedAccounts = ['sla_bank', '--'];
-const poolId = 'ap-northeast-1_WEGpvJz9M';
+async function getAllAccounts() {
+    let users = await cognito.listUsers({
+        UserPoolId: poolId,
+    }).promise();
+
+    return users.Users;
+}
 
 exports.handler = async(event, context, callback) => {
     try {
@@ -49,68 +87,28 @@ exports.handler = async(event, context, callback) => {
         }
 
         let claims = event.requestContext.authorizer.claims;
-        let adminMode = account === 'sla_bank';
+        let adminMode = claims['cognito:groups'] && (claims['cognito:groups'].indexOf('admin') !== -1);
 
         if (!account) {
             throw new Error("アカウントの取得に失敗しました");
         }
 
-        if(adminMode) {
-            if(!await isAdmin(claims['cognito:username'])) {
-                throw new Error("アクセス権限がありません");
-            }
+        if(!adminMode && account !== claims['cognito:username']) {
+            throw new Error("アクセス権限がありません");
+        }
 
-            if(reservedAccounts.indexOf(account) === -1) {
-                let fromUser = await cognito.adminGetUser({
-                    UserPoolId: poolId,
-                    Username: account
-                }).promise();
-        
-                if (!fromUser.Enabled) {
-                    throw new Error("アカウントが無効です");
-                }
+        if(adminMode && reservedAccounts.indexOf(account) === -1) {
+            let fromUser = await cognito.adminGetUser({
+                UserPoolId: poolId,
+                Username: account
+            }).promise();
+
+            if (!fromUser.Enabled) {
+                throw new Error("アカウントが無効です");
             }
         }
 
-        var maxBlockId = Math.floor((await dynamo.get({
-            TableName: 'table_info',
-            Key:{
-                'name': 'remittance_transactions',
-            }
-        }).promise()).Item.current_id_sequence / 1000);
-
-        // Get History
-        var history = {
-            Count: 0,
-            Items: []
-        };
-
-        for (let blockId=maxBlockId; blockId >= 0; --blockId) {
-            let params;
-            if(adminMode) {
-                params = {
-                    TableName: "remittance_transactions",
-                    KeyConditionExpression: "block_id = :block",
-                    ExpressionAttributeValues: {
-                        ":block": blockId
-                    }
-                };
-            } else {
-                params = {
-                    TableName: "remittance_transactions",
-                    KeyConditionExpression: "block_id = :block",
-                    FilterExpression: "from_account = :account or to_account = :account",
-                    ExpressionAttributeValues: {
-                        ":block": blockId,
-                        ":account": account
-                    }
-                };
-            }
-
-            var data = await dynamo.query(params).promise();
-            history.Items = history.Items.concat(data.Items);
-            history.Count += data.Count;
-        }
+        let history = await getHistory(account, adminMode);
 
         let retData = {
             history: history,
@@ -118,14 +116,19 @@ exports.handler = async(event, context, callback) => {
         };
 
         if(adminMode) {
+            let allAccounts = await getAllAccounts();
+
             retData.bank = {
                 published: 0,
                 currency: 0,
                 account: {}
             };
+
+            allAccounts.forEach(userAccount => {
+                retData.bank.account[userAccount.Username] = 0;
+            }, retData);
         }
 
-        const publishAccount = "--";
         history.Items.forEach((item) => {
             if(isFinite(item.amount)) {
                 if(item.from_account == account) {
@@ -143,9 +146,6 @@ exports.handler = async(event, context, callback) => {
                             retData.bank.published += item.amount;
                             break;
                         default:
-                            if(!retData.bank.account[item.from_account]) {
-                                retData.bank.account[item.from_account] = 0;
-                            }
                             retData.bank.account[item.from_account] -= item.amount;
                             break;
                     }
@@ -157,9 +157,6 @@ exports.handler = async(event, context, callback) => {
                             retData.bank.published -= item.amount;
                             break;
                         default:
-                            if(!retData.bank.account[item.to_account]) {
-                                retData.bank.account[item.to_account] = 0;
-                            }
                             retData.bank.account[item.to_account] += item.amount;
                             break;
                     }
