@@ -87,7 +87,7 @@ exports.handler = async(event, context, callback) => {
         }
 
         let claims = event.requestContext.authorizer.claims;
-        let adminMode = claims['cognito:groups'] && (claims['cognito:groups'].indexOf('admin') !== -1);
+        let adminMode = (account === 'sla_bank' && claims['cognito:groups'] && claims['cognito:groups'].indexOf('admin') !== -1);
 
         if (!account) {
             throw new Error("アカウントの取得に失敗しました");
