@@ -89,9 +89,10 @@
           </form>
           <br/>
           <div class="custom-file">
-            <input id="import-transaction-file" type="file" class="custom-file-input" id="customFile" lang="ja">
-            <label id="import-transaction-label" class="custom-file-label" for="customFile">ファイル選択...</label>
-            <button id=import-transaction-button type="button" class="btn btn-danger">CSVインポート</button>
+            <p>同時多重発行問題のため凍結中(要直列化)</p>
+            <input id="import-transaction-file" type="file" class="custom-file-input" id="customFile" lang="ja" disabled>
+            <label id="import-transaction-label" class="custom-file-label" for="customFile" disabled>ファイル選択...</label>
+            <button id=import-transaction-button type="button" class="btn btn-danger" disabled>CSVインポート</button>
           </div>
           <p class="text-center text-danger" id="send-selan-message">送金後の取り消しはできませんのでご注意ください</p>
         </div>
