@@ -180,7 +180,8 @@ upsample.setState = function(state) {
     var formList = {
         'Login': '#login-form-body',
         'SendResetCode': '#send-reset-code-body',
-        'ResetPassword': '#new-password-form-body',
+        'ResetPassword': '#reset-password-form-body',
+        'NewPassword': '#new-password-form-body',
     };
     for(let key in formList) {
         $(formList[key]).hide();
@@ -190,13 +191,13 @@ upsample.setState = function(state) {
     upsample.state = state;
 }
 
-upsample.login = function() {
+upsample.newPassword = function() {
     try {
         var username = $('#inputUserName').val();
         var password = $('#inputPassword').val();
         var redirect = $('#redirectPath').val();
-        var newPassword1 = $('#inputNewPassword1').val();
-        var newPassword2 = $('#inputNewPassword2').val();
+        var newPassword1 = $('#new-password-value').val();
+        var newPassword2 = $('#new-password-check').val();
         if (!username | !password) { return false; }
 
         var authenticationData = {
@@ -266,8 +267,95 @@ upsample.login = function() {
                         alert('同じパスワードを入力してください');
                     }
                 } else {
-                    $('#login-form-body').hide();
-                    $('#new-password-form-body').show();
+                    upsample.setState('NewPassword');
+                    $('#message').text('パスワードを設定してください');
+                }
+            }
+        });
+    } catch(e) {
+        console.log(e);
+        alert(e);
+        $('#message').text('ERROR: 異常終了しました');
+    }
+}
+
+upsample.login = function() {
+    try {
+        var username = $('#inputUserName').val();
+        var password = $('#inputPassword').val();
+        var redirect = $('#redirectPath').val();
+        var newPassword1 = $('#new-password-value').val();
+        var newPassword2 = $('#new-password-check').val();
+        if (!username | !password) { return false; }
+
+        var authenticationData = {
+            Username: username,
+            Password: password
+        };
+        var authenticationDetails = new AWSCognito.CognitoIdentityServiceProvider.AuthenticationDetails(authenticationData);
+
+        var userData = {
+            Username: username,
+            Pool: upsample.UserPool
+        };
+
+        var message_text;
+        var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser(userData);
+        cognitoUser.authenticateUser(authenticationDetails, {
+            onSuccess: function(result) {
+                console.log('access token + ' + result.getAccessToken().getJwtToken());
+
+                AWS.config.region = 'ap-northeast-1';
+                AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                    IdentityPoolId: 'ap-northeast-1:8dc6d009-5c99-41fd-8119-e734643b2e21',
+                    Logins: {
+                        'cognito-idp.ap-northeast-1.amazonaws.com/ap-northeast-1_WEGpvJz9M': result.getIdToken().getJwtToken()
+                    }
+                });
+
+                AWS.config.credentials.refresh(function(err) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log("success");
+                        console.log("id:" + AWS.config.credentials.identityId);
+                    }
+
+                    $(location).attr('href', redirect);
+                });
+            },
+
+            onFailure: function(err) {
+                console.log(err);
+                switch(err.code) {
+                case 'PasswordResetRequiredException':
+                    $('#message').text('Error: パスワードを初期化してください');
+                    upsample.setState('SendResetCode');
+                    break;
+                case 'UserNotFoundException':
+                case 'NotAuthorizedException':
+                    $('#message').text('Error: アカウント名もしくはパスワードが誤っています');
+                    break;
+                default:
+                    $('#message').text('Error: ' + err.message);
+                    break;
+                }
+            },
+
+            mfaRequired: function(codeDeliveryDetails) {
+                console.log(codeDeliveryDetails);
+                $('#message').text('Error: MFA機能は非対応です');
+            },
+
+            newPasswordRequired: function(userAttributes, requiredAttributes) {
+                if ($('#new-password-form-body').is(':visible')) {
+                    if(newPassword1 === newPassword2) {
+                        cognitoUser.completeNewPasswordChallenge(newPassword1, {}, this);
+                    } else {
+                        alert('同じパスワードを入力してください');
+                    }
+                } else {
+                    upsample.setState('NewPassword');
                     $('#message').text('パスワードを設定してください');
                 }
             }

@@ -44,7 +44,7 @@
             </div>
 
             <!-- Reset Password Form -->
-            <div id='new-password-form-body' style="display:none">
+            <div id='reset-password-form-body' style="display:none">
                 <div class="form-group">
                     <label for="auth-code">認証コード</label>
                     <input type="text" id="auth-code" placeholder="Auth code" required></input>
@@ -59,6 +59,20 @@
                 </div>
                 <input type="button" id="reset-password-button" class="button-primary" value="変更"></input>
             </div>
+
+            <!-- New Password Form -->
+            <div id='new-password-form-body' style="display:none">
+                <div class="form-group">
+                    <label for="new-password-value">新パスワード</label>
+                    <input type="password" id="new-password-value" placeholder="New Password" required></input>
+                </div>
+                <div class="form-group">
+                    <label for="new-password-check">新パスワード（確認）</label>
+                    <input type="password" id="new-password-check" placeholder="New Password" required></input>
+                </div>
+                <input type="button" id="new-password-button" class="button-primary" value="変更"></input>
+            </div>
+
             <input type="hidden" id="redirectPath" value="wallet"></input>
         </form>
     </div>
@@ -80,10 +94,9 @@
         });
         $('#send-reset-code-button').click(upsample.sendResetCode);
         $('#link-to-send-reset-code').click(function(){upsample.setState('SendResetCode')});
-        // for reset form
         $('#login-button').click(upsample.login);
-        // for reset form
         $('#reset-password-button').click(upsample.resetPassword);
+        $('#new-password-button').click(upsample.newPassword);
     </script>
 </body>
 
