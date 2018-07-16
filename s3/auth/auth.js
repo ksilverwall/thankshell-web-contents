@@ -166,6 +166,7 @@ upsample.resetPassword = function() {
             },
             onSuccess: function() {
                 upsample.setState('Login');
+                $('#message').text('パスワードが変更されました');
             },
         });
     } catch(e) {
