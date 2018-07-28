@@ -121,9 +121,11 @@ controller.sendSelan = function() {
     data['from_account'] = this.account;
     
     $('#send-selan-button').prop("disabled", true);
+    $('#send-selan-button').addClass("disabled");
     $('#send-selan-message').text('送金中');
     this.createTransaction(data, (err, data) => {
         $('#send-selan-button').prop("disabled", false);
+        $('#send-selan-button').removeClass("disabled");
         if(err) {
             $('#send-selan-message').text('ERROR: ' + err);
         } else {
