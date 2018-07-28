@@ -38,7 +38,7 @@ controller.loadTransactions = function(token) {
             Authorization: this.session.idToken.jwtToken
         }
     }).done(data => {
-        $("#carried").text(data.carried);
+        $("#carried").text(data.carried.toLocaleString());
         $('#history').empty();
         data.history.Items.forEach(record => {
             $('<tr>')
