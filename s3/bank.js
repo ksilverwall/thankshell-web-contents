@@ -108,6 +108,10 @@ controller.publish = function() {
 }
 
 controller.sendSelan = function() {
+    if($('#send-selan-button').prop("disabled")) {
+        return;
+    }
+
     let data = {};
     $('#send-selan').find('input').each((index, input) => {
         if(input.name){
@@ -116,8 +120,10 @@ controller.sendSelan = function() {
     });
     data['from_account'] = this.account;
     
+    $('#send-selan-button').prop("disabled", true);
     $('#send-selan-message').text('送金中');
     this.createTransaction(data, (err, data) => {
+        $('#send-selan-button').prop("disabled", false);
         if(err) {
             $('#send-selan-message').text('ERROR: ' + err);
         } else {
