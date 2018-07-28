@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8"/>
+    <title>SLA Wallet</title>
+    <link rel="shortcut icon" href="https://s3-ap-northeast-1.amazonaws.com/sla-bank/selan.ico" type="image/vnd.microsoft.icon">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="container-fluid bg-info">
+      <nav class="navbar row navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">SLA Wallet</a>
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="https://sketch-life-academy.com/selan-help/">ヘルプ</a>
+          </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+          <label><span id='user-name'>---</span> さん</label>
+          <button type="submit" id="logoutButton" class="btn btn-outline-success my-2 my-sm-0">ログアウト</button>
+        </form>
+      </nav>
+
+      <div class="mx-auto" style="width: 200px;">
+        <img src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/selan_logo.png" class="img-circle" alt="selan-logo">
+      </div>
+      <h1>残高<u><span id=carried>---</span> Selan</u></h1>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <h4>Selanを送る</h4>
+        </div>
+        <div class="card-body">
+          <form class="form-horizontal" id="send-selan">
+            <div class="row">
+              <div class="col form-group">
+                <label>送金先</label>
+                <input class="form-control" type="text" name="to_account" />
+              </div>
+              <div class="col form-group">
+                <label>金額</label>
+                <input class="form-control" type="number" min="1" name="amount" value='1000'/>
+              </div>
+            </div>
+            <input type="hidden" name="from_account"/>
+            <div class="row">
+              <div class="col-5">
+              </div>
+              <div class="col-2">
+                <input id='send-selan-button' class="btn-block btn-primary" type="button" value="送金" />
+              </div>
+              <div class="col-5">
+              </div>
+            </div>
+          </form>
+          <br>
+          <p class="text-center text-danger" id="send-selan-message">送金後の取り消しはできませんのでご注意ください</p>
+        </div>
+      </div>
+
+      <div class="card mx-auto">
+        <div class="card-header">
+          <h4>取引履歴</h4>
+        </div>
+        <div class="card-body">
+          <p class="text-center text-danger" id="history-message"></p>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col" class="text-right">取引ID</th>
+                <th scope="col">取引日時</th>
+                <th scope="col">FROM</th>
+                <th scope="col">TO</th>
+                <th scope="col" class="text-right">金額(selan)</th>
+              </tr>
+            </thead>
+            <tbody id="history">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="row"></div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.263.1.min.js"></script>
+    <script src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/dist/aws-cognito-sdk.min.js"></script>
+    <script src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/dist/amazon-cognito-identity.min.js"></script>
+    <script src='https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/auth.js'></script>
+    <script src='https://s3-ap-northeast-1.amazonaws.com/sla-bank/bank.js'></script>
+
+    <script>
+     $(function() {
+        upsample.checkSession( (err, data) => {
+          if(false) {
+            console.log(err);
+            $(location).attr('href', 'login');
+          } else {
+            $("#user-name").text(data.user ? data.user : '---');
+            controller.account = data.user;
+            controller.session = data.session;
+            controller.loadTransactions();
+            $('#send-selan-button').click(function() { controller.sendSelan(); });
+          }
+        });
+      });
+
+      $('#logoutButton').click(upsample.logout);
+    </script>
+  </body>
+</html>
