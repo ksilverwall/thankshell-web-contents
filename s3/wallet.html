@@ -96,7 +96,7 @@
     <script>
      $(function() {
         upsample.checkSession( (err, data) => {
-          if(false) {
+          if(err) {
             console.log(err);
             $(location).attr('href', 'login');
           } else {
