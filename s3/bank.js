@@ -15,7 +15,10 @@ function getTimeString(timestamp) {
 function getErrorMessage(xhr) {
     if(xhr.responseJSON && xhr.responseJSON.message) {
         switch (xhr.responseJSON.message) {
-        case 'Unauthorized': '認証エラー'
+        case 'Unauthorized':
+            return '認証エラー';
+        case 'The incoming token has expired':
+            return 'ログインセッションがタイムアウトしました。再ログインしてください。';
         default:
             return xhr.responseJSON.message;
         }
