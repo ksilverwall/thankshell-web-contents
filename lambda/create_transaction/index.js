@@ -91,6 +91,10 @@ exports.handler = async(event, context, callback) => {
         let amount = parseInt(args.amount, 10);
         let comment = args.comment ? args.comment : '';
 
+        if(comment.length > 200) {
+            throw new Error("コメントが200文字を超えています");
+        }
+
         // Check send from
         if(args.from_account !== claims['cognito:username']) {
             if(!await isAdmin(claims['cognito:username'])) {

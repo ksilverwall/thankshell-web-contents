@@ -50,6 +50,7 @@ controller.loadTransactions = function(token) {
                 .append($('<td>').text(record.from_account))
                 .append($('<td>').text(record.to_account))
                 .append($('<td class="text-right">').text(record.amount.toLocaleString()))
+                .append($('<td class="text-left">').text(record.comment ? record.comment : ''))
                 .appendTo('#history');
         });
 

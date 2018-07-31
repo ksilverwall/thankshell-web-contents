@@ -42,6 +42,10 @@
                 <label>金額</label>
                 <input class="form-control" type="number" min="1" name="amount" value='1000'/>
               </div>
+              <div class="col form-group">
+                <label>コメント</label>
+                <input class="form-control" type="text" name="comment"/>
+              </div>
             </div>
             <input type="hidden" name="from_account"/>
             <div class="row">
@@ -73,6 +77,7 @@
                 <th scope="col">FROM</th>
                 <th scope="col">TO</th>
                 <th scope="col" class="text-right">金額(selan)</th>
+                <th scope="col" class="text-left">コメント</th>
               </tr>
             </thead>
             <tbody id="history">
