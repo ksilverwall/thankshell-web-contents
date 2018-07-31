@@ -89,6 +89,7 @@ exports.handler = async(event, context, callback) => {
         let args = JSON.parse(event.body);
         let claims = event.requestContext.authorizer.claims;
         let amount = parseInt(args.amount, 10);
+        let comment = args.comment ? args.comment : '';
 
         // Check send from
         if(args.from_account !== claims['cognito:username']) {
@@ -155,7 +156,8 @@ exports.handler = async(event, context, callback) => {
                 "to_account": args.to_account,
                 "type": "selan",
                 "amount": amount,
-                "timestamp": date
+                "timestamp": date,
+                "comment": comment
             }
         }).promise();
 
