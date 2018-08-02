@@ -58,11 +58,13 @@ controller.loadTransactions = function(token) {
             $("#published").text(data.bank.published);
             $("#currency").text(data.bank.published - data.carried);
             $('#carried-list').empty();
+
+            let table = $('#account-info').DataTable();
             for(let key in data.bank.account) {
-                $('<tr>')
-                    .append($('<th scope="row" class="text-right">').text(key))
-                    .append($('<td class="text-right">').text(data.bank.account[key] ? data.bank.account[key].toLocaleString() : 'ERROR'))
-                    .appendTo('#carried-list');
+                table.row.add( [
+                    key,
+                    data.bank.account[key] ? data.bank.account[key].toLocaleString() : 'ERROR',
+                ]).draw();
             };
         }
     }).fail((xhr, textStatus, errorThrown) => {
