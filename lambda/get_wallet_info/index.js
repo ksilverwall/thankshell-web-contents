@@ -71,11 +71,23 @@ async function getHistory(account, adminMode) {
 }
 
 async function getAllAccounts() {
-    let users = await cognito.listUsers({
+    let accountInfo = await cognito.listUsers({
         UserPoolId: poolId,
     }).promise();
 
-    return users.Users;
+    let allAccounts = accountInfo.Users;
+
+    let paginationToken = accountInfo.PaginationToken;
+    while (paginationToken) {
+        let users2 = await cognito.listUsers({
+            UserPoolId: poolId,
+            PaginationToken: paginationToken,
+        }).promise();
+        allAccounts = allAccounts.concat(users2.Users);
+        paginationToken = users2.PaginationToken;
+    }
+
+    return allAccounts;
 }
 
 exports.handler = async(event, context, callback) => {
@@ -127,6 +139,7 @@ exports.handler = async(event, context, callback) => {
             allAccounts.forEach(userAccount => {
                 retData.bank.account[userAccount.Username] = 0;
             }, retData);
+            retData.bank.accountNum = allAccounts.length;
         }
 
         history.Items.forEach((item) => {
