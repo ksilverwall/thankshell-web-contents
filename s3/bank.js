@@ -61,7 +61,7 @@ controller.loadTransactions = function(token) {
             for(let key in data.bank.account) {
                 $('<tr>')
                     .append($('<th scope="row" class="text-right">').text(key))
-                    .append($('<td class="text-right">').text(data.bank.account[key].toLocaleString()))
+                    .append($('<td class="text-right">').text(data.bank.account[key] ? data.bank.account[key].toLocaleString() : 'ERROR'))
                     .appendTo('#carried-list');
             };
         }
