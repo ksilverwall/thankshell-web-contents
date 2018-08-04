@@ -22,10 +22,19 @@
         </form>
       </nav>
 
-      <div class="mx-auto" style="width: 200px;">
-        <img src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/selan_logo.png" class="img-circle" alt="selan-logo">
+
+      <div class="row">
+        <div class="col text-center">
+          <img src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/selan_logo.png" class="img-circle" alt="selan-logo">
+        </div>
       </div>
-      <h1>残高<u><span id=carried>---</span> Selan</u></h1>
+
+      <div class="row">
+        <div class="col">
+          <h1 class="text-right">残高<u><span id=carried>---</span> Selan</u></h1>
+        </div>
+      </div>
+
 
       <div class="card mb-3">
         <div class="card-header">
@@ -33,28 +42,25 @@
         </div>
         <div class="card-body">
           <form class="form-horizontal" id="send-selan">
+
             <div class="row">
-              <div class="col form-group">
+              <div class="col-xs-12 col-sm-6 col-md-4 form-group">
                 <label>送金先</label>
                 <input class="form-control" type="text" name="to_account" />
               </div>
-              <div class="col form-group">
+              <div class="col-xs-12 col-sm-6 col-md-4 form-group">
                 <label>金額</label>
                 <input class="form-control" type="number" min="1" name="amount" value='1000'/>
               </div>
-              <div class="col form-group">
+              <div class="col-xs-12 col-sm-12 col-md-4 form-group">
                 <label>コメント</label>
                 <input class="form-control" type="text" name="comment"/>
               </div>
             </div>
-            <input type="hidden" name="from_account"/>
-            <div class="row">
-              <div class="col-5">
-              </div>
+
+            <div class="row justify-content-around">
               <div class="col-2">
-                <input id='send-selan-button' class="btn-block btn-primary" type="button" value="送金" />
-              </div>
-              <div class="col-5">
+                <input id='send-selan-button' class="btn-primary" type="button" value="送金" />
               </div>
             </div>
           </form>
@@ -62,6 +68,7 @@
           <p class="text-center text-danger" id="send-selan-message">送金後の取り消しはできませんのでご注意ください</p>
         </div>
       </div>
+
 
       <div class="card mx-auto">
         <div class="card-header">
@@ -85,6 +92,7 @@
           </table>
         </div>
       </div>
+
 
       <div class="row"></div>
     </div>
