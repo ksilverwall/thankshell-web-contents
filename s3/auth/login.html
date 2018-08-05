@@ -2,6 +2,7 @@
 
 <head>
     <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login to SLA Bank</title>
     <link rel="shortcut icon" href="https://s3-ap-northeast-1.amazonaws.com/sla-bank/selan.ico" type="image/vnd.microsoft.icon">
     <!-- Bootstrap CSS -->
@@ -11,93 +12,103 @@
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css'>
 </head>
 
-<body>
-    <div class="container">
-        <h2 class="login-heading">ログイン</h2>
-        <form class="login">
-            <p id="message" class='text-danger'></p>
-            <!-- Login Form -->
-            <div id='login-form-body'>
-                <div class="form-group">
-                    <label for="inputUserName">ユーザー名</label>
-                    <input type="text" id="inputUserName" placeholder="User Name" required autofocus></input>
-                </div>
-                <div class="form-group">
-                    <label for="intpuPassword">パスワード</label>
-                    <input type="password" id="inputPassword" placeholder="Password" required></input>
-                </div>
-                <input type="button" id="login-button" class="button-primary" value="ログイン"></input>
+<body class="bg-info">
+  <div class="row">
+    <div class="col-xs-12 col-sm-4">
+      <div class="container-fluid">
+        <div class="card mb-3 mt-3">
+          <div class="card-header">
+              <h4>ログイン</h4>
+          </div>
+          <div class="card-body">
+              <form class="login">
+                  <p id="message" class='text-danger'></p>
+                  <!-- Login Form -->
+                  <div id='login-form-body'>
+                      <div class="form-group">
+                          <label for="inputUserName">ユーザー名</label>
+                          <input type="text" id="inputUserName" placeholder="User Name" required autofocus></input>
+                      </div>
+                      <div class="form-group">
+                          <label for="intpuPassword">パスワード</label>
+                          <input type="password" id="inputPassword" placeholder="Password" required></input>
+                      </div>
+                      <input type="button" id="login-button" class="button-primary" value="ログイン"></input>
 
-                <div class="form-group">
-                    <a id="link-to-send-reset-code" href="#">パスワードを忘れた場合はこちら</a>
-                </div>
-            </div>
+                      <div class="form-group">
+                          <a id="link-to-send-reset-code" href="#">パスワードを忘れた場合はこちら</a>
+                      </div>
+                  </div>
 
-            <!-- Reset Reset Code Form -->
-            <div id='send-reset-code-body' style="display:none">
-                <p>登録メールアドレスに認証コードを送信します</p>
-                <div class="form-group">
-                    <label for="inputUserName">ユーザー名</label>
-                    <input type="text" id="reset-user-name" placeholder="User Name" required autofocus></input>
-                </div>
-                <input type="button" id="send-reset-code-button" class="btn btn-primary disabled" value="送信" disabled/>
-            </div>
+                  <!-- Reset Reset Code Form -->
+                  <div id='send-reset-code-body' style="display:none">
+                      <p>登録メールアドレスに認証コードを送信します</p>
+                      <div class="form-group">
+                          <label for="inputUserName">ユーザー名</label>
+                          <input type="text" id="reset-user-name" placeholder="User Name" required autofocus></input>
+                      </div>
+                      <input type="button" id="send-reset-code-button" class="btn btn-primary disabled" value="送信" disabled/>
+                  </div>
 
-            <!-- Reset Password Form -->
-            <div id='reset-password-form-body' style="display:none">
-                <div class="form-group">
-                    <label for="auth-code">認証コード</label>
-                    <input type="text" id="auth-code" placeholder="Auth code" required></input>
-                </div>
-                <div class="form-group">
-                    <label for="intputNewPassword1">新パスワード</label>
-                    <input type="password" id="inputNewPassword1" placeholder="New Password" required></input>
-                </div>
-                <div class="form-group">
-                    <label for="intputNewPassword2">新パスワード（確認）</label>
-                    <input type="password" id="inputNewPassword2" placeholder="New Password" required></input>
-                </div>
-                <input type="button" id="reset-password-button" class="button-primary" value="変更"></input>
-            </div>
+                  <!-- Reset Password Form -->
+                  <div id='reset-password-form-body' style="display:none">
+                      <div class="form-group">
+                          <label for="auth-code">認証コード</label>
+                          <input type="text" id="auth-code" placeholder="Auth code" required></input>
+                      </div>
+                      <div class="form-group">
+                          <label for="intputNewPassword1">新パスワード</label>
+                          <input type="password" id="inputNewPassword1" placeholder="New Password" required></input>
+                      </div>
+                      <div class="form-group">
+                          <label for="intputNewPassword2">新パスワード（確認）</label>
+                          <input type="password" id="inputNewPassword2" placeholder="New Password" required></input>
+                      </div>
+                      <input type="button" id="reset-password-button" class="button-primary" value="変更"></input>
+                  </div>
 
-            <!-- New Password Form -->
-            <div id='new-password-form-body' style="display:none">
-                <div class="form-group">
-                    <label for="new-password-value">新パスワード</label>
-                    <input type="password" id="new-password-value" placeholder="New Password" required></input>
-                </div>
-                <div class="form-group">
-                    <label for="new-password-check">新パスワード（確認）</label>
-                    <input type="password" id="new-password-check" placeholder="New Password" required></input>
-                </div>
-                <input type="button" id="new-password-button" class="button-primary" value="変更"></input>
-            </div>
+                  <!-- New Password Form -->
+                  <div id='new-password-form-body' style="display:none">
+                      <div class="form-group">
+                          <label for="new-password-value">新パスワード</label>
+                          <input type="password" id="new-password-value" placeholder="New Password" required></input>
+                      </div>
+                      <div class="form-group">
+                          <label for="new-password-check">新パスワード（確認）</label>
+                          <input type="password" id="new-password-check" placeholder="New Password" required></input>
+                      </div>
+                      <input type="button" id="new-password-button" class="button-primary" value="変更"></input>
+                  </div>
 
-            <input type="hidden" id="redirectPath" value="wallet"></input>
-        </form>
+                  <input type="hidden" id="redirectPath" value="wallet"></input>
+              </form>
+          </div>
+        </div>
+      </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.263.1.min.js"></script>
-    <script src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/dist/aws-cognito-sdk.min.js"></script>
-    <script src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/dist/amazon-cognito-identity.min.js"></script>
-    <script src='https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/auth.js'></script>
-    <script type='text/javascript'>
-        // for reset form
-        $('#reset-user-name').keyup(function() {
-            if ($('#reset-user-name').val().length === 0) {
-                $('#send-reset-code-button').addClass('disabled');
-                $('#send-reset-code-button').prop('disabled', true);
-            } else {
-                $('#send-reset-code-button').removeClass('disabled');
-                $('#send-reset-code-button').prop('disabled', false);
-            }
-        });
-        $('#send-reset-code-button').click(upsample.sendResetCode);
-        $('#link-to-send-reset-code').click(function(){upsample.setState('SendResetCode')});
-        $('#login-button').click(upsample.login);
-        $('#reset-password-button').click(upsample.resetPassword);
-        $('#new-password-button').click(upsample.newPassword);
-    </script>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.263.1.min.js"></script>
+  <script src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/dist/aws-cognito-sdk.min.js"></script>
+  <script src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/dist/amazon-cognito-identity.min.js"></script>
+  <script src='https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/auth.js'></script>
+  <script type='text/javascript'>
+    // for reset form
+    $('#reset-user-name').keyup(function() {
+      if ($('#reset-user-name').val().length === 0) {
+        $('#send-reset-code-button').addClass('disabled');
+        $('#send-reset-code-button').prop('disabled', true);
+      } else {
+        $('#send-reset-code-button').removeClass('disabled');
+        $('#send-reset-code-button').prop('disabled', false);
+      }
+    });
+    $('#send-reset-code-button').click(upsample.sendResetCode);
+    $('#link-to-send-reset-code').click(function(){upsample.setState('SendResetCode')});
+    $('#login-button').click(upsample.login);
+    $('#reset-password-button').click(upsample.resetPassword);
+    $('#new-password-button').click(upsample.newPassword);
+  </script>
 </body>
 
 </html>
