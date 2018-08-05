@@ -176,7 +176,7 @@ upsample.resetPassword = function() {
     }
 }
 
-upsample.setState = function(state) {
+upsample.setState = function(state, uname) {
     var formList = {
         'Login': '#login-form-body',
         'SendResetCode': '#send-reset-code-body',

@@ -93,6 +93,21 @@
   <script src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/dist/amazon-cognito-identity.min.js"></script>
   <script src='https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/auth.js'></script>
   <script type='text/javascript'>
+    function getParams() {
+      "use strict";
+      var query = location.search.substr(1);
+
+      let params = {};
+      query.split("&").forEach(function (item) {
+        var s = item.split("=");
+        var k = decodeURIComponent(s[0]);
+        var v = decodeURIComponent(s[1]);
+        (k in params) ? params[k].push(v) : params[k] = [v];
+      });
+
+      return params;
+    }
+
     // for reset form
     $('#reset-user-name').keyup(function() {
       if ($('#reset-user-name').val().length === 0) {
@@ -104,10 +119,17 @@
       }
     });
     $('#send-reset-code-button').click(upsample.sendResetCode);
-    $('#link-to-send-reset-code').click(function(){upsample.setState('SendResetCode')});
+    $('#link-to-send-reset-code').click(function(){ location.href = "?s=SendResetCode";});
     $('#login-button').click(upsample.login);
     $('#reset-password-button').click(upsample.resetPassword);
     $('#new-password-button').click(upsample.newPassword);
+
+    $(function() {
+      let params = getParams();
+      let s = params['s'];
+      let u = params['u'];
+      upsample.setState(s ? s : 'Login', u ? u : '');
+    });
   </script>
 </body>
 
