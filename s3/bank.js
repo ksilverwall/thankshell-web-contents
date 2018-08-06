@@ -33,6 +33,18 @@ let controller = {
     session: null, 
 };
 
+function getAccountStatusString(s) {
+    if(!s) { return '取得失敗' }
+
+    switch(s) {
+    case 'CONFIRMED': return '有効';
+    case 'DISABLED': return '停止中';
+    case 'FORCE_CHANGE_PASSWORD': return '仮パスワードを入力して下さい';
+    case 'RESET_REQUIRED': return 'パスワード変更待ち（一括登録）';
+    default: return '不明な状態:' + s
+    }
+}
+
 controller.loadTransactions = function(token) {
     $.ajax({
         url: '../account/' + this.account,
@@ -61,10 +73,13 @@ controller.loadTransactions = function(token) {
 
             let table = $('#account-info').DataTable();
             for(let key in data.bank.account) {
-                table.row.add( [
-                    key,
-                    data.bank.account[key] ? data.bank.account[key].toLocaleString() : 'ERROR',
-                ]).draw();
+                if(data.bank.account[key].amount) {
+                    table.row.add( [
+                        key,
+                        getAccountStatusString(data.bank.account[key].accountStatus),
+                        data.bank.account[key].amount ? data.bank.account[key].amount.toLocaleString() : 'ERROR',
+                    ]).draw();
+                }
             };
         }
     }).fail((xhr, textStatus, errorThrown) => {

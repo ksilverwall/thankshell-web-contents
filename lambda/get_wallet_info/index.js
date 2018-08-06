@@ -137,7 +137,10 @@ exports.handler = async(event, context, callback) => {
             };
 
             allAccounts.forEach(userAccount => {
-                retData.bank.account[userAccount.Username] = 0;
+                retData.bank.account[userAccount.Username] = {
+                    amount: 0,
+                    accountStatus: userAccount.Enabled ? userAccount.UserStatus : 'DISABLED'
+                };
             }, retData);
             retData.bank.accountNum = allAccounts.length;
         }
@@ -159,7 +162,7 @@ exports.handler = async(event, context, callback) => {
                             retData.bank.published += item.amount;
                             break;
                         default:
-                            retData.bank.account[item.from_account] -= item.amount;
+                            retData.bank.account[item.from_account].amount -= item.amount;
                             break;
                     }
 
@@ -170,7 +173,7 @@ exports.handler = async(event, context, callback) => {
                             retData.bank.published -= item.amount;
                             break;
                         default:
-                            retData.bank.account[item.to_account] += item.amount;
+                            retData.bank.account[item.to_account].amount += item.amount;
                             break;
                     }
                 }
