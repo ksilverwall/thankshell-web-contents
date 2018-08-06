@@ -39,9 +39,9 @@ function getAccountStatusString(s) {
     switch(s) {
     case 'CONFIRMED': return '有効';
     case 'DISABLED': return '停止中';
-    case 'FORCE_CHANGE_PASSWORD': return '仮パスワードを入力して下さい';
+    case 'FORCE_CHANGE_PASSWORD': return '仮パスワードの入力待ち';
     case 'RESET_REQUIRED': return 'パスワード変更待ち（一括登録）';
-    default: return '不明な状態:' + s
+    default: return '不明な状態:' + s;
     }
 }
 
