@@ -67,8 +67,8 @@ controller.loadTransactions = function(token) {
         });
 
         if(data.bank) {
-            $("#published").text(data.bank.published);
-            $("#currency").text(data.bank.published - data.carried);
+            $("#published").text(data.bank.published.toLocaleString());
+            $("#currency").text((data.bank.published - data.carried).toLocaleString());
             $('#carried-list').empty();
 
             let table = $('#account-info').DataTable();

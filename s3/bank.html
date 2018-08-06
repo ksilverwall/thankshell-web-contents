@@ -2,37 +2,33 @@
 <html lang="ja">
   <head>
     <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SLA Bank Manager</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css"/>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">SLA Bank Management</a>
-      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#Navber" aria-controls="Navber" aria-expanded="false" aria-label="ナビゲーションの切替">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="Navber">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link">銀行残高<u><span id=carried>---</span> Selan</u></a>
-          </li>
-          <li class="nav-item active">
-            <a class="nav-link">総発行量<u><span id=published>---</span> Selan</u></a>
-          </li>
-          <li class="nav-item active">
-            <a class="nav-link">総流通量<u><span id=currency>---</span> Selan</u></a>
-          </li>
-        </ul>
-        <ul class="navbar-nav mr-auto">
-        </ul>
-        <ul class="my-2 my-lg-0">
-          <a><span id='user-name'>---</span> さん</a>
-          <button type="submit" id="logoutButton" class="btn btn-outline-success my-2 my-sm-0">ログアウト</button>
-        </ul>
-      </div>
+      <a class="navbar-brand" href="#">SLA Bank Manager</a>
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="https://sketch-life-academy.com/selan-help/">ヘルプ</a>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0">
+        <label><span id='user-name'>---</span> さん</label>
+        <button type="submit" id="logoutButton" class="btn btn-outline-success my-2 my-sm-0">ログアウト</button>
+      </form>
     </nav>
+
+    <div class="row">
+      <div class="col">
+        <h4 class="text-right">総発行量 <u><span id=published>---</span> Selan</u></h4>
+        <h4 class="text-right">銀行保有量 <u><span id=carried>---</span> Selan</u></h4>
+        <h4 class="text-right">流通量 <u><span id=currency>---</span> Selan</u></h4>
+      </div>
+    </div>
 
     <div id='admin-only' class="container-fluid" style='display:none'>
       <h1>管理フォーム</h1>
@@ -93,12 +89,6 @@
             </div>
           </form>
           <br/>
-          <div class="custom-file">
-            <p>同時多重発行問題のため凍結中(要直列化)</p>
-            <input id="import-transaction-file" type="file" class="custom-file-input" id="customFile" lang="ja" disabled>
-            <label id="import-transaction-label" class="custom-file-label" for="customFile" disabled>ファイル選択...</label>
-            <button id=import-transaction-button type="button" class="btn btn-danger" disabled>CSVインポート</button>
-          </div>
           <p class="text-center text-danger" id="send-selan-message">送金後の取り消しはできませんのでご注意ください</p>
         </div>
       </div>
