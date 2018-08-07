@@ -112,6 +112,10 @@ upsample.sendResetCode = function() {
                 case "LimitExceededException":
                     $('#message').text('ロックされました。しばらく待ってやり直してください');
                     break;
+                case "NotAuthorizedException":
+                    $('#message').text('ユーザー名／仮パスワードでログインして下さい');
+                    upsample.setState('Login');
+                    break;
                 default:
                     console.log(err);
                     alert(err);
