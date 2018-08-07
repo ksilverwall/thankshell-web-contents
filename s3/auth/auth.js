@@ -1,14 +1,12 @@
 'use strict'
-var upsample = {};
 
-upsample.state = 'login';
-
-upsample.poolData = {
+let Status = 'Login';
+let UserPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool({
     UserPoolId: 'ap-northeast-1_WEGpvJz9M',
     ClientId: 'dnjrhu35ok1pren744jvjq28e'
-};
+});
 
-upsample.UserPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool(upsample.poolData);
+var upsample = {};
 
 upsample.signup = function() {
     var email = $('#inputEmail').val();
@@ -21,7 +19,7 @@ upsample.signup = function() {
     attributeList.push(attributeEmail);
 
     var message_text;
-    upsample.UserPool.signUp(username, password, attributeList, null, function(err, result){
+    UserPool.signUp(username, password, attributeList, null, function(err, result){
         if (err) {
             console.log(err);
             message_text = err;
@@ -43,7 +41,7 @@ upsample.verify = function() {
 
     var userData = {
         Username: username,
-        Pool: upsample.UserPool
+        Pool: UserPool
     };
 
     var message_text;
@@ -71,7 +69,7 @@ upsample.resend = function() {
 
     var userData = {
         Username: username,
-        Pool: upsample.UserPool
+        Pool: UserPool
     };
 
     var message_text;
@@ -96,7 +94,7 @@ upsample.sendResetCode = function() {
 
         var userData = {
             Username: username,
-            Pool: upsample.UserPool
+            Pool: UserPool
         };
 
         var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser(userData);
@@ -147,7 +145,7 @@ upsample.resetPassword = function() {
 
         var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
             Username: username,
-            Pool: upsample.UserPool
+            Pool: UserPool
         });
 
         cognitoUser.confirmPassword(authCode, newPassword1, {
@@ -192,7 +190,7 @@ upsample.setState = function(state, uname) {
     }
 
     $(formList[state]).show();
-    upsample.state = state;
+    Status = state;
 }
 
 upsample.newPassword = function() {
@@ -212,7 +210,7 @@ upsample.newPassword = function() {
 
         var userData = {
             Username: username,
-            Pool: upsample.UserPool
+            Pool: UserPool
         };
 
         var message_text;
@@ -300,7 +298,7 @@ upsample.login = function() {
 
         var userData = {
             Username: username,
-            Pool: upsample.UserPool
+            Pool: UserPool
         };
 
         var message_text;
@@ -373,7 +371,7 @@ upsample.login = function() {
 
 upsample.checkSession = function (callback) {
 
-    var cognitoUser = upsample.UserPool.getCurrentUser();
+    var cognitoUser = UserPool.getCurrentUser();
     if (cognitoUser != null) {
         cognitoUser.getSession(function (err, session) {
             if (session) {
@@ -400,7 +398,7 @@ upsample.checkSession = function (callback) {
 
 upsample.logout = function() {
 
-    var cognitoUser = upsample.UserPool.getCurrentUser();
+    var cognitoUser = UserPool.getCurrentUser();
     if (cognitoUser != null) {
         cognitoUser.signOut();
         location.reload();
