@@ -66,15 +66,7 @@ let upsample = {
                 },
 
                 newPasswordRequired: function(userAttributes, requiredAttributes) {
-                    if ($('#new-password-form-body').is(':visible')) {
-                        if(newPassword1 === newPassword2) {
-                            cognitoUser.completeNewPasswordChallenge(newPassword1, {}, this);
-                        } else {
-                            callback(null, 'Error: 同じパスワードを入力してください');
-                        }
-                    } else {
-                        callback('NewPassword', 'Error: パスワードを設定してください');
-                    }
+                    callback('NewPassword', 'Error: パスワードを設定してください');
                 }
             });
         } catch(e) {
@@ -180,7 +172,11 @@ let upsample = {
 
     newPassword: function(username, password, redirect, newPassword1, newPassword2, callback) {
         try {
-            if (!username | !password) { return false; }
+            if (!username || !password) { return false; }
+            if (newPassword1 !== newPassword) {
+                callback(null, '確認パスワードが一致しません');
+                return false;
+            }
 
             let authenticationDetails = new AWSCognito.CognitoIdentityServiceProvider.AuthenticationDetails({
                 Username: username,
@@ -238,15 +234,8 @@ let upsample = {
                 },
 
                 newPasswordRequired: function(userAttributes, requiredAttributes) {
-                    if ($('#new-password-form-body').is(':visible')) {
-                        if(newPassword1 === newPassword2) {
-                            cognitoUser.completeNewPasswordChallenge(newPassword1, {}, this);
-                        } else {
-                            callback(null, 'Error: 確認パスワードが異なります');
-                        }
-                    } else {
-                        callback('NewPassword', 'Error: パスワードを設定してください');
-                    }
+                    cognitoUser.completeNewPasswordChallenge(newPassword1, {}, this);
+                    callback('Login', 'パスワードを再設定しました');
                 }
             });
         } catch(e) {
