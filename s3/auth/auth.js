@@ -48,7 +48,7 @@ let upsample = {
                     console.log(err);
                     switch(err.code) {
                     case 'PasswordResetRequiredException':
-                        callback('SendResetCode', 'Error: パスワードを初期化してください');
+                        callback('SendResetCode', 'パスワードを初期化してください');
                         break;
                     case 'UserNotFoundException':
                     case 'NotAuthorizedException':
@@ -71,7 +71,7 @@ let upsample = {
             });
         } catch(e) {
             console.log(e);
-            callback(null, 'Error: 想定外のエラーが発生しました');
+            callback(null, 'Error: 想定外のエラーが発生しました(' + e.message + ')');
         }
     },
 
@@ -111,7 +111,7 @@ let upsample = {
             });
         } catch(e) {
             console.log(e);
-            callback(null, 'Error: 想定外のエラーが発生しました');
+            callback(null, 'Error: 想定外のエラーが発生しました(' + e.message + ')');
         }
     },
 
@@ -240,7 +240,7 @@ let upsample = {
             });
         } catch(e) {
             console.log(e);
-            callback(null, 'Error: 想定外のエラーが発生しました');
+            callback(null, 'Error: 想定外のエラーが発生しました(' + e.message + ')');
         }
     },
 
