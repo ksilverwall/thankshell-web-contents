@@ -66,7 +66,7 @@ let upsample = {
                 },
 
                 newPasswordRequired: function(userAttributes, requiredAttributes) {
-                    callback('NewPassword', 'Error: パスワードを設定してください');
+                    callback('NewPassword', 'パスワードを設定してください');
                 }
             });
         } catch(e) {
