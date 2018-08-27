@@ -166,14 +166,14 @@ let upsample = {
             });
         } catch(e) {
             console.log(e);
-            callback(null, 'Error: 想定外のエラーが発生しました');
+            callback(null, 'Error: 想定外のエラーが発生しました(' + e.message + ')');
         }
     },
 
     newPassword: function(username, password, redirect, newPassword1, newPassword2, callback) {
         try {
             if (!username || !password) { return false; }
-            if (newPassword1 !== newPassword) {
+            if (newPassword1 !== newPassword2) {
                 callback(null, '確認パスワードが一致しません');
                 return false;
             }
