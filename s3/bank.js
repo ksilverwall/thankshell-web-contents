@@ -15,6 +15,8 @@ function getTimeString(timestamp) {
 function getErrorMessage(xhr) {
     if(xhr.responseJSON && xhr.responseJSON.message) {
         switch (xhr.responseJSON.message) {
+        case 'User does not exist.':
+            return '送信先アカウント名が見つかりませんでした';
         case 'Unauthorized':
             return '認証エラー';
         case 'The incoming token has expired':
