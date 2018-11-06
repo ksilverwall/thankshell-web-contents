@@ -89,7 +89,7 @@ exports.handler = async(event, context, callback) => {
         let args = JSON.parse(event.body);
         let claims = event.requestContext.authorizer.claims;
         let amount = parseInt(args.amount, 10);
-        let comment = args.comment ? args.comment : '';
+        let comment = args.comment ? args.comment : ' ';
 
         if(comment.length > 200) {
             throw new Error("コメントが200文字を超えています");
@@ -105,7 +105,7 @@ exports.handler = async(event, context, callback) => {
                     UserPoolId: poolId,
                     Username: args.from_account
                 }).promise();
-        
+
                 if (!fromUser.Enabled) {
                     throw new Error("送金元アカウントが無効です");
                 }
@@ -170,4 +170,3 @@ exports.handler = async(event, context, callback) => {
         responseError(500, err.message, callback);
     }
 };
-
