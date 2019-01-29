@@ -4,11 +4,54 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SLA Wallet</title>
-    <link rel="shortcut icon" href="https://s3-ap-northeast-1.amazonaws.com/sla-bank/selan.ico" type="image/vnd.microsoft.icon">
+    <link rel="shortcut icon" href="groups/sla/selan.ico" type="image/vnd.microsoft.icon">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   </head>
   <body>
+    <!-- Facebook SDK -->
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '366917974106989',
+          xfbml      : true,
+          version    : 'v3.2'
+        });
+        FB.AppEvents.logPageView();
+        FB.getLoginStatus(function(response) {
+          if (response.status === 'connected') {
+              console.log(response.authResponse.userID);
+
+              AWS.config.region = 'ap-northeast-1';
+              AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                IdentityPoolId: 'ap-northeast-1:8dc6d009-5c99-41fd-8119-e734643b2e21',
+                Logins: {
+                  'graph.facebook.com': response.authResponse.accessToken
+                }
+              });
+
+              AWS.config.credentials.get(function(){
+                let accessKeyId = AWS.config.credentials.accessKeyId;
+                let secretAccessKey = AWS.config.credentials.secretAccessKey;
+                let sessionToken = AWS.config.credentials.sessionToken;
+                console.log('accessKeyId    : ' + accessKeyId);
+                console.log('secretAccessKey: ' + secretAccessKey);
+                console.log('sessionToken   : ' + sessionToken);
+              });
+          } else if (response.status === 'not_authorized') {
+          }
+        });
+      };
+
+      (function(d, s, id){
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {return;}
+        js = d.createElement(s); js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
+    </script>
+
     <div class="container-fluid bg-info">
       <nav class="navbar row navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">SLA Wallet</a>
@@ -26,7 +69,7 @@
 
       <div class="row">
         <div class="col-6 col-sm-2 offset-3 offset-sm-5">
-          <img src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/selan_logo.png?hash=0069ec343441e211e4025116ca56c9d4ee772d534ea7032feb341349c4c6d2c8" class="img-fluid" alt="selan-logo">
+          <img src="/groups/sla/selan_logo.png" class="img-fluid" alt="selan-logo">
         </div>
       </div>
 
@@ -102,17 +145,17 @@
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.263.1.min.js"></script>
-    <script src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/dist/aws-cognito-sdk.min.js"></script>
-    <script src="https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/dist/amazon-cognito-identity.min.js"></script>
-    <script src='https://s3-ap-northeast-1.amazonaws.com/sla-bank/auth/auth.js?hash=33f1668fa51fab7fb7a8c9a94a8d30cb54c885695aebf4c055deb657ca80a530'></script>
-    <script src='https://s3-ap-northeast-1.amazonaws.com/sla-bank/bank.js?hash=8d8750ef3082c90d02adf70fc45407d9755975eff6d186476cc68cbbcf797a4a'></script>
+    <script src="/js/aws-cognito-sdk.min.js"></script>
+    <script src="/js/amazon-cognito-identity.min.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/bank.js"></script>
 
     <script>
      $(function() {
         upsample.checkSession( (err, data) => {
           if(err) {
             console.log(err);
-            $(location).attr('href', 'login');
+            $(location).attr('href', '/login');
           } else {
             $("#user-name").text(data.user ? data.user : '---');
             controller.account = data.user;

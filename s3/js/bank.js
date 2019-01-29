@@ -49,7 +49,7 @@ function getAccountStatusString(s) {
 
 controller.loadTransactions = function(token) {
     $.ajax({
-        url: '../account/' + this.account,
+        url: '/account/' + this.account,
         type: 'get',
         headers: {
             Authorization: this.session.idToken.jwtToken
