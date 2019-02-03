@@ -6,46 +6,6 @@ let UserPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool({
 });
 
 let upsample = {
-    resetPassword: function(username, authCode, newPassword1, newPassword2, callback) {
-        try {
-            if(newPassword1 !== newPassword2) {
-                callback(null, '確認入力パスワードが一致しません');
-                return;
-            }
-
-            let cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
-                Username: username,
-                Pool: UserPool
-            });
-
-            cognitoUser.confirmPassword(authCode, newPassword1, {
-                getResetCode: function(continuation) {
-                    alert(continuation);
-                },
-                onFailure: function(err) {
-                    console.log(err);
-                    switch(err.code){
-                    case 'CodeMismatchException':
-                        callback(null, '認証コードが一致しません');
-                        break;
-                    case 'MultipleValidationErrors':
-                        alert(err.errors);
-                        break;
-                    default:
-                        callback(null, '指定のユーザーは登録されていません');
-                        alert(err);
-                    }
-                },
-                onSuccess: function() {
-                    callback('Login', 'パスワードが変更されました');
-                },
-            });
-        } catch(e) {
-            console.log(e);
-            callback(null, 'Error: 想定外のエラーが発生しました(' + e.message + ')');
-        }
-    },
-
 //    resend: function(username, callback) {
 //        if (!username) { return false; }
 //
@@ -64,42 +24,6 @@ let upsample = {
 //            }
 //        });
 //    }
-
-    sendResetCode: function(username, callback) {
-        try {
-            let cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
-                Username: username,
-                Pool: UserPool
-            });
-            cognitoUser.forgotPassword({
-                getResetCode: function(continuation) {
-                    alert(continuation);
-                },
-                onFailure: function(err) {
-                    switch(err.code){
-                    case 'UserNotFoundException':
-                        callback(null, '指定のユーザーは登録されていません');
-                        break;
-                    case "LimitExceededException":
-                        callback('Login', 'ロックされました。しばらく待ってやり直してください');
-                        break;
-                    case "NotAuthorizedException":
-                        callback('Login', 'ユーザー名／仮パスワードでログインして下さい');
-                        break;
-                    default:
-                        console.log(err);
-                        alert(err);
-                    }
-                },
-                onSuccess: function() {
-                    callback('ResetPassword', '登録メールアドレスに認証コードを送りました');
-                },
-            });
-        } catch(e) {
-            console.log(e);
-            callback(null, 'Error: 想定外のエラーが発生しました(' + e.message + ')');
-        }
-    },
 
     newPassword: function(username, password, redirect, newPassword1, newPassword2, callback) {
         try {
