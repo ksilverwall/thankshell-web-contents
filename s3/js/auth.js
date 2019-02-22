@@ -1,8 +1,8 @@
 'use strict'
 
 let UserPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool({
-    UserPoolId: 'ap-northeast-1_WEGpvJz9M',
-    ClientId: 'dnjrhu35ok1pren744jvjq28e'
+    UserPoolId: 'ap-northeast-1_A6SNCzbmM',
+    ClientId: '1opllluc6ruh50h0qc74395k1i'
 });
 
 let upsample = {
