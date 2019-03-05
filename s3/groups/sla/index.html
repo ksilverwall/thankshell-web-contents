@@ -17,10 +17,9 @@
             <a class="nav-link" href="https://sketch-life-academy.com/selan-help/">ヘルプ</a>
           </li>
         </ul>
-        <form class="form-inline my-2 my-lg-0">
-          <label><span id='user-name'>---</span> さん</label>
-          <button type="submit" id="logoutButton" class="btn btn-outline-success my-2 my-sm-0">ログアウト</button>
-        </form>
+        <label><span id='user-name'>---</span> さん</label>
+        <button id="logoutButton" class="btn btn-outline-success my-2 my-sm-0">ログアウト</button>
+        <button id="configButton" class="btn btn-outline-success my-2 my-sm-0">設定</button>
       </nav>
 
 
@@ -119,16 +118,33 @@
       });
 
       if(auth.isUserSignedIn()) {
-          let user = auth.getCurrentUser();
-          console.log("User is signed-in, lets get session");
-          $("#user-name").text(user ? user : '---');
-
+          console.log(auth.getCurrentUser());
           auth.userhandler = {
-            onSuccess: function(result) {
-              console.log(result);
-//            controller.account = data.user;
-//            controller.session = data.session;
-//            controller.loadTransactions();
+            onSuccess: function(session) {
+              $.ajax({
+                  url: 'https://api.thankshell.com/dev/user/',
+                  type: 'get',
+                  dataType: 'json',
+                  headers: {
+                      Authorization: session.idToken.jwtToken
+                  }
+              }).done(userInfo => {
+                  if (userInfo.code == "SUCCESS") {
+                      $("#user-name").text(userInfo.name ? userInfo.name : '---');
+                      $('#logoutButton').click(()=>{auth.signOut();});
+                      $('#configButton').click(()=>{location.href='/user/config';});
+                      // TODO: Implement here
+                      //controller.account = data.user;
+                      //controller.session = data.session;
+                      //controller.loadTransactions();
+                  } else {
+                      // TODO implement here
+                  }
+
+                  console.log(userInfo);
+              }).fail((xhr, textStatus, errorThrown) => {
+                  $('#history-message').text('ERROR: ' + getErrorMessage(xhr));
+              });
             },
             onFailure: function(err) {
               console.log("Error!");
@@ -137,8 +153,6 @@
           };
 
           auth.getSession();
-
-          $('#logoutButton').click(()=>{auth.signOut();});
       } else {
           console.log("User is not signed in");
           location.href='/';
