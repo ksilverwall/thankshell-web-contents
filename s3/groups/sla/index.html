@@ -133,10 +133,9 @@
                       $("#user-name").text(userInfo.name ? userInfo.name : '---');
                       $('#logoutButton').click(()=>{auth.signOut();});
                       $('#configButton').click(()=>{location.href='/user/config';});
-                      // TODO: Implement here
-                      //controller.account = data.user;
-                      //controller.session = data.session;
-                      //controller.loadTransactions();
+                      controller.account = userInfo.name;
+                      controller.session = session;
+                      controller.loadTransactions();
                   } else {
                       // TODO implement here
                   }

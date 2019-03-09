@@ -49,8 +49,9 @@ function getAccountStatusString(s) {
 
 controller.loadTransactions = function(token) {
     $.ajax({
-        url: '/account/' + this.account,
+        url: 'https://api.thankshell.com/dev/transactions/selan/',
         type: 'get',
+        dataType: 'json',
         headers: {
             Authorization: this.session.idToken.jwtToken
         }
