@@ -136,6 +136,7 @@
                       controller.account = userInfo.name;
                       controller.session = session;
                       controller.loadTransactions();
+                      $('#send-selan-button').click(function() { controller.sendSelan(); });
                   } else {
                       // TODO implement here
                   }

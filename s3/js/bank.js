@@ -93,7 +93,7 @@ controller.loadTransactions = function(token) {
 
 controller.createTransaction = function(data, callback) {
     $.ajax({
-        url: '../transaction',
+        url: 'https://api.thankshell.com/dev/transactions/selan/',
         type: 'post',
         contentType: 'application/json',
         dataType: 'json',
