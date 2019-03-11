@@ -20,12 +20,12 @@
 
         let defaultRedirectPage = "/groups/sla";
         let redirectPage = Cookies.get('auth_previous_page');
-//        location.href = redirectPage ? redirectPage : defaultRedirectPage;
-    	},
-    	onFailure: function(err) {
-    	  console.log("Error!");
-    	  console.log(err);
-    	}
+        location.href = redirectPage ? redirectPage : defaultRedirectPage;
+      },
+      onFailure: function(err) {
+        console.log("Error!");
+        console.log(err);
+      }
     };
     auth.useCodeGrantFlow();
 
