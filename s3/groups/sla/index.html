@@ -109,54 +109,67 @@
     <script type="text/javascript" src="/js/amazon-cognito-auth.min.js"></script>
 
     <script>
-      let auth = new AmazonCognitoIdentity.CognitoAuth({
-        ClientId : '1opllluc6ruh50h0qc74395k1i',
-        AppWebDomain : 'auth.thankshell.com',
-        TokenScopesArray : ['profile', 'email', 'openid', 'aws.cognito.signin.user.admin', 'phone'],
-        RedirectUriSignIn : 'https://develop.thankshell.com/login/callback',
-        RedirectUriSignOut : 'https://develop.thankshell.com/login/logout',
+      let closeSession = () => {
+          let auth = new AmazonCognitoIdentity.CognitoAuth({
+            ClientId : '1opllluc6ruh50h0qc74395k1i',
+            AppWebDomain : 'auth.thankshell.com',
+            TokenScopesArray : ['profile', 'email', 'openid', 'aws.cognito.signin.user.admin', 'phone'],
+            RedirectUriSignIn : 'https://develop.thankshell.com/login/callback',
+            RedirectUriSignOut : 'https://develop.thankshell.com/login/logout',
+          });
+
+          auth.signOut();
+      };
+
+      let getSession = (callback) => {
+          let auth = new AmazonCognitoIdentity.CognitoAuth({
+            ClientId : '1opllluc6ruh50h0qc74395k1i',
+            AppWebDomain : 'auth.thankshell.com',
+            TokenScopesArray : ['profile', 'email', 'openid', 'aws.cognito.signin.user.admin', 'phone'],
+            RedirectUriSignIn : 'https://develop.thankshell.com/login/callback',
+            RedirectUriSignOut : 'https://develop.thankshell.com/login/logout',
+          });
+
+          if(auth.isUserSignedIn()) {
+              console.log(auth.getCurrentUser());
+              auth.userhandler = {
+                onSuccess: callback,
+                onFailure: function(err) {
+                  console.log("Error!");
+                  console.log(err);
+                }
+              };
+
+              auth.getSession();
+          } else {
+              console.log("User is not signed in");
+              location.href='/';
+          }
+      };
+
+      getSession(async(session) => {
+          let userInfo = await (await fetch('https://api.thankshell.com/dev/user/', {
+              method: "GET",
+              headers: {
+                  "Content-Type": "application/json; charset=utf-8",
+                  Authorization: session.idToken.jwtToken
+              },
+          })).json();
+
+          if (userInfo.code == "SUCCESS") {
+              $("#user-name").text(userInfo.name ? userInfo.name : '---');
+              $('#logoutButton').click(closeSession);
+              $('#configButton').click(()=>{location.href='/user/config';});
+              controller.account = userInfo.name;
+              controller.session = session;
+              controller.loadTransactions();
+              $('#send-selan-button').click(function() { controller.sendSelan(); });
+          } else {
+              // TODO implement here
+          }
+
+          console.log(userInfo);
       });
-
-      if(auth.isUserSignedIn()) {
-          console.log(auth.getCurrentUser());
-          auth.userhandler = {
-            onSuccess: function(session) {
-              $.ajax({
-                  url: 'https://api.thankshell.com/dev/user/',
-                  type: 'get',
-                  dataType: 'json',
-                  headers: {
-                      Authorization: session.idToken.jwtToken
-                  }
-              }).done(userInfo => {
-                  if (userInfo.code == "SUCCESS") {
-                      $("#user-name").text(userInfo.name ? userInfo.name : '---');
-                      $('#logoutButton').click(()=>{auth.signOut();});
-                      $('#configButton').click(()=>{location.href='/user/config';});
-                      controller.account = userInfo.name;
-                      controller.session = session;
-                      controller.loadTransactions();
-                      $('#send-selan-button').click(function() { controller.sendSelan(); });
-                  } else {
-                      // TODO implement here
-                  }
-
-                  console.log(userInfo);
-              }).fail((xhr, textStatus, errorThrown) => {
-                  $('#history-message').text('ERROR: ' + getErrorMessage(xhr));
-              });
-            },
-            onFailure: function(err) {
-              console.log("Error!");
-              console.log(err);
-            }
-          };
-
-          auth.getSession();
-      } else {
-          console.log("User is not signed in");
-          location.href='/';
-      }
     </script>
   </body>
 </html>
