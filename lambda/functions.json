@@ -1,0 +1,146 @@
+[
+  {
+    "FunctionName": "thankshell_get_transactions",
+    "FunctionArn": "arn:aws:lambda:ap-northeast-1:027569216980:function:thankshell_get_transactions",
+    "Runtime": "nodejs8.10",
+    "Role": "arn:aws:iam::027569216980:role/thankshell",
+    "Handler": "index.handler",
+    "CodeSize": 1864,
+    "Description": "",
+    "Timeout": 3,
+    "MemorySize": 128,
+    "LastModified": "2019-03-09T16:07:48.541+0000",
+    "CodeSha256": "HUbzWcaJbOMM+IrHTL63aswLJ6+KwYtCGIZmZ1rmgIU=",
+    "Version": "$LATEST",
+    "TracingConfig": {
+      "Mode": "PassThrough"
+    },
+    "RevisionId": "2c80898a-f9e1-44e5-9b4b-a219c1520711"
+  },
+  {
+    "FunctionName": "thankshell_get_user_link",
+    "FunctionArn": "arn:aws:lambda:ap-northeast-1:027569216980:function:thankshell_get_user_link",
+    "Runtime": "nodejs8.10",
+    "Role": "arn:aws:iam::027569216980:role/thankshell",
+    "Handler": "index.handler",
+    "CodeSize": 752,
+    "Description": "",
+    "Timeout": 3,
+    "MemorySize": 128,
+    "LastModified": "2019-03-25T14:24:06.321+0000",
+    "CodeSha256": "gtfaasKUFmrrYeTOokbCyZ4JGeeEb6YpuSnMUUzmdWs=",
+    "Version": "$LATEST",
+    "TracingConfig": {
+      "Mode": "PassThrough"
+    },
+    "RevisionId": "75a8d9bb-da15-4612-ac37-37885f219ec7"
+  },
+  {
+    "FunctionName": "thankshell_delete_user_link",
+    "FunctionArn": "arn:aws:lambda:ap-northeast-1:027569216980:function:thankshell_delete_user_link",
+    "Runtime": "nodejs8.10",
+    "Role": "arn:aws:iam::027569216980:role/thankshell",
+    "Handler": "index.handler",
+    "CodeSize": 708,
+    "Description": "",
+    "Timeout": 3,
+    "MemorySize": 128,
+    "LastModified": "2019-03-25T15:34:30.312+0000",
+    "CodeSha256": "WymuVw7GiUX94wWIjMXDkoWqPffhZGDMqGOwYIw/0Xo=",
+    "Version": "$LATEST",
+    "TracingConfig": {
+      "Mode": "PassThrough"
+    },
+    "RevisionId": "2303f95a-c10e-4330-84e7-d1bfb0b4b2ee"
+  },
+  {
+    "FunctionName": "thankshell_get_user_info",
+    "FunctionArn": "arn:aws:lambda:ap-northeast-1:027569216980:function:thankshell_get_user_info",
+    "Runtime": "nodejs8.10",
+    "Role": "arn:aws:iam::027569216980:role/thankshell",
+    "Handler": "index.handler",
+    "CodeSize": 658,
+    "Description": "",
+    "Timeout": 3,
+    "MemorySize": 128,
+    "LastModified": "2019-03-25T15:20:19.576+0000",
+    "CodeSha256": "Oj+iSjAg7ZCW2zHqsfUH5hp86OWi2cas/Ac4x1wHbZ8=",
+    "Version": "$LATEST",
+    "TracingConfig": {
+      "Mode": "PassThrough"
+    },
+    "RevisionId": "4da12d24-06d8-496f-97d6-abb56c958852"
+  },
+  {
+    "FunctionName": "thankshell_create_transaction",
+    "FunctionArn": "arn:aws:lambda:ap-northeast-1:027569216980:function:thankshell_create_transaction",
+    "Runtime": "nodejs8.10",
+    "Role": "arn:aws:iam::027569216980:role/thankshell",
+    "Handler": "index.handler",
+    "CodeSize": 1985,
+    "Description": "",
+    "Timeout": 3,
+    "MemorySize": 128,
+    "LastModified": "2019-03-09T16:21:24.262+0000",
+    "CodeSha256": "pxZVdZOp0RA7sJbT4LX+0N0vFJwSKP4yw76YdVPGGbo=",
+    "Version": "$LATEST",
+    "TracingConfig": {
+      "Mode": "PassThrough"
+    },
+    "RevisionId": "9302f73d-ba49-4eb4-ba08-25f3cf981435"
+  },
+  {
+    "FunctionName": "thankshell_login_page_manager",
+    "FunctionArn": "arn:aws:lambda:ap-northeast-1:027569216980:function:thankshell_login_page_manager",
+    "Runtime": "nodejs8.10",
+    "Role": "arn:aws:iam::027569216980:role/thankshell",
+    "Handler": "index.handler",
+    "CodeSize": 523,
+    "Description": "",
+    "Timeout": 3,
+    "MemorySize": 128,
+    "LastModified": "2019-02-02T17:48:23.957+0000",
+    "CodeSha256": "KxHh4NNV3L22OB4OK8B6R96lOZWtC6TcQugKPeetUnI=",
+    "Version": "$LATEST",
+    "TracingConfig": {
+      "Mode": "PassThrough"
+    },
+    "RevisionId": "4cc75790-dde7-4ea5-9e33-67fec8a20ef9"
+  },
+  {
+    "FunctionName": "thankshell_create_user_link",
+    "FunctionArn": "arn:aws:lambda:ap-northeast-1:027569216980:function:thankshell_create_user_link",
+    "Runtime": "nodejs8.10",
+    "Role": "arn:aws:iam::027569216980:role/thankshell",
+    "Handler": "index.handler",
+    "CodeSize": 756,
+    "Description": "",
+    "Timeout": 3,
+    "MemorySize": 128,
+    "LastModified": "2019-03-25T15:35:44.332+0000",
+    "CodeSha256": "l7ZGvChQA14qlV3F5vapyFiBXraJcct8ZI8ULU50EiU=",
+    "Version": "$LATEST",
+    "TracingConfig": {
+      "Mode": "PassThrough"
+    },
+    "RevisionId": "a5b36f82-d08c-45a0-bf8d-e1e0437f11cc"
+  },
+  {
+    "FunctionName": "thankshell_get_wallet_info",
+    "FunctionArn": "arn:aws:lambda:ap-northeast-1:027569216980:function:thankshell_get_wallet_info",
+    "Runtime": "nodejs8.10",
+    "Role": "arn:aws:iam::027569216980:role/thankshell",
+    "Handler": "index.handler",
+    "CodeSize": 1771,
+    "Description": "",
+    "Timeout": 3,
+    "MemorySize": 128,
+    "LastModified": "2019-02-02T16:27:23.443+0000",
+    "CodeSha256": "wnSyXd7FDi8toYgqHIQvkvyChs6pvpgxFFB9iY8fctI=",
+    "Version": "$LATEST",
+    "TracingConfig": {
+      "Mode": "PassThrough"
+    },
+    "RevisionId": "7edd2d4d-755f-4a08-8a07-971fc4da6eb9"
+  }
+]

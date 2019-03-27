@@ -5,17 +5,19 @@ import zipfile
 import os
 
 
-def get_function_names():
+def get_functions():
     result = json.loads(subprocess.check_output(['aws', '--profile', 'thankshell', 'lambda', 'list-functions']))
 
-    return [ f['FunctionName'] for f in result['Functions'] if f['FunctionName'].startswith('thankshell')]
+    return [ f for f in result['Functions'] if f['FunctionName'].startswith('thankshell')]
 
 if __name__ == '__main__':
     lambda_dir = os.path.dirname(os.path.abspath(__file__))
 
-    function_names = get_function_names()
+    functions = get_functions()
+    json.dump(functions, open('functions.json', 'w'), indent=2)
 
-    for fname in function_names:
+    for f_info in functions:
+        fname = f_info['FunctionName']
         result = json.loads(subprocess.check_output(['aws', '--profile', 'thankshell', 'lambda', 'get-function', '--function-name', fname]))
         response = requests.get(result['Code']['Location'])
         with open('tmp.zip', 'wb') as fp:

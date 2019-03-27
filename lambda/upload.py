@@ -6,7 +6,7 @@ import os
 
 
 def get_function_names():
-    return [d for d in os.listdir('.') if os.path.isdir(d)]
+    return [ f['FunctionName'] for f in json.load(open('functions.json')) ]
 
 if __name__ == '__main__':
     lambda_dir = os.path.dirname(os.path.abspath(__file__))
