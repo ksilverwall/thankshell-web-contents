@@ -15,20 +15,13 @@ if __name__ == '__main__':
 
     for fname in function_names:
         with zipfile.ZipFile('tmp.zip', 'w') as tmp_zip:
-            [tmp_zip.write(fname + '/' + f) for f in os.listdir(fname)]
-
-        data = {
-            "FunctionName": fname,
-            "ZipFile": 'tmp.zip',
-            "DryRun": True,
-        }
+            [tmp_zip.write(fname + '/' + f, arcname=f) for f in os.listdir(fname)]
 
         result = json.loads(subprocess.check_output([
             'aws', '--profile', 'thankshell',
             'lambda', 'update-function-code',
             '--function-name', fname,
             '--zip-file', 'fileb://tmp.zip',
-            '--dry-run',
         ]))
 
         os.remove('tmp.zip')
