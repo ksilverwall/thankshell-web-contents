@@ -1,21 +1,5 @@
+let Auth = require('thankshell-libs/auth.js');
 let AWS = require("aws-sdk");
-
-let getAccountInfo = async(event) => {
-    let lambda = new AWS.Lambda();
-
-    let response = await lambda.invoke({
-        FunctionName: 'thankshell_get_user_info',
-        InvocationType: "RequestResponse",
-        Payload: JSON.stringify(event)
-    }).promise();
-
-    let payload = JSON.parse(response.Payload)
-    if (payload.errorMessage) {
-        throw new Error(payload.errorMessage);
-    }
-
-    return JSON.parse(payload.body);
-};
 
 let createUserLink = async(userId, params, data) => {
     let dynamo = new AWS.DynamoDB.DocumentClient();
@@ -35,23 +19,36 @@ let createUserLink = async(userId, params, data) => {
     return result;
 };
 
-exports.handler = async(event, context, callback) => {
-    try {
-        let user = await getAccountInfo(event);
-        let data = await createUserLink(user.name, event.pathParameters, JSON.parse(event.body));
+let getHandler = mainProcess => {
+    return async(event, context, callback) => {
+        let statusCode;
+        let data;
+
+        try {
+            let userId = await Auth.getUserId(event.requestContext.authorizer.claims);
+            if (userId) {
+                statusCode = 200;
+                data = await mainProcess(userId, event.pathParameters, JSON.parse(event.body));
+            } else {
+                statusCode = 403;
+                data = {
+                    "message": "user id not found",
+                };
+            }
+        } catch(err) {
+            console.log(err);
+            statusCode = 500;
+            data = {
+                'message': err.message,
+            };
+        }
 
         return {
-            statusCode: 200,
+            statusCode: statusCode,
             headers: {"Access-Control-Allow-Origin": "*"},
             body: JSON.stringify(data),
         };
-    } catch(err) {
-        console.log(err);
-
-        return {
-            statusCode: 500,
-            headers: {"Access-Control-Allow-Origin": "*"},
-            body: JSON.stringify({'message': err.message}),
-        };
-    }
+    };
 };
+
+exports.handler = getHandler(createUserLink);

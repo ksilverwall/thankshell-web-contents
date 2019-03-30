@@ -1,151 +1,56 @@
 [
   {
     "FunctionName": "thankshell_get_transactions",
-    "FunctionArn": "arn:aws:lambda:ap-northeast-1:027569216980:function:thankshell_get_transactions",
-    "Runtime": "nodejs8.10",
-    "Role": "arn:aws:iam::027569216980:role/thankshell",
-    "Handler": "index.handler",
-    "CodeSize": 5932,
-    "Description": "",
-    "Timeout": 3,
-    "MemorySize": 128,
-    "LastModified": "2019-03-28T06:18:29.981+0000",
-    "CodeSha256": "W88T0DOsNCT0z8FcsEkvaPwPojDJwtaWt4uXVxkRQXk=",
-    "Version": "$LATEST",
-    "TracingConfig": {
-      "Mode": "PassThrough"
-    },
-    "RevisionId": "0063be65-fa92-4c55-ae0b-bc3f06721bfe"
+    "Layers": [
+      {
+        "Arn": "arn:aws:lambda:ap-northeast-1:027569216980:layer:thankshell-libs:5",
+        "CodeSize": 990
+      }
+    ]
   },
   {
     "FunctionName": "thankshell_get_user_link",
-    "FunctionArn": "arn:aws:lambda:ap-northeast-1:027569216980:function:thankshell_get_user_link",
-    "Runtime": "nodejs8.10",
-    "Role": "arn:aws:iam::027569216980:role/thankshell",
-    "Handler": "index.handler",
-    "CodeSize": 1769,
-    "Description": "",
-    "Timeout": 3,
-    "MemorySize": 128,
-    "LastModified": "2019-03-28T06:18:30.839+0000",
-    "CodeSha256": "gaPor1JZ7Oq3XNxEQrKIhJpGq2tY9yfJTmp5l0cD50E=",
-    "Version": "$LATEST",
-    "TracingConfig": {
-      "Mode": "PassThrough"
-    },
-    "RevisionId": "95edaf26-d68b-4879-b8a9-f38dd5eac721"
+    "Layers": [
+      {
+        "Arn": "arn:aws:lambda:ap-northeast-1:027569216980:layer:thankshell-libs:5",
+        "CodeSize": 990
+      }
+    ]
   },
   {
     "FunctionName": "thankshell_delete_user_link",
-    "FunctionArn": "arn:aws:lambda:ap-northeast-1:027569216980:function:thankshell_delete_user_link",
-    "Runtime": "nodejs8.10",
-    "Role": "arn:aws:iam::027569216980:role/thankshell",
-    "Handler": "index.handler",
-    "CodeSize": 1525,
-    "Description": "",
-    "Timeout": 3,
-    "MemorySize": 128,
-    "LastModified": "2019-03-28T06:18:31.737+0000",
-    "CodeSha256": "Wzud/TY7IqTqWhOcakybEfhijnCjwH6HgMqQZxVryOI=",
-    "Version": "$LATEST",
-    "TracingConfig": {
-      "Mode": "PassThrough"
-    },
-    "RevisionId": "8e28dcff-73f9-4fd0-b609-20d8cfc5a408"
+    "Layers": [
+      {
+        "Arn": "arn:aws:lambda:ap-northeast-1:027569216980:layer:thankshell-libs:5",
+        "CodeSize": 990
+      }
+    ]
   },
   {
     "FunctionName": "thankshell_get_user_info",
-    "FunctionArn": "arn:aws:lambda:ap-northeast-1:027569216980:function:thankshell_get_user_info",
-    "Runtime": "nodejs8.10",
-    "Role": "arn:aws:iam::027569216980:role/thankshell",
-    "Handler": "index.handler",
-    "CodeSize": 1161,
-    "Description": "",
-    "Timeout": 3,
-    "MemorySize": 128,
-    "LastModified": "2019-03-28T06:18:32.645+0000",
-    "CodeSha256": "sZND0gidCJ5TdXIoZjr1AuFL1akKqSb1TrzNstpL4No=",
-    "Version": "$LATEST",
-    "VpcConfig": {
-      "SubnetIds": [],
-      "SecurityGroupIds": [],
-      "VpcId": ""
-    },
-    "TracingConfig": {
-      "Mode": "PassThrough"
-    },
-    "RevisionId": "94e2fb61-6e28-4b23-9f2f-252cb3e871e5"
+    "Layers": [
+      {
+        "Arn": "arn:aws:lambda:ap-northeast-1:027569216980:layer:thankshell-libs:5",
+        "CodeSize": 990
+      }
+    ]
   },
   {
-    "FunctionName": "thankshell_create_transaction",
-    "FunctionArn": "arn:aws:lambda:ap-northeast-1:027569216980:function:thankshell_create_transaction",
-    "Runtime": "nodejs8.10",
-    "Role": "arn:aws:iam::027569216980:role/thankshell",
-    "Handler": "index.handler",
-    "CodeSize": 5518,
-    "Description": "",
-    "Timeout": 3,
-    "MemorySize": 128,
-    "LastModified": "2019-03-28T06:18:33.543+0000",
-    "CodeSha256": "XvaB7MSUh12hJBvWf4VRNUTQxDZWjPdPX9FD4Td4jnU=",
-    "Version": "$LATEST",
-    "TracingConfig": {
-      "Mode": "PassThrough"
-    },
-    "RevisionId": "795abff1-5edb-4d7b-8147-35da564da374"
+    "FunctionName": "thankshell_create_transaction"
   },
   {
-    "FunctionName": "thankshell_login_page_manager",
-    "FunctionArn": "arn:aws:lambda:ap-northeast-1:027569216980:function:thankshell_login_page_manager",
-    "Runtime": "nodejs8.10",
-    "Role": "arn:aws:iam::027569216980:role/thankshell",
-    "Handler": "index.handler",
-    "CodeSize": 894,
-    "Description": "",
-    "Timeout": 3,
-    "MemorySize": 128,
-    "LastModified": "2019-03-28T06:18:34.398+0000",
-    "CodeSha256": "iPRHTnRKg763q3zo6kJ/ajIWdjgQmZcPN+MCkB8Ik1o=",
-    "Version": "$LATEST",
-    "TracingConfig": {
-      "Mode": "PassThrough"
-    },
-    "RevisionId": "7155287d-ea24-40b4-ad85-45c289e694f1"
+    "FunctionName": "thankshell_login_page_manager"
   },
   {
     "FunctionName": "thankshell_create_user_link",
-    "FunctionArn": "arn:aws:lambda:ap-northeast-1:027569216980:function:thankshell_create_user_link",
-    "Runtime": "nodejs8.10",
-    "Role": "arn:aws:iam::027569216980:role/thankshell",
-    "Handler": "index.handler",
-    "CodeSize": 1647,
-    "Description": "",
-    "Timeout": 3,
-    "MemorySize": 128,
-    "LastModified": "2019-03-28T06:18:35.305+0000",
-    "CodeSha256": "KJJKJ2utkKpdPAlkisLbBjlIqpbha0Bu1feJj45JP34=",
-    "Version": "$LATEST",
-    "TracingConfig": {
-      "Mode": "PassThrough"
-    },
-    "RevisionId": "5771a769-c911-4b77-b02f-c2680da19af3"
+    "Layers": [
+      {
+        "Arn": "arn:aws:lambda:ap-northeast-1:027569216980:layer:thankshell-libs:5",
+        "CodeSize": 990
+      }
+    ]
   },
   {
-    "FunctionName": "thankshell_get_wallet_info",
-    "FunctionArn": "arn:aws:lambda:ap-northeast-1:027569216980:function:thankshell_get_wallet_info",
-    "Runtime": "nodejs8.10",
-    "Role": "arn:aws:iam::027569216980:role/thankshell",
-    "Handler": "index.handler",
-    "CodeSize": 5825,
-    "Description": "",
-    "Timeout": 3,
-    "MemorySize": 128,
-    "LastModified": "2019-03-28T06:18:36.204+0000",
-    "CodeSha256": "HFRp8YbOg4XiAkmUb8VJbwIHHVZsnolAGqZSp6a/aos=",
-    "Version": "$LATEST",
-    "TracingConfig": {
-      "Mode": "PassThrough"
-    },
-    "RevisionId": "549887b2-d506-4ac5-bcd7-be36d7bbeaa6"
+    "FunctionName": "thankshell_get_wallet_info"
   }
 ]

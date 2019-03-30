@@ -1,21 +1,5 @@
+let Auth = require('thankshell-libs/auth.js');
 let AWS = require("aws-sdk");
-
-let getAccountInfo = async(event) => {
-    let lambda = new AWS.Lambda();
-
-    let response = await lambda.invoke({
-        FunctionName: 'thankshell_get_user_info',
-        InvocationType: "RequestResponse",
-        Payload: JSON.stringify(event)
-    }).promise();
-
-    let payload = JSON.parse(response.Payload);
-    if (payload.errorMessage) {
-        throw new Error(payload.errorMessage);
-    }
-
-    return JSON.parse(payload.body);
-};
 
 async function getCarried(account, dynamo) {
     var maxBlockId = Math.floor((await dynamo.get({
@@ -171,22 +155,22 @@ let createTransaction = async(event, username) => {
 }
 
 exports.handler = async(event, context, callback) => {
+    let statusCode = 200;
+    let data;
     try {
-        let account = await getAccountInfo(event);
-        let data = await createTransaction(event, account.name);
-
-        return {
-            statusCode: 200,
-            headers: {"Access-Control-Allow-Origin": "*"},
-            body: JSON.stringify(data),
-        };
+        data = await createTransaction(event, await Auth.getUserId(event.requestContext.authorizer.claims));
     } catch(err) {
         console.log(err);
 
+        statusCode = 500;
+        data = {
+            'message': err.message,
+        };
+    } finally {
         return {
-            statusCode: 500,
+            statusCode: statusCode,
             headers: {"Access-Control-Allow-Origin": "*"},
-            body: JSON.stringify({'message': err.message}),
+            body: JSON.stringify(data),
         };
     }
 }

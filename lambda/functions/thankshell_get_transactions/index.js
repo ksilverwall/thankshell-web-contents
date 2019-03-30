@@ -1,16 +1,5 @@
+let Auth = require('thankshell-libs/auth.js');
 let AWS = require("aws-sdk");
-
-let getAccountInfo = async(event) => {
-    let lambda = new AWS.Lambda();
-
-    let response = await lambda.invoke({
-        FunctionName: 'thankshell_get_user_info',
-        InvocationType: "RequestResponse",
-        Payload: JSON.stringify(event)
-    }).promise();
-
-    return JSON.parse(JSON.parse(response.Payload).body);
-};
 
 async function getHistory(dynamo, account, adminMode) {
     let history = {
@@ -75,7 +64,7 @@ async function getAllAccounts(cognito, poolId) {
     return allAccounts;
 }
 
-let getTransactions = async(event, account) => {
+let getTransactions = async(userId, event) => {
     let cognito = new AWS.CognitoIdentityServiceProvider({
         apiVersion: '2016-04-18',
         region: 'ap-northeast-1'
@@ -87,22 +76,22 @@ let getTransactions = async(event, account) => {
     }
 
     let claims = event.requestContext.authorizer.claims;
-    let adminMode = (account === 'sla_bank' && claims['cognito:groups'] && claims['cognito:groups'].indexOf('admin') !== -1);
+    let adminMode = (userId === 'sla_bank' && claims['cognito:groups'] && claims['cognito:groups'].indexOf('admin') !== -1);
 
-    if (!account) {
+    if (!userId) {
         throw new Error("アカウントの取得に失敗しました");
     }
 
-    if(!adminMode && account !== claims['cognito:username']) {
+    if(!adminMode && userId !== claims['cognito:username']) {
         throw new Error("アクセス権限がありません");
     }
 
     const publishAccount = "--";
     const reservedAccounts = ['sla_bank', publishAccount];
-    if(adminMode && reservedAccounts.indexOf(account) === -1) {
+    if(adminMode && reservedAccounts.indexOf(userId) === -1) {
         let fromUser = await cognito.adminGetUser({
             UserPoolId: poolId,
-            Username: account
+            Username: userId
         }).promise();
 
         if (!fromUser.Enabled) {
@@ -110,7 +99,7 @@ let getTransactions = async(event, account) => {
         }
     }
 
-    let history = await getHistory(dynamo, account, adminMode);
+    let history = await getHistory(dynamo, userId, adminMode);
 
     let retData = {
         history: history,
@@ -138,10 +127,10 @@ let getTransactions = async(event, account) => {
 
     history.Items.forEach((item) => {
         if(isFinite(item.amount)) {
-            if(item.from_account == account) {
+            if(item.from_account == userId) {
                 retData.carried -= item.amount;
             }
-            if(item.to_account == account) {
+            if(item.to_account == userId) {
                 retData.carried += item.amount;
             }
 
@@ -172,25 +161,39 @@ let getTransactions = async(event, account) => {
     });
 
     return retData;
-}
+};
 
-exports.handler = async(event, context, callback) => {
-    try {
-        let account = await getAccountInfo(event);
-        let data = await getTransactions(event, account.name);
+let getHandler = mainProcess => {
+    return async(event, context, callback) => {
+        let statusCode = 200;
+        let data;
+
+        try {
+            let userId = await Auth.getUserId(event.requestContext.authorizer.claims);
+            if (userId) {
+                statusCode = 200;
+                data = await mainProcess(userId, event);
+            } else {
+                statusCode = 403;
+                data = {
+                    "message": "user id not found",
+                };
+            }
+        } catch(err) {
+            console.log(err);
+
+            statusCode = 500;
+            data = {
+                'message': err.message,
+            };
+        }
 
         return {
-            statusCode: 200,
+            statusCode: statusCode,
             headers: {"Access-Control-Allow-Origin": "*"},
             body: JSON.stringify(data),
         };
-    } catch(err) {
-        console.log(err);
+    };
+};
 
-        return {
-            statusCode: 500,
-            headers: {"Access-Control-Allow-Origin": "*"},
-            body: JSON.stringify({'message': err.message}),
-        };
-    }
-}
+exports.handler = getHandler(getTransactions);
