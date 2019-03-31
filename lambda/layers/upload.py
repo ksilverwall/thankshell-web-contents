@@ -10,17 +10,19 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('name', help='itarget layer name')
     args = parser.parse_args()
-    fname = args.name
+    layer_name = args.name
+    file_name = layer_name + '.zip'
 
-    shutil.make_archive(fname, format='zip', root_dir=fname)
+    shutil.make_archive(layer_name, format='zip', root_dir=layer_name)
 
-    print('Zip file created: ' + fname)
-    #result = json.loads(subprocess.check_output([
-    #    'aws', '--profile', 'thankshell',
-    #    'lambda', 'update-function-code',
-    #    '--function-name', fname,
-    #    '--zip-file', 'fileb://tmp.zip',
-    #]))
+    print('Zip file created: ' + layer_name)
+    result = json.loads(subprocess.check_output([
+        'aws', '--profile', 'thankshell',
+        'lambda', 'publish-layer-version',
+        '--layer-name', layer_name,
+        '--zip-file', 'fileb://' + file_name,
+        '--compatible-runtimes', 'nodejs8.10',
+    ]))
 
-    #os.remove('tmp.zip')
-    #print("update: "+ fname)
+    os.remove(file_name)
+    print("update: "+ layer_name)
