@@ -44,123 +44,27 @@ async function getHistory(dynamo, account, adminMode) {
     return history;
 }
 
-async function getAllAccounts(cognito, poolId) {
-    let accountInfo = await cognito.listUsers({
-        UserPoolId: poolId,
-    }).promise();
-
-    let allAccounts = accountInfo.Users;
-
-    let paginationToken = accountInfo.PaginationToken;
-    while (paginationToken) {
-        let users2 = await cognito.listUsers({
-            UserPoolId: poolId,
-            PaginationToken: paginationToken,
-        }).promise();
-        allAccounts = allAccounts.concat(users2.Users);
-        paginationToken = users2.PaginationToken;
-    }
-
-    return allAccounts;
-}
-
-let getTransactions = async(userId, event) => {
-    let cognito = new AWS.CognitoIdentityServiceProvider({
-        apiVersion: '2016-04-18',
-        region: 'ap-northeast-1'
-    });
+let getTransactions = async(userId, pathParameters, requestBody) => {
     let dynamo = new AWS.DynamoDB.DocumentClient();
 
-    if(!event.requestContext) {
-        throw new Error("ログインしてください");
-    }
-
-    let claims = event.requestContext.authorizer.claims;
-    let adminMode = (userId === 'sla_bank' && claims['cognito:groups'] && claims['cognito:groups'].indexOf('admin') !== -1);
-
-    if (!userId) {
-        throw new Error("アカウントの取得に失敗しました");
-    }
-
-    if(!adminMode && userId !== claims['cognito:username']) {
-        throw new Error("アクセス権限がありません");
-    }
-
-    const publishAccount = "--";
-    const reservedAccounts = ['sla_bank', publishAccount];
-    if(adminMode && reservedAccounts.indexOf(userId) === -1) {
-        let fromUser = await cognito.adminGetUser({
-            UserPoolId: poolId,
-            Username: userId
-        }).promise();
-
-        if (!fromUser.Enabled) {
-            throw new Error("アカウントが無効です");
-        }
-    }
-
-    let history = await getHistory(dynamo, userId, adminMode);
-
-    let retData = {
-        history: history,
-        carried: 0
-    };
-
-    const poolId = 'ap-northeast-1_WEGpvJz9M';
-    if(adminMode) {
-        let allAccounts = await getAllAccounts(cognito, poolId);
-
-        retData.bank = {
-            published: 0,
-            currency: 0,
-            account: {}
-        };
-
-        allAccounts.forEach(userAccount => {
-            retData.bank.account[userAccount.Username] = {
-                amount: 0,
-                accountStatus: userAccount.Enabled ? userAccount.UserStatus : 'DISABLED'
-            };
-        }, retData);
-        retData.bank.accountNum = allAccounts.length;
-    }
+    let history = await getHistory(dynamo, userId, false);
+    let carried = 0;
 
     history.Items.forEach((item) => {
         if(isFinite(item.amount)) {
             if(item.from_account == userId) {
-                retData.carried -= item.amount;
+                carried -= item.amount;
             }
             if(item.to_account == userId) {
-                retData.carried += item.amount;
-            }
-
-            if(adminMode) {
-                switch(item.from_account) {
-                    case 'sla_bank':
-                        break;
-                    case publishAccount:
-                        retData.bank.published += item.amount;
-                        break;
-                    default:
-                        retData.bank.account[item.from_account].amount -= item.amount;
-                        break;
-                }
-
-                switch(item.to_account) {
-                    case 'sla_bank':
-                        break;
-                    case publishAccount:
-                        retData.bank.published -= item.amount;
-                        break;
-                    default:
-                        retData.bank.account[item.to_account].amount += item.amount;
-                        break;
-                }
+                carried += item.amount;
             }
         }
     });
 
-    return retData;
+    return {
+        history: history,
+        carried: carried
+    };
 };
 
 let getHandler = mainProcess => {
@@ -172,7 +76,7 @@ let getHandler = mainProcess => {
             let userId = await Auth.getUserId(event.requestContext.authorizer.claims);
             if (userId) {
                 statusCode = 200;
-                data = await mainProcess(userId, event);
+                data = await mainProcess(userId, event.pathParameters, JSON.parse(event.body));
             } else {
                 statusCode = 403;
                 data = {
