@@ -159,8 +159,8 @@
             $(location).attr('href', 'login');
           } else {
             if (!data.session.idToken.payload['cognito:groups'] || data.session.idToken.payload['cognito:groups'].indexOf('admin') === -1) {
-                alert('管理者権限がありません。ログインし直すか管理者に問い合わせてください。');
-                $(location).attr('href', 'wallet');
+                console.log('管理者権限がありません。ログインし直すか管理者に問い合わせてください。');
+                //$(location).attr('href', 'wallet');
             }else{
                 $("#user-name").text(data.user ? data.user : '---');
                 $("#admin-only").show();

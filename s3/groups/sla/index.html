@@ -22,6 +22,7 @@
         <button id="configButton" class="btn btn-outline-success my-2 my-sm-0">設定</button>
       </nav>
 
+      <button id="groupManagerButton" class="btn my-2 my-sm-0">管理ページへ</button>
 
       <div class="row">
         <div class="col-6 col-sm-2 offset-3 offset-sm-5">
@@ -148,24 +149,29 @@
       };
 
       getSession(async(session) => {
-          let userInfo = await (await fetch('https://api.thankshell.com/dev/user/', {
+          let response = await fetch('https://api.thankshell.com/dev/user/', {
               method: "GET",
               headers: {
                   "Content-Type": "application/json; charset=utf-8",
                   Authorization: session.idToken.jwtToken
               },
-          })).json();
+          });
+
+          let userInfo = await response.json();
 
           if (userInfo.code == "SUCCESS") {
+              // Display pages
               $("#user-name").text(userInfo.name ? userInfo.name : '---');
               $('#logoutButton').click(closeSession);
               $('#configButton').click(()=>{location.href='/user/config';});
+              $('#groupManagerButton').click(()=>{location.href='/groups/sla/admin';});
               controller.account = userInfo.name;
               controller.session = session;
               controller.loadTransactions();
               $('#send-selan-button').click(function() { controller.sendSelan(); });
           } else {
-              // TODO implement here
+              // TODO: implement register page
+              location.href='/register';
           }
 
           console.log(userInfo);

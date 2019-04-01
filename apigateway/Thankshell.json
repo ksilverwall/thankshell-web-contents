@@ -1,7 +1,7 @@
 {
   "swagger" : "2.0",
   "info" : {
-    "version" : "2019-03-12T11:20:10Z",
+    "version" : "2019-04-01T14:55:23Z",
     "title" : "Thankshell"
   },
   "host" : "develop.thankshell.com",
@@ -61,15 +61,10 @@
         }
       }
     },
-    "/groups/{group}/{item}" : {
+    "/groups/{group}/admin" : {
       "get" : {
-        "produces" : [ "image/png", "application/json" ],
+        "produces" : [ "text/html", "application/json" ],
         "parameters" : [ {
-          "name" : "item",
-          "in" : "path",
-          "required" : true,
-          "type" : "string"
-        }, {
           "name" : "group",
           "in" : "path",
           "required" : true,
