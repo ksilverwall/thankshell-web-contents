@@ -77,7 +77,7 @@ class AccountManager {
     }
 }
 
-let createTransaction = async(event, username) => {
+let createTransaction = async(username, pathParameter, event) => {
     let dynamo = new AWS.DynamoDB.DocumentClient();
     let accountManager = new AccountManager();
 
@@ -152,25 +152,6 @@ let createTransaction = async(event, username) => {
             "comment": comment
         }
     }).promise();
-}
+};
 
-exports.handler = async(event, context, callback) => {
-    let statusCode = 200;
-    let data;
-    try {
-        data = await createTransaction(event, await Auth.getUserId(event.requestContext.authorizer.claims));
-    } catch(err) {
-        console.log(err);
-
-        statusCode = 500;
-        data = {
-            'message': err.message,
-        };
-    } finally {
-        return {
-            statusCode: statusCode,
-            headers: {"Access-Control-Allow-Origin": "*"},
-            body: JSON.stringify(data),
-        };
-    }
-}
+exports.handler = Auth.getHandler(createTransaction);
