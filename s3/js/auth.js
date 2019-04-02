@@ -1,61 +1,35 @@
 'use strict'
 
-let UserPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool({
-    UserPoolId: 'ap-northeast-1_A6SNCzbmM',
-    ClientId: '1opllluc6ruh50h0qc74395k1i'
-});
+class SessionController {
+    constructor() {
+        this.auth = new AmazonCognitoIdentity.CognitoAuth({
+            ClientId : '1opllluc6ruh50h0qc74395k1i',
+            AppWebDomain : 'auth.thankshell.com',
+            TokenScopesArray : ['profile', 'email', 'openid', 'aws.cognito.signin.user.admin', 'phone'],
+            RedirectUriSignIn : 'https://develop.thankshell.com/login/callback',
+            RedirectUriSignOut : 'https://develop.thankshell.com/login/logout',
+        });
+    }
 
-let upsample = {
-//    resend: function(username, callback) {
-//        if (!username) { return false; }
-//
-//        let cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser({
-//            Username: username,
-//            Pool: UserPool
-//        });
-//
-//        cognitoUser.resendConfirmationCode(function(err, result) {
-//            if (err) {
-//                console.log(err);
-//                callback(null, err);
-//            } else {
-//                console.log('call result ' + result);
-//                callback(null, '確認コードを再送信しました');
-//            }
-//        });
-//    }
+    close() {
+        this.auth.signOut();
+    }
 
-    checkSession: function (callback) {
-        var cognitoUser = UserPool.getCurrentUser();
-        if (cognitoUser != null) {
-            cognitoUser.getSession(function (err, session) {
-                if (session) {
-                    cognitoUser.getUserAttributes(function (err, attrs) {
-                        if (err) {
-                            callback(err, null);
-                        } else {
-                            const data = {
-                                user: cognitoUser.getUsername(),
-                                attributes: attrs,
-                                session: session
-                            }
-                            callback(null, data);
-                        }
-                    });
-                } else {
-                    callback('session is invalid', null);
-                }
-            });
+    get(callback) {
+        if(this.auth.isUserSignedIn()) {
+            console.log(this.auth.getCurrentUser());
+            this.auth.userhandler = {
+              onSuccess: callback,
+              onFailure: function(err) {
+                console.log("Error!");
+                console.log(err);
+              }
+            };
+
+            this.auth.getSession();
         } else {
-            callback('no user', null);
+            console.log("User is not signed in");
+            location.href='/';
         }
-    },
-
-    logout: function() {
-        let cognitoUser = UserPool.getCurrentUser();
-        if (cognitoUser != null) {
-            cognitoUser.signOut();
-            location.reload();
-        }
-    },
-};
+    }
+}

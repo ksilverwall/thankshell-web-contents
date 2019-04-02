@@ -145,49 +145,40 @@
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.224.1.min.js"></script>
     <script src="/js/aws-cognito-sdk.min.js"></script>
     <script src="/js/amazon-cognito-identity.min.js"></script>
-    <script src="/js/auth.js"></script>
+    <script src="/js/amazon-cognito-auth.min.js"></script>
     <script src="/js/bank.js"></script>
+    <script src="/js/auth.js"></script>
 
     <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
     <script src="//cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
 
     <script>
-      $(function() {
-        upsample.checkSession( (err, data) => {
-          if(err) {
-            console.log(err);
-            $(location).attr('href', 'login');
+      (new SessionController()).get(async(session) => {
+          let response = await fetch('https://api.thankshell.com/dev/user/', {
+              method: "GET",
+              headers: {
+                  "Content-Type": "application/json; charset=utf-8",
+                  Authorization: session.idToken.jwtToken
+              },
+          });
+
+          let userInfo = await response.json();
+
+          if (userInfo.code == "SUCCESS") {
+              $("#user-name").text(userInfo.name ? userInfo.name : '---');
+              $("#admin-only").show();
+              controller.account = 'sla_bank';
+              controller.session = session;
+              controller.loadTransactions();
+              $('#publish-button').click(function(){ controller.publish(); });
+              $('#send-selan-button').click(function() { controller.sendSelan(); });
           } else {
-            if (!data.session.idToken.payload['cognito:groups'] || data.session.idToken.payload['cognito:groups'].indexOf('admin') === -1) {
-                console.log('管理者権限がありません。ログインし直すか管理者に問い合わせてください。');
-                //$(location).attr('href', 'wallet');
-            }else{
-                $("#user-name").text(data.user ? data.user : '---');
-                $("#admin-only").show();
-                controller.account = 'sla_bank';
-                controller.session = data.session;
-                controller.loadTransactions();
-                $('#publish-button').click(function(){ controller.publish(); });
-                $('#send-selan-button').click(function() { controller.sendSelan(); });
-            }
+              // TODO: implement register page
+              location.href='/register';
           }
-        });
-      });
 
-      $('#import-transaction-file').on('change',function(){
-        $('#import-transaction-label').html($(this)[0].files[0].name);
+          console.log(userInfo);
       });
-
-      $("#import-transaction-button").click(function(){
-        let file = $('#import-transaction-file')[0].files[0];
-        var reader = new FileReader();
-        reader.readAsText(file);
-        reader.addEventListener('load', function() {
-          controller.importTransaction(reader.result);
-        })
-      });
-
-      $('#logoutButton').click(upsample.logout);
     </script>
   </body>
 </html>
