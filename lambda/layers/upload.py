@@ -26,3 +26,4 @@ if __name__ == '__main__':
 
     os.remove(file_name)
     print("update: "+ layer_name)
+    print(json.dumps(result, indent=4))
