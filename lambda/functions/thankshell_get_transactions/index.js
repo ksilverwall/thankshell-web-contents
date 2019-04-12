@@ -1,24 +1,39 @@
 let Auth = require('thankshell-libs/auth.js');
 let AWS = require("aws-sdk");
 
-async function getHistory(dynamo, account, adminMode) {
+async function getHistory(dynamo, account, stage) {
+    let tableName = {
+        'production': {
+            'info': 'table_info',
+            'data': 'remittance_transactions',
+        },
+        'develop': {
+            'info': 'dev_table_info',
+            'data': 'dev_remittance_transactions',
+        },
+    };
+
+    let adminMode = false;
+
     let history = {
         Count: 0,
         Items: []
     };
 
-    let maxBlockId = Math.floor((await dynamo.get({
-        TableName: 'table_info',
+    let tableInfo = await dynamo.get({
+        TableName: tableName[stage]['info'],
         Key:{
-            'name': 'remittance_transactions',
+            'name': tableName[stage]['data'],
         }
-    }).promise()).Item.current_id_sequence / 1000);
+    }).promise();
+
+    let maxBlockId = tableInfo.Item ? Math.floor(tableInfo.Item.current_id_sequence / 1000) : 0;
 
     for (let blockId=maxBlockId; blockId >= 0; --blockId) {
         let params;
         if(adminMode) {
             params = {
-                TableName: "remittance_transactions",
+                TableName: tableName[stage]['data'],
                 KeyConditionExpression: "block_id = :block",
                 ExpressionAttributeValues: {
                     ":block": blockId
@@ -26,7 +41,7 @@ async function getHistory(dynamo, account, adminMode) {
             };
         } else {
             params = {
-                TableName: "remittance_transactions",
+                TableName: tableName[stage]['data'],
                 KeyConditionExpression: "block_id = :block",
                 FilterExpression: "from_account = :account or to_account = :account",
                 ExpressionAttributeValues: {
@@ -44,10 +59,10 @@ async function getHistory(dynamo, account, adminMode) {
     return history;
 }
 
-let getTransactions = async(userId, pathParameters, requestBody) => {
+let getTransactions = async(userId, pathParameters, requestBody, stage) => {
     let dynamo = new AWS.DynamoDB.DocumentClient();
 
-    let history = await getHistory(dynamo, userId, false);
+    let history = await getHistory(dynamo, userId, stage);
     let carried = 0;
 
     history.Items.forEach((item) => {

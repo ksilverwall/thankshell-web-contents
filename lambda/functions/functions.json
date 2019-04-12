@@ -3,8 +3,8 @@
     "FunctionName": "thankshell_get_transactions",
     "Layers": [
       {
-        "Arn": "arn:aws:lambda:ap-northeast-1:027569216980:layer:thankshell-libs:7",
-        "CodeSize": 1282
+        "Arn": "arn:aws:lambda:ap-northeast-1:027569216980:layer:thankshell-libs:8",
+        "CodeSize": 1290
       }
     ]
   },
@@ -39,8 +39,8 @@
     "FunctionName": "thankshell_create_transaction",
     "Layers": [
       {
-        "Arn": "arn:aws:lambda:ap-northeast-1:027569216980:layer:thankshell-libs:7",
-        "CodeSize": 1282
+        "Arn": "arn:aws:lambda:ap-northeast-1:027569216980:layer:thankshell-libs:8",
+        "CodeSize": 1290
       }
     ]
   },
