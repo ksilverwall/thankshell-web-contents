@@ -59,15 +59,11 @@ class TransactionController
         let accountManager = new AccountManager();
 
         if (!(await accountManager.isExists(xdata.from))) {
-            throw new Error(`送金元${xdata.from}が無効です`);
+            throw new Error("送金元アカウントが無効です");
         }
 
         if (!(await accountManager.isExists(xdata.to))) {
-            throw new Error(`送金先${xdata.to}が無効です`);
-        }
-
-        if (await this.getCarried(xdata.from) < xdata.amount) {
-            throw new Error("所持金が不足しています");
+            throw new Error("送金先アカウントが無効です");
         }
 
         if (xdata.from === xdata.to) {
@@ -198,23 +194,18 @@ let getTableInfo = (stage) => {
     return tableInfoList[stage];
 };
 
-let createTransaction = async(userId, pathParameter, body, stage) => {
+let createTransaction = async(username, pathParameter, body, stage) => {
     let controller = new TransactionController(getTableInfo(stage));
+    let transaction = {};
 
-    if(body.from !== userId && !await isAdmin(userId)) {
+    if(!await isAdmin(username)) {
         throw new Error("この取引を発行する権限がありません");
     }
-
-    let transaction = {
-        "token": pathParameter.token,
-        "from": body.from,
-        "to": body.to,
-        "amount": parseInt(body.amount, 10),
-    };
-
-    if (body.comment) {
-        transaction.comment = body.comment;
-    }
+    transaction.token = pathParameter.token;
+    transaction.from = '--';
+    transaction.to = body.to;
+    transaction.amount = parseInt(body.amount, 10);
+    transaction.comment = body.comment ? body.comment : ' ';
 
     await controller.create(transaction);
 };

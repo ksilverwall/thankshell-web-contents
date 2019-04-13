@@ -47,7 +47,7 @@
             <div class="row">
               <div class="col-xs-12 col-sm-6 col-md-4 form-group">
                 <label>送金先</label>
-                <input class="form-control" type="text" name="to_account" />
+                <input class="form-control" type="text" name="to" />
               </div>
               <div class="col-xs-12 col-sm-6 col-md-4 form-group">
                 <label>金額</label>
@@ -109,35 +109,137 @@
     <script src="/js/auth.js"></script>
 
     <script>
-      $('#logoutButton').click(()=>(new SessionController()).close());
-      $('#configButton').click(()=>{location.href='/user/config';});
-      $('#groupManagerButton').click(()=>{location.href='/groups/sla/admin';});
+    $('#logoutButton').click(()=>(new SessionController()).close());
+    $('#configButton').click(()=>{location.href='/user/config';});
+    $('#groupManagerButton').click(()=>{location.href='/groups/sla/admin';});
 
-      (new SessionController()).get(async(session) => {
-          let response = await fetch('https://api.thankshell.com/dev/user/', {
-              method: "GET",
-              headers: {
-                  "Content-Type": "application/json; charset=utf-8",
-                  Authorization: session.idToken.jwtToken
-              },
-          });
+    let createTransaction = async(data, session) => {
+        let response = await fetch('https://api.thankshell.com/dev/token/selan/transactions', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                Authorization: session.idToken.jwtToken
+            },
+            body: JSON.stringify(data),
+        });
 
-          let userInfo = await response.json();
+        if (response.status !== 200) {
+            let data = await response.json();
+            throw new Error(data.message);
+        }
+    };
 
-          if (userInfo.code == "SUCCESS") {
-              // Display pages
-              $("#user-name").text(userInfo.name ? userInfo.name : '---');
-              controller.account = userInfo.name;
-              controller.session = session;
-              controller.loadTransactions();
-              $('#send-selan-button').click(function() { controller.sendSelan(); });
-          } else {
-              // TODO: implement register page
-              location.href='/register';
-          }
+    let getHolding = async(userId, session) => {
+        let response = await fetch('https://api.thankshell.com/dev/token/selan/holders?user_id=' + userId, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                Authorization: session.idToken.jwtToken
+            },
+        });
 
-          console.log(userInfo);
-      });
+        return await response.json();
+    };
+
+    let loadTransactions = async(userId, session) => {
+        let response2 = await fetch('https://api.thankshell.com/dev/token/selan/transactions?user_id=' + userId, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                Authorization: session.idToken.jwtToken
+            },
+        });
+
+        let data = await response2.json();
+        let history = data.history.Items;
+
+        return history;
+    };
+
+    let sendSelan = async() => {
+        // TODO should be promise
+        (new SessionController()).get(async(session) => {
+            if($('#send-selan-button').prop("disabled")) {
+                return;
+            }
+
+            let response = await fetch('https://api.thankshell.com/dev/user/', {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    Authorization: session.idToken.jwtToken
+                },
+            });
+            let userInfo = await response.json();
+
+            let data = {};
+            $('#send-selan').find('input').each((index, input) => {
+                if(input.name){
+                    data[input.name] = input.value;
+                }
+            });
+            data['from'] = userInfo.name;
+            
+            $('#send-selan-button').prop("disabled", true);
+            $('#send-selan-button').addClass("disabled");
+            $('#send-selan-message').text('送金中');
+
+            try {
+                await createTransaction(data, session);
+                // FIXME
+                await loadTransactions(userInfo.name, session);
+                $('#send-selan-message').text('送金が完了しました');
+            } catch(e) {
+                $('#send-selan-message').text('ERROR: ' + e.message);
+            }
+
+            $('#send-selan-button').prop("disabled", false);
+            $('#send-selan-button').removeClass("disabled");
+        });
+    };
+
+    (new SessionController()).get(async(session) => {
+        let response = await fetch('https://api.thankshell.com/dev/user/', {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                Authorization: session.idToken.jwtToken
+            },
+        });
+
+        let userInfo = await response.json();
+
+        if (userInfo.code == "SUCCESS") {
+            $("#user-name").text(userInfo.name ? userInfo.name : '---');
+
+            let holding = await getHolding(userInfo.name, session);
+            $("#carried").text(holding.toLocaleString());
+
+            try {
+                let history = await loadTransactions(userInfo.name, session);
+
+                $('#history').empty();
+                history.forEach(record => {
+                    $('<tr>')
+                        .append($('<th scope="row" class="text-right">').text(record.transaction_id))
+                        .append($('<td>').text(getTimeString(record.timestamp)))
+                        .append($('<td>').text(record.from_account))
+                        .append($('<td>').text(record.to_account))
+                        .append($('<td class="text-right">').text(record.amount.toLocaleString()))
+                        .append($('<td class="text-left">').text(record.comment ? record.comment : ''))
+                        .appendTo('#history');
+                });
+            } catch(e) {
+                $('#history-message').text('ERROR: ' + getErrorMessage(e));
+            }
+            $('#send-selan-button').click(function() { sendSelan(); });
+        } else {
+            // TODO: implement register page
+            location.href='/register';
+        }
+
+        console.log(userInfo);
+    });
     </script>
   </body>
 </html>
