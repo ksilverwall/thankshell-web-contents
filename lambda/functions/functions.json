@@ -3,8 +3,8 @@
     "FunctionName": "thankshell_get_transactions",
     "Layers": [
       {
-        "Arn": "arn:aws:lambda:ap-northeast-1:027569216980:layer:thankshell-libs:8",
-        "CodeSize": 1290
+        "Arn": "arn:aws:lambda:ap-northeast-1:027569216980:layer:thankshell-libs:9",
+        "CodeSize": 1267
       }
     ]
   },
@@ -14,6 +14,42 @@
       {
         "Arn": "arn:aws:lambda:ap-northeast-1:027569216980:layer:thankshell-libs:7",
         "CodeSize": 1282
+      }
+    ]
+  },
+  {
+    "FunctionName": "thankshell_get_token_published",
+    "Layers": [
+      {
+        "Arn": "arn:aws:lambda:ap-northeast-1:027569216980:layer:thankshell-libs:8",
+        "CodeSize": 1290
+      }
+    ]
+  },
+  {
+    "FunctionName": "thankshell_publish_token",
+    "Layers": [
+      {
+        "Arn": "arn:aws:lambda:ap-northeast-1:027569216980:layer:thankshell-libs:8",
+        "CodeSize": 1290
+      }
+    ]
+  },
+  {
+    "FunctionName": "thankshell_get_token_holdings",
+    "Layers": [
+      {
+        "Arn": "arn:aws:lambda:ap-northeast-1:027569216980:layer:thankshell-libs:8",
+        "CodeSize": 1290
+      }
+    ]
+  },
+  {
+    "FunctionName": "thankshell_get_token_holders",
+    "Layers": [
+      {
+        "Arn": "arn:aws:lambda:ap-northeast-1:027569216980:layer:thankshell-libs:8",
+        "CodeSize": 1290
       }
     ]
   },

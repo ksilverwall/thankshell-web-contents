@@ -130,7 +130,7 @@
     };
 
     let getHolding = async(userId, session) => {
-        let response = await fetch('https://api.thankshell.com/dev/token/selan/holders?user_id=' + userId, {
+        let response = await fetch('https://api.thankshell.com/dev/token/selan/holders/' + userId, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json; charset=utf-8",

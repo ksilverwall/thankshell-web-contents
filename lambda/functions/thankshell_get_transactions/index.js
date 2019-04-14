@@ -13,7 +13,7 @@ async function getHistory(dynamo, account, stage) {
         },
     };
 
-    let adminMode = false;
+    let adminMode = account == null;
 
     let history = {
         Count: 0,
@@ -59,10 +59,22 @@ async function getHistory(dynamo, account, stage) {
     return history;
 }
 
-let getTransactions = async(userId, pathParameters, requestBody, stage) => {
+let getTargetUserId = (event) => {
+    if (event.multiValueQueryStringParameters && event.multiValueQueryStringParameters['user_id']) {
+        return event.multiValueQueryStringParameters['user_id'][0];
+    } else {
+        return null;
+    }
+}
+
+let getTransactions = async(userId, event) => {
     let dynamo = new AWS.DynamoDB.DocumentClient();
 
-    let history = await getHistory(dynamo, userId, stage);
+    let stage = event.requestContext.stage;
+
+    let targetUser = getTargetUserId(event);
+    let history = await getHistory(dynamo, targetUser, stage);
+
     let carried = 0;
 
     history.Items.forEach((item) => {

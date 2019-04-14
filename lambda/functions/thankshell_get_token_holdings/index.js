@@ -43,8 +43,10 @@ async function getHistory(dynamo, account, stage) {
             params = {
                 TableName: tableName[stage]['data'],
                 KeyConditionExpression: "block_id = :block",
+                FilterExpression: "from_account = :account or to_account = :account",
                 ExpressionAttributeValues: {
                     ":block": blockId,
+                    ":account": account
                 }
             };
         }
@@ -61,22 +63,20 @@ let getTransactions = async(userId, pathParameters, requestBody, stage) => {
     let dynamo = new AWS.DynamoDB.DocumentClient();
 
     let history = await getHistory(dynamo, userId, stage);
-    let result = {};
+    let carried = 0;
 
     history.Items.forEach((item) => {
         if(isFinite(item.amount)) {
-            if (item.from_account != '--') {
-                if (!result[item.from_account]) { result[item.from_account] = 0; }
-                result[item.from_account] -= item.amount;
+            if(item.from_account == userId) {
+                carried -= item.amount;
             }
-            if (item.to_account != '--') {
-                if (!result[item.to_account]) { result[item.to_account] = 0; }
-                result[item.to_account] += item.amount;
+            if(item.to_account == userId) {
+                carried += item.amount;
             }
         }
     });
 
-    return result;
+    return carried;
 };
 
 exports.handler = Auth.getHandler(getTransactions);

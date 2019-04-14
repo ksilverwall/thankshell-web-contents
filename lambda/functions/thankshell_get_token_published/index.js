@@ -62,17 +62,16 @@ async function getHistory(dynamo, account, stage) {
 let getTransactions = async(userId, pathParameters, requestBody, stage) => {
     let dynamo = new AWS.DynamoDB.DocumentClient();
 
-    let history = await getHistory(dynamo, '--', stage);
+    userId = '--';
+    let history = await getHistory(dynamo, userId, stage);
     let carried = 0;
 
     history.Items.forEach((item) => {
-        if(isFinite(item.amount)) {
-            if(item.from_account == userId) {
-                carried += item.amount;
-            }
-            if(item.to_account == userId) {
-                carried -= item.amount;
-            }
+        if(item.from_account == userId) {
+            carried += item.amount;
+        }
+        if(item.to_account == userId) {
+            carried -= item.amount;
         }
     });
 

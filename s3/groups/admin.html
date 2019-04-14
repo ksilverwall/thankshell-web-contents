@@ -153,32 +153,137 @@
     <script src="//cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
 
     <script>
-      (new SessionController()).get(async(session) => {
-          let response = await fetch('https://api.thankshell.com/dev/user/', {
-              method: "GET",
-              headers: {
-                  "Content-Type": "application/json; charset=utf-8",
-                  Authorization: session.idToken.jwtToken
-              },
-          });
+    let createTransaction = async(data, session) => {
+        let response = await fetch('https://api.thankshell.com/dev/token/selan/transactions', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                Authorization: session.idToken.jwtToken
+            },
+            body: JSON.stringify(data),
+        });
 
-          let userInfo = await response.json();
+        if (response.status !== 200) {
+            let data = await response.json();
+            throw new Error(data.message);
+        }
+    };
 
-          if (userInfo.code == "SUCCESS") {
-              $("#user-name").text(userInfo.name ? userInfo.name : '---');
-              $("#admin-only").show();
-              controller.account = 'sla_bank';
-              controller.session = session;
-              controller.loadTransactions();
-              $('#publish-button').click(function(){ controller.publish(); });
-              $('#send-selan-button').click(function() { controller.sendSelan(); });
-          } else {
-              // TODO: implement register page
-              location.href='/register';
-          }
+    let getHolding = async(userId, session) => {
+        let response = await fetch('https://api.thankshell.com/dev/token/selan/holders', {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                Authorization: session.idToken.jwtToken
+            },
+        });
 
-          console.log(userInfo);
-      });
+        return await response.json();
+    };
+
+    let getPublished = async(session) => {
+        let response1 = await fetch('https://api.thankshell.com/dev/token/selan/published', {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                Authorization: session.idToken.jwtToken
+            },
+        });
+
+        return published = await response1.json();
+    };
+
+    let getCarriedList = async(userId, session) => {
+        let response2 = await fetch('https://api.thankshell.com/dev/token/selan/transactions', {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                Authorization: session.idToken.jwtToken
+            },
+        });
+        let data = await response2.json();
+
+        //return data.bank.account;
+        return null;
+
+    };
+
+    let loadTransactions = async(userId, session) => {
+        let response2 = await fetch('https://api.thankshell.com/dev/token/selan/transactions', {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                Authorization: session.idToken.jwtToken
+            },
+        });
+        let data = await response2.json();
+
+        return data.history.Items;
+    };
+
+    (new SessionController()).get(async(session) => {
+        let response = await fetch('https://api.thankshell.com/dev/user/', {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                Authorization: session.idToken.jwtToken
+            },
+        });
+
+        let userInfo = await response.json();
+
+        if (userInfo.code == "SUCCESS") {
+            let published = await getPublished(session);
+            let holdersInfo = await getHolding(userInfo.name, session);
+            let holding = holdersInfo['sla_bank'];
+
+            $("#user-name").text(userInfo.name ? userInfo.name : '---');
+            $("#published").text(published.toLocaleString());
+            $("#carried").text(holding.toLocaleString());
+            $("#currency").text((published - holding).toLocaleString());
+
+
+            $("#admin-only").show();
+
+            try {
+                $('#carried-list').empty();
+                let table = $('#account-info').DataTable();
+                for(let holder in holdersInfo) {
+                    if(holdersInfo[holder]) {
+                        table.row.add( [
+                            holder,
+                            '--',
+                            holdersInfo[holder],
+                        ]).draw();
+                    }
+                };
+
+                let history = await loadTransactions('sla_bank', session);
+
+                $('#history').empty();
+                history.forEach(record => {
+                    $('<tr>')
+                        .append($('<th scope="row" class="text-right">').text(record.transaction_id))
+                        .append($('<td>').text(getTimeString(record.timestamp)))
+                        .append($('<td>').text(record.from_account))
+                        .append($('<td>').text(record.to_account))
+                        .append($('<td class="text-right">').text(record.amount.toLocaleString()))
+                        .append($('<td class="text-left">').text(record.comment ? record.comment : ''))
+                        .appendTo('#history');
+                });
+            } catch(e) {
+                $('#history-message').text('ERROR: ' + e.message);
+            }
+
+            $('#publish-button').click(function(){ controller.publish(); });
+            $('#send-selan-button').click(function() { controller.sendSelan(); });
+        } else {
+            // TODO: implement register page
+            location.href='/register';
+        }
+
+        console.log(userInfo);
+    });
     </script>
   </body>
 </html>
