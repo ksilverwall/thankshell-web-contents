@@ -153,6 +153,80 @@
     <script src="//cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
 
     <script>
+    let publish = async() => {
+        (new SessionController()).get(async(session) => {
+            let data = {};
+            $('#publish').find('input').each((index, input) => {
+                if(input.name){
+                    data[input.name] = input.value;
+                }
+            });
+            data['from_account'] = '--';
+            data['to_account'] = 'sla_bank';
+
+            $('#publish-message').text('発行中');
+
+            try {
+                let response = await fetch('https://api.thankshell.com/dev/token/selan/published', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json; charset=utf-8",
+                        Authorization: session.idToken.jwtToken
+                    },
+                    body: JSON.stringify({
+                        to: 'sla_bank',
+                        amount: data['amount'],
+                    }),
+                });
+                $('#publish-message').text('発行しました');
+            } catch(e) {
+                $('#publish-message').text('ERROR: ' + e.message);
+            }
+        });
+    };
+
+    let sendSelan = async() => {
+        // TODO should be promise
+        (new SessionController()).get(async(session) => {
+            if($('#send-selan-button').prop("disabled")) {
+                return;
+            }
+
+            let response = await fetch('https://api.thankshell.com/dev/user/', {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    Authorization: session.idToken.jwtToken
+                },
+            });
+            let userInfo = await response.json();
+
+            let data = {};
+            $('#send-selan').find('input').each((index, input) => {
+                if(input.name){
+                    data[input.name] = input.value;
+                }
+            });
+            data['from'] = 'sla_bank';
+
+            $('#send-selan-button').prop("disabled", true);
+            $('#send-selan-button').addClass("disabled");
+            $('#send-selan-message').text('送金中');
+
+            try {
+                await createTransaction(data, session);
+                // FIXME
+                await loadTransactions(session);
+                $('#send-selan-message').text('送金が完了しました');
+            } catch(e) {
+                $('#send-selan-message').text('ERROR: ' + e.message);
+            }
+
+            $('#send-selan-button').prop("disabled", false);
+            $('#send-selan-button').removeClass("disabled");
+        });
+    };
+
     let createTransaction = async(data, session) => {
         let response = await fetch('https://api.thankshell.com/dev/token/selan/transactions', {
             method: "POST",
@@ -275,8 +349,8 @@
                 $('#history-message').text('ERROR: ' + e.message);
             }
 
-            $('#publish-button').click(function(){ controller.publish(); });
-            $('#send-selan-button').click(function() { controller.sendSelan(); });
+            $('#publish-button').click(function(){ publish(); });
+            $('#send-selan-button').click(function() { sendSelan(); });
         } else {
             // TODO: implement register page
             location.href='/register';
