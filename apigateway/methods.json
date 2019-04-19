@@ -1,0 +1,246 @@
+{
+    "1erj5m": {
+        "GET": {
+            "httpMethod": "GET",
+            "authorizationType": "NONE",
+            "apiKeyRequired": false,
+            "requestParameters": {
+                "method.request.path.group": true
+            },
+            "methodResponses": {
+                "200": {
+                    "statusCode": "200",
+                    "responseModels": {
+                        "text/html": "Empty"
+                    }
+                }
+            },
+            "methodIntegration": {
+                "type": "AWS",
+                "httpMethod": "GET",
+                "uri": "arn:aws:apigateway:ap-northeast-1:s3:path/static.thankshell.com/groups/admin.html",
+                "credentials": "arn:aws:iam::027569216980:role/thankshell",
+                "passthroughBehavior": "WHEN_NO_MATCH",
+                "timeoutInMillis": 29000,
+                "cacheNamespace": "1erj5m",
+                "cacheKeyParameters": [],
+                "integrationResponses": {
+                    "200": {
+                        "statusCode": "200",
+                        "responseTemplates": {
+                            "application/json": null
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "b4ocup7y4a": {
+        "GET": {
+            "httpMethod": "GET",
+            "authorizationType": "NONE",
+            "apiKeyRequired": false,
+            "requestParameters": {},
+            "methodResponses": {
+                "200": {
+                    "statusCode": "200",
+                    "responseModels": {
+                        "application/json": "Empty"
+                    }
+                }
+            },
+            "methodIntegration": {
+                "type": "HTTP_PROXY",
+                "httpMethod": "GET",
+                "uri": "http://static.thankshell.com/index.html",
+                "connectionType": "INTERNET",
+                "passthroughBehavior": "WHEN_NO_MATCH",
+                "timeoutInMillis": 29000,
+                "cacheNamespace": "b4ocup7y4a",
+                "cacheKeyParameters": [],
+                "integrationResponses": {
+                    "200": {
+                        "statusCode": "200",
+                        "responseTemplates": {
+                            "application/json": null
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "c6rjxm": {
+        "GET": {
+            "httpMethod": "GET",
+            "authorizationType": "NONE",
+            "apiKeyRequired": false,
+            "requestParameters": {},
+            "methodResponses": {
+                "200": {
+                    "statusCode": "200",
+                    "responseModels": {
+                        "application/json": "Empty"
+                    }
+                }
+            },
+            "methodIntegration": {
+                "type": "HTTP_PROXY",
+                "httpMethod": "GET",
+                "uri": "http://static.thankshell.com/login/callback.html",
+                "connectionType": "INTERNET",
+                "passthroughBehavior": "WHEN_NO_MATCH",
+                "timeoutInMillis": 29000,
+                "cacheNamespace": "c6rjxm",
+                "cacheKeyParameters": [],
+                "integrationResponses": {
+                    "200": {
+                        "statusCode": "200",
+                        "responseTemplates": {
+                            "application/json": null
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "k0k8oh": {
+        "GET": {
+            "httpMethod": "GET",
+            "authorizationType": "NONE",
+            "apiKeyRequired": false,
+            "requestParameters": {
+                "method.request.path.group": true
+            },
+            "methodResponses": {
+                "200": {
+                    "statusCode": "200",
+                    "responseModels": {
+                        "text/html": "Empty"
+                    }
+                }
+            },
+            "methodIntegration": {
+                "type": "AWS",
+                "httpMethod": "GET",
+                "uri": "arn:aws:apigateway:ap-northeast-1:s3:path/static.thankshell.com/groups/{group}/index.html",
+                "credentials": "arn:aws:iam::027569216980:role/thankshell",
+                "requestParameters": {
+                    "integration.request.path.group": "method.request.path.group"
+                },
+                "passthroughBehavior": "WHEN_NO_MATCH",
+                "timeoutInMillis": 29000,
+                "cacheNamespace": "k0k8oh",
+                "cacheKeyParameters": [],
+                "integrationResponses": {
+                    "200": {
+                        "statusCode": "200",
+                        "responseTemplates": {
+                            "application/json": null
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "mo6xpk": {
+        "ANY": {
+            "httpMethod": "ANY",
+            "authorizationType": "NONE",
+            "apiKeyRequired": false,
+            "requestParameters": {
+                "method.request.path.proxy": true
+            },
+            "methodIntegration": {
+                "type": "HTTP_PROXY",
+                "httpMethod": "ANY",
+                "uri": "http://static.thankshell.com/js/{proxy}",
+                "connectionType": "INTERNET",
+                "requestParameters": {
+                    "integration.request.path.proxy": "method.request.path.proxy"
+                },
+                "passthroughBehavior": "WHEN_NO_MATCH",
+                "timeoutInMillis": 29000,
+                "cacheNamespace": "mo6xpk",
+                "cacheKeyParameters": [
+                    "method.request.path.proxy"
+                ],
+                "integrationResponses": {
+                    "200": {
+                        "statusCode": "200",
+                        "responseTemplates": {
+                            "application/json": null
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "pf91hc": {
+        "GET": {
+            "httpMethod": "GET",
+            "authorizationType": "NONE",
+            "apiKeyRequired": false,
+            "requestParameters": {},
+            "methodResponses": {
+                "200": {
+                    "statusCode": "200",
+                    "responseModels": {
+                        "application/json": "Empty"
+                    }
+                }
+            },
+            "methodIntegration": {
+                "type": "HTTP_PROXY",
+                "httpMethod": "GET",
+                "uri": "http://static.thankshell.com/user/config.html",
+                "connectionType": "INTERNET",
+                "passthroughBehavior": "WHEN_NO_MATCH",
+                "timeoutInMillis": 29000,
+                "cacheNamespace": "pf91hc",
+                "cacheKeyParameters": [],
+                "integrationResponses": {
+                    "200": {
+                        "statusCode": "200",
+                        "responseTemplates": {
+                            "application/json": null
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "u8vl90": {
+        "GET": {
+            "httpMethod": "GET",
+            "authorizationType": "NONE",
+            "apiKeyRequired": false,
+            "requestParameters": {},
+            "methodResponses": {
+                "200": {
+                    "statusCode": "200",
+                    "responseModels": {
+                        "application/javascript": "Empty"
+                    }
+                }
+            },
+            "methodIntegration": {
+                "type": "AWS",
+                "httpMethod": "GET",
+                "uri": "arn:aws:apigateway:ap-northeast-1:s3:path/thankshell.com/js",
+                "credentials": "arn:aws:iam::027569216980:role/thankshell",
+                "passthroughBehavior": "WHEN_NO_MATCH",
+                "timeoutInMillis": 29000,
+                "cacheNamespace": "u8vl90",
+                "cacheKeyParameters": [],
+                "integrationResponses": {
+                    "200": {
+                        "statusCode": "200",
+                        "responseTemplates": {
+                            "application/json": null
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
