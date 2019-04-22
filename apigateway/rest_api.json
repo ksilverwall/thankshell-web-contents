@@ -1,15 +1,15 @@
 {
-    "id": "4y7p03ggql",
-    "name": "Thankshell",
-    "description": "virtual coin web service",
-    "createdDate": 1548485373,
-    "binaryMediaTypes": [
-        "image/png"
-    ],
-    "apiKeySource": "HEADER",
+    "apiKeySource": "HEADER", 
+    "description": "virtual coin web service", 
     "endpointConfiguration": {
         "types": [
             "REGIONAL"
         ]
-    }
+    }, 
+    "createdDate": 1548485373, 
+    "binaryMediaTypes": [
+        "image/png"
+    ], 
+    "id": "4y7p03ggql", 
+    "name": "Thankshell"
 }

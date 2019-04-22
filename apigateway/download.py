@@ -10,6 +10,7 @@ if __name__ == '__main__':
     api_id = '4y7p03ggql'
     rest_api = json.loads(subprocess.check_output([
         'aws',
+        '--profile', 'thankshell',
         'apigateway',
         'get-rest-api',
         '--rest-api-id', api_id,
@@ -20,6 +21,7 @@ if __name__ == '__main__':
 
     result = subprocess.check_output([
         'aws',
+        '--profile', 'thankshell',
         'apigateway',
         'get-export',
         '--rest-api-id', api_id,
@@ -30,6 +32,7 @@ if __name__ == '__main__':
 
     resources = json.loads(subprocess.check_output([
         'aws',
+        '--profile', 'thankshell',
         'apigateway',
         'get-resources',
         '--rest-api-id', api_id,
@@ -47,6 +50,7 @@ if __name__ == '__main__':
         for m in r['resourceMethods'].keys():
             method = json.loads(subprocess.check_output([
                 'aws',
+                '--profile', 'thankshell',
                 'apigateway',
                 'get-method',
                 '--rest-api-id', api_id,

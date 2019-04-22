@@ -1,7 +1,7 @@
 {
   "swagger" : "2.0",
   "info" : {
-    "version" : "2019-04-19T16:15:10Z",
+    "version" : "2019-04-22T23:45:30Z",
     "title" : "Thankshell"
   },
   "host" : "develop.thankshell.com",
@@ -99,6 +99,19 @@
     "/user/config" : {
       "get" : {
         "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          }
+        }
+      }
+    },
+    "/user/register" : {
+      "get" : {
+        "produces" : [ "text/html", "application/json" ],
         "responses" : {
           "200" : {
             "description" : "200 response",

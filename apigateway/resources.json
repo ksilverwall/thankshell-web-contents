@@ -1,83 +1,92 @@
 {
     "items": [
         {
-            "id": "1erj5m",
-            "parentId": "k0k8oh",
-            "pathPart": "admin",
-            "path": "/groups/{group}/admin",
+            "path": "/groups/{group}/admin", 
+            "resourceMethods": {
+                "GET": {}
+            }, 
+            "id": "1erj5m", 
+            "pathPart": "admin", 
+            "parentId": "k0k8oh"
+        }, 
+        {
+            "path": "/groups", 
+            "id": "86z76p", 
+            "pathPart": "groups", 
+            "parentId": "b4ocup7y4a"
+        }, 
+        {
+            "path": "/user", 
+            "id": "ajh1ig", 
+            "pathPart": "user", 
+            "parentId": "b4ocup7y4a"
+        }, 
+        {
+            "path": "/", 
+            "id": "b4ocup7y4a", 
             "resourceMethods": {
                 "GET": {}
             }
-        },
+        }, 
         {
-            "id": "86z76p",
-            "parentId": "b4ocup7y4a",
-            "pathPart": "groups",
-            "path": "/groups"
-        },
-        {
-            "id": "ajh1ig",
-            "parentId": "b4ocup7y4a",
-            "pathPart": "user",
-            "path": "/user"
-        },
-        {
-            "id": "b4ocup7y4a",
-            "path": "/",
+            "path": "/login/callback", 
             "resourceMethods": {
                 "GET": {}
-            }
-        },
+            }, 
+            "id": "c6rjxm", 
+            "pathPart": "callback", 
+            "parentId": "s39mvj"
+        }, 
         {
-            "id": "c6rjxm",
-            "parentId": "s39mvj",
-            "pathPart": "callback",
-            "path": "/login/callback",
+            "path": "/groups/{group}", 
             "resourceMethods": {
                 "GET": {}
-            }
-        },
+            }, 
+            "id": "k0k8oh", 
+            "pathPart": "{group}", 
+            "parentId": "86z76p"
+        }, 
         {
-            "id": "k0k8oh",
-            "parentId": "86z76p",
-            "pathPart": "{group}",
-            "path": "/groups/{group}",
-            "resourceMethods": {
-                "GET": {}
-            }
-        },
-        {
-            "id": "mo6xpk",
-            "parentId": "u8vl90",
-            "pathPart": "{proxy+}",
-            "path": "/js/{proxy+}",
+            "path": "/js/{proxy+}", 
             "resourceMethods": {
                 "ANY": {}
-            }
-        },
+            }, 
+            "id": "mo6xpk", 
+            "pathPart": "{proxy+}", 
+            "parentId": "u8vl90"
+        }, 
         {
-            "id": "pf91hc",
-            "parentId": "ajh1ig",
-            "pathPart": "config",
-            "path": "/user/config",
+            "path": "/user/config", 
             "resourceMethods": {
                 "GET": {}
-            }
-        },
+            }, 
+            "id": "pf91hc", 
+            "pathPart": "config", 
+            "parentId": "ajh1ig"
+        }, 
         {
-            "id": "s39mvj",
-            "parentId": "b4ocup7y4a",
-            "pathPart": "login",
-            "path": "/login"
-        },
+            "path": "/login", 
+            "id": "s39mvj", 
+            "pathPart": "login", 
+            "parentId": "b4ocup7y4a"
+        }, 
         {
-            "id": "u8vl90",
-            "parentId": "b4ocup7y4a",
-            "pathPart": "js",
-            "path": "/js",
+            "path": "/js", 
             "resourceMethods": {
                 "GET": {}
-            }
+            }, 
+            "id": "u8vl90", 
+            "pathPart": "js", 
+            "parentId": "b4ocup7y4a"
+        }, 
+        {
+            "path": "/user/register", 
+            "resourceMethods": {
+                "GET": {}
+            }, 
+            "id": "xh6i10", 
+            "pathPart": "register", 
+            "parentId": "ajh1ig"
         }
     ]
 }
