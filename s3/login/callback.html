@@ -5,14 +5,10 @@
   <p>Redirecting...</p>
   <script type="text/javascript" src="/js/js.cookie.js"></script>
   <script type="text/javascript" src="/js/amazon-cognito-auth.min.js"></script>
+  <script type="text/javascript" src="/js/auth.js"></script>
   <script>
-    let auth = new AmazonCognitoIdentity.CognitoAuth({
-      ClientId : '2kbm6ejg25gk7q3r681nci4b2h',
-      AppWebDomain : 'auth.thankshell.com',
-      TokenScopesArray : ['profile', 'email', 'openid', 'aws.cognito.signin.user.admin', 'phone'],
-      RedirectUriSignIn : 'https://develop.thankshell.com/login/callback',
-      RedirectUriSignOut : 'https://develop.thankshell.com/',
-    });
+    let controller = new SessionController();
+    let auth = controller.auth;
 
     auth.userhandler = {
       onSuccess: function(result) {
