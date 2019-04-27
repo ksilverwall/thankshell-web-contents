@@ -42,4 +42,19 @@ class SessionController {
             location.href='/';
         }
     }
+
+    getSession() {
+        return new Promise((resolve, reject) => {
+            if(!this.auth.isUserSignedIn()) {
+                resolve(null);
+            }
+
+            this.auth.userhandler = {
+                onSuccess: resolve,
+                onFailure: reject,
+            };
+
+            this.auth.getSession();
+        });
+    }
 }

@@ -7,16 +7,82 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   </head>
-  <body>
-    <div class="container-fluid bg-info">
-      <p>Facebookでの新規登録は非対応です。ユーザー登録後にFacebook連携を行ってください。</p>
+  <body class="bg-info">
+    <div class="container-fluid">
+      <p class="alert alert-danger" role="alert" style="display:none" id="message"></p>
+      <form class="form-horizontal" id="register" onsubmit="register(); return false">
+        <div class="form-group">
+          <label for="user-id">ID</label>
+          <input id="user-id" class="form-control" type="text" name="to" />
+        </div>
+        <button type="submit" class="btn btn-primary">送信する</button>
+      </form>
     </div>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.263.1.min.js"></script>
+    <script src="/js/amazon-cognito-auth.min.js"></script>
+    <script src="/js/auth.js"></script>
 
-    <script type="text/javascript" src="/js/amazon-cognito-auth.min.js"></script>
+    <script>
+    (async() => {
+        let session = await (new SessionController()).getSession();
+        let response = await fetch('https://api.thankshell.com/dev/user/', {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                Authorization: session.idToken.jwtToken
+            },
+        });
+
+        // FIXME api returns 403. Fix to return 200 and null object body
+        if (response.status == 200) {
+            location.href="/groups/sla";
+        }
+    })();
+
+    let register = async() => {
+        try {
+            let session = await (new SessionController()).getSession();
+            let userId = $("#user-id").val();
+
+            let response = await fetch('https://api.thankshell.com/dev/user/', {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    Authorization: session.idToken.jwtToken
+                },
+                body: JSON.stringify({
+                    id: userId,
+                }),
+            });
+            let responseBody = await response.json();
+
+            switch (response.status) {
+                case 200:
+                    break;
+                case 403:
+                    switch (responseBody.code) {
+                        case 'AUTHINFO_ALREADY_REGISTERD':
+                            break;
+                        default:
+                            throw new Error(responseBody.message);
+                    }
+                    break;
+                default:
+                    throw new Error(responseBody.message);
+            }
+
+            location.href="/groups/sla";
+        } catch(e) {
+            $("#message").text(e.message);
+            $('#message').show();
+            console.erro
+        }
+    };
+
+    </script>
   </body>
 </html>
