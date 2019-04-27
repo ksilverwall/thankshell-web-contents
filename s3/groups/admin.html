@@ -153,6 +153,8 @@
     <script src="//cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
 
     <script>
+    $('#logoutButton').click(()=>(new SessionController()).close());
+
     let publish = async() => {
         (new SessionController()).get(async(session) => {
             let data = {};
