@@ -4,14 +4,24 @@
   <title>Thankshell: The Community Token Service</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
-<body>
-  <button id="signin-button" type="button" class="btn btn-primary">サインイン</button>
-  <script>
-    document.getElementById("signin-button").onclick = function() {
-      let clientId = (document.domain == 'thankshell.com') ? '1opllluc6ruh50h0qc74395k1i' : '2kbm6ejg25gk7q3r681nci4b2h';
-      let redirectUri = 'https://' + document.domain + '/login/callback';
-      location.href="https://auth.thankshell.com/login?response_type=code&client_id=" + clientId + "&redirect_uri=" + redirectUri;
-    }
-  </script>
-</body>
+  <body>
+    <div class="raw">
+      <button id="signin-button" type="button" class="btn btn-primary">サインイン</button>
+    </div>
+    <div class="raw">
+      <a href="/privacy-policy" class="btn-link">プライバシーポリシー</a>
+    </div>
+    <div class="raw">
+      <a href="/tos" class="btn-link">利用規約</a>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      document.getElementById("signin-button").onclick = function() {
+        let clientId = (document.domain == 'thankshell.com') ? '1opllluc6ruh50h0qc74395k1i' : '2kbm6ejg25gk7q3r681nci4b2h';
+        let redirectUri = 'https://' + document.domain + '/login/callback';
+        location.href="https://auth.thankshell.com/login?response_type=code&client_id=" + clientId + "&redirect_uri=" + redirectUri;
+      }
+    </script>
+  </body>
 </html>
