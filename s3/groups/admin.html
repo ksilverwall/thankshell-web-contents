@@ -9,28 +9,28 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css"/>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">SLA Bank Manager</a>
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="https://sketch-life-academy.com/selan-help/">ヘルプ</a>
-        </li>
-      </ul>
-      <form class="form-inline my-2 my-lg-0">
-        <label><span id='user-name'>---</span> さん</label>
-        <button type="submit" id="logoutButton" class="btn btn-outline-success my-2 my-sm-0">ログアウト</button>
-      </form>
+    <nav class="navbar navbar-expand navbar-light bg-light">
+      <div class="navbar-nav">
+        <a class="nav-item nav-link" href="/groups/sla">ホーム </a>
+        <a class="nav-item nav-link" href="/user/config">設定</a>
+      </div>
     </nav>
 
-    <div class="row">
-      <div class="col">
-        <h4 class="text-right">総発行量 <u><span id=published>---</span> Selan</u></h4>
-        <h4 class="text-right">銀行保有量 <u><span id=carried>---</span> Selan</u></h4>
-        <h4 class="text-right">流通量 <u><span id=currency>---</span> Selan</u></h4>
-      </div>
+    <div id='loading-view' class="container-fluid">
+      <p>読み込み中...</p>
     </div>
+    <div id='visitor-view' class="container-fluid" style='display:none'>
+      <p>管理者のみアクセス可能なページです</p>
+    </div>
+    <div id='admin-view' class="container-fluid" style='display:none'>
+      <div class="row">
+        <div class="col">
+          <h4 class="text-right">総発行量 <u><span id=published>---</span> Selan</u></h4>
+          <h4 class="text-right">銀行保有量 <u><span id=carried>---</span> Selan</u></h4>
+          <h4 class="text-right">流通量 <u><span id=currency>---</span> Selan</u></h4>
+        </div>
+      </div>
 
-    <div id='admin-only' class="container-fluid" style='display:none'>
       <h1>管理フォーム</h1>
 
       <div class="card bg-light mb-3" style="max-width: 40rem;">
@@ -46,15 +46,6 @@
           </form>
           <br/>
           <p class="text-center text-danger" id="publish-message">削除未実装のためご注意ください</p>
-        </div>
-      </div>
-
-      <div class="card bg-warning mb-3" style="max-width: 40rem;">
-        <div class="card-header">
-	      <h4>ユーザー(未実装)</h4>
-        </div>
-        <div class="card-body">
-          <a href='https://ap-northeast-1.console.aws.amazon.com/cognito/users/?region=ap-northeast-1#/pool/ap-northeast-1_WEGpvJz9M/details?_k=xuxjha'>ユーザー管理画面(Amazon Cognito)</a>
         </div>
       </div>
 
@@ -297,7 +288,23 @@
         return data.history.Items;
     };
 
-    (new SessionController()).get(async(session) => {
+    let isGroupAdmin = async(session, userId) => {
+        let response = await fetch('https://api.thankshell.com/dev/groups/sla', {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                Authorization: session.idToken.jwtToken
+            },
+        });
+
+        let data = await response.json();
+
+        return data.admin.values.includes(userId);
+    };
+
+
+    (async()=>{
+        let session = await (new SessionController()).getSession();
         let response = await fetch('https://api.thankshell.com/dev/user/', {
             method: "GET",
             headers: {
@@ -307,19 +314,26 @@
         });
 
         let userInfo = await response.json();
+        if(userInfo.status == 'UNREGISTERED') {
+            location.href = '/user/register';
+            return;
+        }
 
-        if (userInfo.code == "SUCCESS") {
+        $("#user-name").text(userInfo.user_id ? userInfo.user_id : '---');
+
+        if (await isGroupAdmin(session, userInfo.user_id)) {
+            $("#loading-view").hide();
+            $("#admin-view").show();
+
             let published = await getPublished(session);
-            let holdersInfo = await getHolding(userInfo.name, session);
+            let holdersInfo = await getHolding(userInfo.user_id, session);
             let holding = holdersInfo['sla_bank'];
 
-            $("#user-name").text(userInfo.name ? userInfo.name : '---');
             $("#published").text(published.toLocaleString());
             $("#carried").text(holding.toLocaleString());
             $("#currency").text((published - holding).toLocaleString());
 
 
-            $("#admin-only").show();
 
             try {
                 $('#carried-list').empty();
@@ -354,12 +368,12 @@
             $('#publish-button').click(function(){ publish(); });
             $('#send-selan-button').click(function() { sendSelan(); });
         } else {
-            // TODO: implement register page
-            location.href='/user/register';
+            $("#loading-view").hide();
+            $("#visitor-view").show();
         }
 
         console.log(userInfo);
-    });
+    })();
     </script>
   </body>
 </html>

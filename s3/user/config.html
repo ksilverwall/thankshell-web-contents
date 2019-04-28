@@ -165,7 +165,8 @@
             $("#linkFacebook").prop("disabled", false);
             break;
         default:
-            throw new Error("Unknown Error");
+            let err = await response.json();
+            throw new Error(err.message);
         }
     };
 
@@ -184,13 +185,13 @@
             switch (response.status) {
             case 200:
                 let userInfo = await response.json();
-                $("#user-name").text(userInfo.name ? userInfo.name : '---');
+                $("#user-name").text(userInfo.user_id ? userInfo.user_id : '---');
 
                 updateButtonStatus(session);
                 break;
-            case 403:
-                //FIXME unauthrized shuld be return 401
-                location.href = "/"
+            default:
+                let errorInfo = await response.json();
+                throw new Error(errorInfo.message);
                 break;
             }
         } catch(e) {

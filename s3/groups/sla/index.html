@@ -4,29 +4,33 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SLA Wallet</title>
-    <link rel="shortcut icon" href="groups/sla/selan.ico" type="image/vnd.microsoft.icon">
+    <link rel="shortcut icon" href="/groups/sla/ico" type="image/x-icon">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/thankshell.css">
   </head>
   <body>
-    <div class="container-fluid bg-info">
-      <nav class="navbar row navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">SLA Wallet</a>
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="https://sketch-life-academy.com/selan-help/">ヘルプ</a>
-          </li>
-        </ul>
-        <label><span id='user-name'>---</span> さん</label>
-        <button id="logoutButton" class="btn btn-outline-success my-2 my-sm-0">ログアウト</button>
-        <button id="configButton" class="btn btn-outline-success my-2 my-sm-0">設定</button>
-      </nav>
+    <nav class="navbar navbar-expand navbar-light bg-light">
+      <div class="navbar-nav">
+        <a class="nav-item nav-link" href="/groups/sla">ホーム </a>
+        <a class="nav-item nav-link" href="/user/config">設定</a>
+      </div>
+    </nav>
 
-      <button id="groupManagerButton" class="btn my-2 my-sm-0">管理ページへ</button>
+    <div class="container-fluid" id="loading-view">
+      <p>読み込み中...</p>
+    </div>
+    <div class="container-fluid" id="visitor-view" style="display:none">
+      <p class="row">このグループに参加していません</p>
+      <button class="row btn btn-primary" onclick="requestButtonAction();">参加リクエスト</button>
+    </div>
+    <div class="container-fluid" id="member-view" style="display:none">
+      <a class="row" href="https://sketch-life-academy.com/selan-help/">ヘルプ</a>
+      <button class="row btn my-2 my-sm-0" id="groupManagerButton" onclick="location.href='/groups/sla/admin';">管理ページへ</button>
 
       <div class="row">
         <div class="col-6 col-sm-2 offset-3 offset-sm-5">
-          <img src="/groups/sla/selan_logo.png" class="img-fluid" alt="selan-logo">
+          <img src="/groups/sla/logo" class="img-fluid" alt="selan-logo">
         </div>
       </div>
 
@@ -35,7 +39,6 @@
           <h1 class="text-right">残高<u><span id=carried>---</span> Selan</u></h1>
         </div>
       </div>
-
 
       <div class="card mb-3">
         <div class="card-header">
@@ -109,9 +112,11 @@
     <script src="/js/auth.js"></script>
 
     <script>
-    $('#logoutButton').click(()=>(new SessionController()).close());
-    $('#configButton').click(()=>{location.href='/user/config';});
     $('#groupManagerButton').click(()=>{location.href='/groups/sla/admin';});
+
+    let requestButtonAction = () => {
+        alert("本機能は未実装です");
+    };
 
     let createTransaction = async(data, session) => {
         let response = await fetch('https://api.thankshell.com/dev/token/selan/transactions', {
@@ -178,7 +183,7 @@
                     data[input.name] = input.value;
                 }
             });
-            data['from'] = userInfo.name;
+            data['from'] = userInfo.user_id;
             
             $('#send-selan-button').prop("disabled", true);
             $('#send-selan-button').addClass("disabled");
@@ -187,7 +192,7 @@
             try {
                 await createTransaction(data, session);
                 // FIXME
-                await loadTransactions(userInfo.name, session);
+                await loadTransactions(userInfo.user_id, session);
                 $('#send-selan-message').text('送金が完了しました');
             } catch(e) {
                 $('#send-selan-message').text('ERROR: ' + e.message);
@@ -198,7 +203,7 @@
         });
     };
 
-    (new SessionController()).get(async(session) => {
+    let getUserInfo = async(session) => {
         let response = await fetch('https://api.thankshell.com/dev/user/', {
             method: "GET",
             headers: {
@@ -207,16 +212,43 @@
             },
         });
 
-        let userInfo = await response.json();
+        return await response.json();
+    };
 
-        if (userInfo.code == "SUCCESS") {
-            $("#user-name").text(userInfo.name ? userInfo.name : '---');
+    let isMember = async(session, userId) => {
+        let response = await fetch('https://api.thankshell.com/dev/groups/sla', {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                Authorization: session.idToken.jwtToken
+            },
+        });
 
-            let holding = await getHolding(userInfo.name, session);
+        let data = await response.json();
+
+        return data.member.values.includes(userId);
+    };
+
+    (async() => {
+        let session = await (new SessionController()).getSession();
+
+        let userInfo = await getUserInfo(session);
+        if(userInfo.status == 'UNREGISTERED') {
+            location.href = '/user/register';
+            return;
+        }
+
+        $("#user-name").text(userInfo.user_id ? userInfo.user_id : '---');
+
+        if (await isMember(session, userInfo.user_id)) {
+            $("#loading-view").hide();
+            $("#member-view").show();
+
+            let holding = await getHolding(userInfo.user_id, session);
             $("#carried").text(holding.toLocaleString());
 
             try {
-                let history = await loadTransactions(userInfo.name, session);
+                let history = await loadTransactions(userInfo.user_id, session);
 
                 $('#history').empty();
                 history.forEach(record => {
@@ -234,12 +266,12 @@
             }
             $('#send-selan-button').click(function() { sendSelan(); });
         } else {
-            // TODO: implement register page
-            //location.href='/user/register';
+            $("#loading-view").hide();
+            $("#visitor-view").show();
         }
 
         console.log(userInfo);
-    });
+    })();
     </script>
   </body>
 </html>
