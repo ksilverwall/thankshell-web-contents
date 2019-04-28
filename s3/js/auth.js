@@ -57,4 +57,16 @@ class SessionController {
             this.auth.getSession();
         });
     }
+
+    commitLogin(path) {
+        return new Promise((resolve, reject) => {
+            this.auth.userhandler = {
+                onSuccess: resolve,
+                onFailure: reject,
+            };
+
+            this.auth.useCodeGrantFlow();
+            this.auth.parseCognitoWebResponse(path);
+        });
+    }
 }

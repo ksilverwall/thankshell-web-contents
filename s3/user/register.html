@@ -6,16 +6,21 @@
     <title>ユーザ登録</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/thankshell.css">
   </head>
-  <body class="bg-info">
+  <body>
     <div class="container-fluid">
       <p class="alert alert-danger" role="alert" style="display:none" id="message"></p>
       <form class="form-horizontal" id="register" onsubmit="register(); return false">
         <div class="form-group">
           <label for="user-id">ID</label>
-          <input id="user-id" class="form-control" type="text" name="to" />
+          <input id="user-id" class="form-control" type="text" />
         </div>
-        <button type="submit" class="btn btn-primary">送信する</button>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="agree-check" onchange="changeCheckbox()">
+          <label class="form-check-label" for="agree-check"><a href="/tos" target="_blank">利用規約</a>に同意する</label>
+        </div>
+        <button type="submit" class="btn btn-primary" id="register-button" disabled>登録する</button>
       </form>
     </div>
 
@@ -27,21 +32,10 @@
     <script src="/js/auth.js"></script>
 
     <script>
-    (async() => {
-        let session = await (new SessionController()).getSession();
-        let response = await fetch('https://api.thankshell.com/dev/user/', {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json; charset=utf-8",
-                Authorization: session.idToken.jwtToken
-            },
-        });
-
-        // FIXME api returns 403. Fix to return 200 and null object body
-        if (response.status == 200) {
-            location.href="/groups/sla";
-        }
-    })();
+    let changeCheckbox = async() => {
+        let checked = $('#agree-check').prop('checked');
+        $('#register-button').prop("disabled", !checked);
+    };
 
     let register = async() => {
         try {
@@ -82,6 +76,31 @@
             console.erro
         }
     };
+
+    (async() => {
+        $('#agree-check').prop("checked", false);
+
+        let session = await (new SessionController()).getSession();
+
+        let response = await fetch('https://api.thankshell.com/dev/user/', {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                Authorization: session.idToken.jwtToken
+            },
+        });
+
+        let userInfo = await response.json();
+        if (userInfo.status != "UNREGISTERED") {
+            location.href = '/groups/sla';
+            return;
+        }
+
+        if (userInfo.user_id) {
+            $('#user-id').val(userInfo.user_id);
+            $('#user-id').prop("disabled", true);
+        }
+    })();
 
     </script>
   </body>

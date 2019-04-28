@@ -1,31 +1,45 @@
 <html>
-<head>
-</head>
-<body>
-  <p>Redirecting...</p>
-  <script type="text/javascript" src="/js/js.cookie.js"></script>
-  <script type="text/javascript" src="/js/amazon-cognito-auth.min.js"></script>
-  <script type="text/javascript" src="/js/auth.js"></script>
-  <script>
-    let controller = new SessionController();
-    let auth = controller.auth;
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ログイン処理中 - Thankshell</title>
+    <link rel="stylesheet" href="/css/thankshell.css">
+  </head>
+  <body>
+    <p>ログイン処理中...</p>
+    <script type="text/javascript" src="/js/js.cookie.js"></script>
+    <script type="text/javascript" src="/js/amazon-cognito-auth.min.js"></script>
+    <script type="text/javascript" src="/js/auth.js"></script>
+    <script>
+    (async()=>{
+        try {
+            let sessionController = new SessionController();
 
-    auth.userhandler = {
-      onSuccess: function(result) {
-        console.log(result);
+            try {
+                await sessionController.commitLogin(location.href);
+            } catch (e) {
+            }
 
-        let defaultRedirectPage = "/groups/sla";
-        let redirectPage = Cookies.get('auth_previous_page');
-        location.href = redirectPage ? redirectPage : defaultRedirectPage;
-      },
-      onFailure: function(err) {
-        console.log("Error!");
-        console.log(err);
-      }
-    };
-    auth.useCodeGrantFlow();
+            let session = await sessionController.getSession();
 
-    auth.parseCognitoWebResponse(window.location.href);
-  </script>
-</body>
+            let response = await fetch('https://api.thankshell.com/dev/user/', {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    Authorization: session.idToken.jwtToken
+                },
+            });
+
+            let userInfo = await response.json();
+            if (userInfo.status == "UNREGISTERED") {
+                location.href = '/user/register';
+            } else {
+                location.href = '/groups/sla';
+            }
+        } catch(e) {
+            alert(e.message);
+        }
+    })();
+    </script>
+  </body>
 </html>
