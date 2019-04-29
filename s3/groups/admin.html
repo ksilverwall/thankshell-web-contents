@@ -89,7 +89,6 @@
           <h4>保有状況</h4>
         </div>
         <div class="card-body">
-          <p class="text-center text-danger" id="history-message"></p>
           <table id='account-info' class="table mb-0">
             <thead>
               <tr>
@@ -99,6 +98,24 @@
               </tr>
             </thead>
             <tbody id="carried-list">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <h4>参加申請</h4>
+        </div>
+        <div class="card-body">
+          <table id='request-info' class="table mb-0">
+            <thead>
+              <tr>
+                <th scope="col" class="text-left">チェックリスト</th>
+                <th scope="col" class="text-left">アカウント</th>
+              </tr>
+            </thead>
+            <tbody id="request-list">
             </tbody>
           </table>
         </div>
@@ -288,19 +305,90 @@
         return data.history.Items;
     };
 
-    let isGroupAdmin = async(session, userId) => {
-        let response = await fetch('https://api.thankshell.com/dev/groups/sla', {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json; charset=utf-8",
-                Authorization: session.idToken.jwtToken
-            },
-        });
 
-        let data = await response.json();
+    class GroupInfo {
+        constructor(data) {
+            this.data = data;
+        }
 
-        return data.admin.values.includes(userId);
-    };
+        getAdmins() {
+            if (!this.data.admins) {
+                return [];
+            }
+
+            return this.data.admins.values;
+        }
+
+        getMembers() {
+            if (!this.data.members) {
+                return [];
+            }
+
+            return this.data.members.values;
+        }
+
+        getRequests() {
+            if (!this.data.requests) {
+                return [];
+            }
+
+            return this.data.requests.values;
+        }
+    }
+
+    class ThankshellApi {
+        constructor(session) {
+            this.session = session;
+        }
+
+        async getGroup(groupName) {
+            let response = await fetch('https://api.thankshell.com/dev/groups/' + groupName, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    Authorization: this.session.idToken.jwtToken
+                },
+            });
+
+            return new GroupInfo(await response.json());
+        }
+
+        async sendGroupJoinRequest(groupName, userId) {
+            let response = await fetch('https://api.thankshell.com/dev/groups/' + groupName + '/requests/' + userId, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    Authorization: this.session.idToken.jwtToken
+                },
+            });
+            let data = await response.json();
+        }
+
+        async cancelGroupJoinRequest(groupName, userId) {
+            let response = await fetch('https://api.thankshell.com/dev/groups/' + groupName + '/requests/' + userId, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    Authorization: this.session.idToken.jwtToken
+                },
+            });
+            let data = await response.json();
+        }
+    }
+
+    class RequestTable {
+        constructor(requests) {
+            console.log(requests);
+            $('#request-list').empty();
+            let table = $('#request-info').DataTable();
+            for (let index=0; index < requests.length; index++) {
+                table.row.add( [
+                    requests[index],
+                    requests[index],
+                ]).draw();
+            };
+        }
+    }
 
 
     (async()=>{
@@ -321,7 +409,8 @@
 
         $("#user-name").text(userInfo.user_id ? userInfo.user_id : '---');
 
-        if (await isGroupAdmin(session, userInfo.user_id)) {
+        let groupInfo = await (new ThankshellApi(session)).getGroup('sla');
+        if (groupInfo.getAdmins().includes(userInfo.user_id)) {
             $("#loading-view").hide();
             $("#admin-view").show();
 
@@ -333,21 +422,23 @@
             $("#carried").text(holding.toLocaleString());
             $("#currency").text((published - holding).toLocaleString());
 
+            // carried list
+            $('#carried-list').empty();
+            let table = $('#account-info').DataTable();
+            for(let holder in holdersInfo) {
+                if(holdersInfo[holder]) {
+                    table.row.add( [
+                        holder,
+                        '--',
+                        holdersInfo[holder],
+                    ]).draw();
+                }
+            };
 
+            let requestTable = new RequestTable(groupInfo.getRequests());
 
+            // history list
             try {
-                $('#carried-list').empty();
-                let table = $('#account-info').DataTable();
-                for(let holder in holdersInfo) {
-                    if(holdersInfo[holder]) {
-                        table.row.add( [
-                            holder,
-                            '--',
-                            holdersInfo[holder],
-                        ]).draw();
-                    }
-                };
-
                 let history = await loadTransactions('sla_bank', session);
 
                 $('#history').empty();
