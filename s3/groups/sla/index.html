@@ -21,8 +21,8 @@
       <p>読み込み中...</p>
     </div>
     <div class="container-fluid" id="visitor-view" style="display:none">
-      <p class="row">このグループに参加していません</p>
-      <button class="row btn btn-primary" onclick="requestButtonAction();">参加リクエスト</button>
+      <p class="row" id="visitor-text">このグループに参加していません</p>
+      <button class="row btn btn-primary" id="request-button">参加リクエスト</button>
     </div>
     <div class="container-fluid" id="member-view" style="display:none">
       <a class="row" href="https://sketch-life-academy.com/selan-help/">ヘルプ</a>
@@ -114,7 +114,11 @@
     <script>
     $('#groupManagerButton').click(()=>{location.href='/groups/sla/admin';});
 
-    let requestButtonAction = () => {
+    let sendRequest = () => {
+        alert("本機能は未実装です");
+    };
+
+    let cancelRequest = () => {
         alert("本機能は未実装です");
     };
 
@@ -229,6 +233,71 @@
         return data.member.values.includes(userId);
     };
 
+
+    class GroupInfo {
+        constructor(data) {
+            this.data = data;
+        }
+
+        getMembers() {
+            if (!this.data.member) {
+                return [];
+            }
+
+            return this.data.member.values;
+        }
+
+        getRequests() {
+            if (!this.data.requests) {
+                return [];
+            }
+
+            return this.data.requests;
+        }
+    }
+
+
+    class ThankshellApi {
+        constructor(session) {
+            this.session = session;
+        }
+
+        async getGroup(groupName) {
+            let response = await fetch('https://api.thankshell.com/dev/groups/' + groupName, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    Authorization: this.session.idToken.jwtToken
+                },
+            });
+
+            return new GroupInfo(await response.json());
+        }
+
+        async sendGroupJoinRequest(groupName, userId) {
+            let response = await fetch('https://api.thankshell.com/dev/groups/' + groupName + '/requests/' + userId, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    Authorization: this.session.idToken.jwtToken
+                },
+            });
+            let data = await response.json();
+        }
+
+        async cancelGroupJoinRequest(groupName, userId) {
+            let response = await fetch('https://api.thankshell.com/dev/groups/' + groupName + '/requests/' + userId, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    Authorization: this.session.idToken.jwtToken
+                },
+            });
+            let data = await response.json();
+        }
+    }
+
+
     (async() => {
         let session = await (new SessionController()).getSession();
 
@@ -240,7 +309,8 @@
 
         $("#user-name").text(userInfo.user_id ? userInfo.user_id : '---');
 
-        if (await isMember(session, userInfo.user_id)) {
+        let groupInfo = await (new ThankshellApi(session)).getGroup('sla');
+        if (groupInfo.getMembers().includes(userInfo.user_id)) {
             $("#loading-view").hide();
             $("#member-view").show();
 
@@ -264,10 +334,29 @@
             } catch(e) {
                 $('#history-message').text('ERROR: ' + getErrorMessage(e));
             }
-            $('#send-selan-button').click(function() { sendSelan(); });
+            $('#send-selan-button').click(() => { sendSelan(); });
         } else {
             $("#loading-view").hide();
             $("#visitor-view").show();
+            if (groupInfo.getRequests().includes(userInfo.user_id)) {
+                $("#visitor-text").text("参加リクエスト中です");
+                $("#request-button").text("参加リクエストを取り消す");
+                $("#request-button").click(async() => {
+                    $("#request-button").prop("disabled",true);
+                    let session = await (new SessionController()).getSession();
+                    let groupInfo = await (new ThankshellApi(session)).cancelGroupJoinRequest('sla', userInfo.user_id);
+                    location.reload();
+                });
+            } else {
+                $("#visitor-text").text("このグループに参加していません");
+                $("#request-button").text("参加リクエストを送る");
+                $("#request-button").click(async() => {
+                    $("#request-button").prop("disabled",true);
+                    let session = await (new SessionController()).getSession();
+                    let groupInfo = await (new ThankshellApi(session)).sendGroupJoinRequest('sla', userInfo.user_id);
+                    location.reload();
+                });
+            }
         }
 
         console.log(userInfo);
