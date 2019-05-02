@@ -111,8 +111,8 @@
           <table id='request-info' class="table mb-0">
             <thead>
               <tr>
-                <th scope="col" class="text-left">チェックリスト</th>
                 <th scope="col" class="text-left">アカウント</th>
+                <th scope="col" class="text-left">承認ボタン</th>
               </tr>
             </thead>
             <tbody id="request-list">
@@ -379,6 +379,24 @@
             });
             let data = await response.json();
         }
+
+        async acceptGroupJoinRequest(groupName, userId) {
+            let response = await fetch('https://api.thankshell.com/dev/groups/' + groupName + '/members/' + userId, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    Authorization: this.session.idToken.jwtToken
+                },
+            });
+            let data = await response.json();
+            console.log(data);
+        }
+    }
+
+    let acceptRequest = async(userId) => {
+        let session = await (new SessionController()).getSession();
+        await (new ThankshellApi(session)).acceptGroupJoinRequest('sla', userId);
+        location.reload();
     }
 
     class RequestTable {
@@ -389,9 +407,13 @@
             for (let index=0; index < requests.length; index++) {
                 table.row.add( [
                     requests[index],
-                    requests[index],
+                    this.getButtonTag(requests[index]),
                 ]).draw();
             };
+        }
+        getButtonTag(userId) {
+            let jscode = "acceptRequest('" + userId + "')";
+            return '<button class="btn btn-primary" type="button" onclick="' + jscode + '">承認する</button>';
         }
     }
 
