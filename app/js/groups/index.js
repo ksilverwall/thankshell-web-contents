@@ -1,194 +1,42 @@
 $('#groupManagerButton').click(()=>{location.href='/groups/sla/admin';});
 
-let sendRequest = () => {
-    alert("本機能は未実装です");
-};
-
-let cancelRequest = () => {
-    alert("本機能は未実装です");
-};
-
-let createTransaction = async(data, session) => {
-    let response = await fetch('https://api.thankshell.com/dev/token/selan/transactions', {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            Authorization: session.idToken.jwtToken
-        },
-        body: JSON.stringify(data),
-    });
-
-    if (response.status !== 200) {
-        let data = await response.json();
-        throw new Error(data.message);
-    }
-};
-
-let getHolding = async(userId, session) => {
-    let response = await fetch('https://api.thankshell.com/dev/token/selan/holders/' + userId, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            Authorization: session.idToken.jwtToken
-        },
-    });
-
-    return await response.json();
-};
-
-let loadTransactions = async(userId, session) => {
-    let response2 = await fetch('https://api.thankshell.com/dev/token/selan/transactions?user_id=' + userId, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            Authorization: session.idToken.jwtToken
-        },
-    });
-
-    let data = await response2.json();
-    let history = data.history.Items;
-
-    return history;
-};
-
 let sendSelan = async() => {
-    // TODO should be promise
-    (new SessionController()).get(async(session) => {
-        if($('#send-selan-button').prop("disabled")) {
-            return;
+    let session = await (new SessionController()).getSession();
+    if($('#send-selan-button').prop("disabled")) {
+        return;
+    }
+
+    let api = new ThankshellApi(session);
+    let userInfo = await api.getUser();
+
+    let data = {};
+    $('#send-selan').find('input').each((index, input) => {
+        if(input.name){
+            data[input.name] = input.value;
         }
-
-        let response = await fetch('https://api.thankshell.com/dev/user/', {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json; charset=utf-8",
-                Authorization: session.idToken.jwtToken
-            },
-        });
-        let userInfo = await response.json();
-
-        let data = {};
-        $('#send-selan').find('input').each((index, input) => {
-            if(input.name){
-                data[input.name] = input.value;
-            }
-        });
-        data['from'] = userInfo.user_id;
-        
-        $('#send-selan-button').prop("disabled", true);
-        $('#send-selan-button').addClass("disabled");
-        $('#send-selan-message').text('送金中');
-
-        try {
-            await createTransaction(data, session);
-            // FIXME
-            await loadTransactions(userInfo.user_id, session);
-            $('#send-selan-message').text('送金が完了しました');
-        } catch(e) {
-            $('#send-selan-message').text('ERROR: ' + e.message);
-        }
-
-        $('#send-selan-button').prop("disabled", false);
-        $('#send-selan-button').removeClass("disabled");
     });
+    data['from'] = userInfo.user_id;
+    
+    $('#send-selan-button').prop("disabled", true);
+    $('#send-selan-button').addClass("disabled");
+    $('#send-selan-message').text('送金中');
+
+    try {
+        await api.createTransaction(data);
+        $('#send-selan-message').text('送金が完了しました');
+    } catch(e) {
+        $('#send-selan-message').text('ERROR: ' + e.message);
+    }
+
+    $('#send-selan-button').prop("disabled", false);
+    $('#send-selan-button').removeClass("disabled");
 };
-
-let getUserInfo = async(session) => {
-    let response = await fetch('https://api.thankshell.com/dev/user/', {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            Authorization: session.idToken.jwtToken
-        },
-    });
-
-    return await response.json();
-};
-
-let isMember = async(session, userId) => {
-    let response = await fetch('https://api.thankshell.com/dev/groups/sla', {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            Authorization: session.idToken.jwtToken
-        },
-    });
-
-    let data = await response.json();
-
-    return data.member.values.includes(userId);
-};
-
-
-class GroupInfo {
-    constructor(data) {
-        this.data = data;
-    }
-
-    getMembers() {
-        if (!this.data.members) {
-            return [];
-        }
-
-        return this.data.members.values;
-    }
-
-    getRequests() {
-        if (!this.data.requests) {
-            return [];
-        }
-
-        return this.data.requests.values;
-    }
-}
-
-
-class ThankshellApi {
-    constructor(session) {
-        this.session = session;
-    }
-
-    async getGroup(groupName) {
-        let response = await fetch('https://api.thankshell.com/dev/groups/' + groupName, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json; charset=utf-8",
-                Authorization: this.session.idToken.jwtToken
-            },
-        });
-
-        return new GroupInfo(await response.json());
-    }
-
-    async sendGroupJoinRequest(groupName, userId) {
-        let response = await fetch('https://api.thankshell.com/dev/groups/' + groupName + '/requests/' + userId, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json; charset=utf-8",
-                Authorization: this.session.idToken.jwtToken
-            },
-        });
-        let data = await response.json();
-    }
-
-    async cancelGroupJoinRequest(groupName, userId) {
-        let response = await fetch('https://api.thankshell.com/dev/groups/' + groupName + '/requests/' + userId, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json; charset=utf-8",
-                Authorization: this.session.idToken.jwtToken
-            },
-        });
-        let data = await response.json();
-        console.log(data);
-    }
-}
-
 
 (async() => {
     let session = await (new SessionController()).getSession();
+    let api = new ThankshellApi(session);
+    let userInfo = await api.getUser();
 
-    let userInfo = await getUserInfo(session);
     if(userInfo.status == 'UNREGISTERED') {
         location.href = '/user/register';
         return;
@@ -201,11 +49,11 @@ class ThankshellApi {
         $("#loading-view").hide();
         $("#member-view").show();
 
-        let holding = await getHolding(userInfo.user_id, session);
+        let holding = await api.getHolding(userInfo.user_id);
         $("#carried").text(holding.toLocaleString());
 
         try {
-            let history = await loadTransactions(userInfo.user_id, session);
+            let history = await api.loadTransactions(userInfo.user_id);
 
             $('#history').empty();
             history.forEach(record => {

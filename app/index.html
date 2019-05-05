@@ -19,9 +19,7 @@
     <script src="/js/auth.js"></script>
     <script>
       document.getElementById("signin-button").onclick = function() {
-        let clientId = (document.domain == 'thankshell.com') ? '1opllluc6ruh50h0qc74395k1i' : '2kbm6ejg25gk7q3r681nci4b2h';
-        let redirectUri = 'https://' + document.domain + '/login/callback';
-        location.href="https://auth.thankshell.com/login?response_type=code&client_id=" + clientId + "&redirect_uri=" + redirectUri;
+        location.href = getLoginUri();
       }
     </script>
   </body>

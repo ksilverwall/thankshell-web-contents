@@ -1,23 +1,34 @@
 'use strict'
 
+let mode = (document.domain == 'thankshell.com') ? 'production' : 'develop';
+
+let cognitoInfo = {
+    'production': {
+        ClientId : '1opllluc6ruh50h0qc74395k1i',
+        AppWebDomain : 'auth.thankshell.com',
+        TokenScopesArray : ['profile', 'email', 'openid', 'aws.cognito.signin.user.admin', 'phone'],
+        RedirectUriSignIn : 'https://thankshell.com/login/callback',
+        RedirectUriSignOut : 'https://thankshell.com/',
+    },
+    'develop': {
+        ClientId : '2kbm6ejg25gk7q3r681nci4b2h',
+        AppWebDomain : 'auth.thankshell.com',
+        TokenScopesArray : ['profile', 'email', 'openid', 'aws.cognito.signin.user.admin', 'phone'],
+        RedirectUriSignIn : 'https://develop.thankshell.com/login/callback',
+        RedirectUriSignOut : 'https://develop.thankshell.com/',
+    },
+};
+
+let getLoginUri = () => {
+    return "https://auth.thankshell.com/login?response_type=code&client_id=" + cognitoInfo[mode].ClientId + "&redirect_uri=" + cognitoInfo[mode].RedirectUriSignIn;
+}
+
 class SessionController {
     constructor() {
         if (document.domain == 'thankshell.com') {
-            this.auth = new AmazonCognitoIdentity.CognitoAuth({
-                ClientId : '1opllluc6ruh50h0qc74395k1i',
-                AppWebDomain : 'auth.thankshell.com',
-                TokenScopesArray : ['profile', 'email', 'openid', 'aws.cognito.signin.user.admin', 'phone'],
-                RedirectUriSignIn : 'https://thankshell.com/login/callback',
-                RedirectUriSignOut : 'https://thankshell.com/',
-            });
+            this.auth = new AmazonCognitoIdentity.CognitoAuth(cognitoInfo[mode]);
         } else {
-            this.auth = new AmazonCognitoIdentity.CognitoAuth({
-                ClientId : '2kbm6ejg25gk7q3r681nci4b2h',
-                AppWebDomain : 'auth.thankshell.com',
-                TokenScopesArray : ['profile', 'email', 'openid', 'aws.cognito.signin.user.admin', 'phone'],
-                RedirectUriSignIn : 'https://develop.thankshell.com/login/callback',
-                RedirectUriSignOut : 'https://develop.thankshell.com/',
-            });
+            this.auth = new AmazonCognitoIdentity.CognitoAuth(cognitoInfo[mode]);
         }
     }
 

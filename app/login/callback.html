@@ -9,6 +9,7 @@
     <p>ログイン処理中...</p>
     <script type="text/javascript" src="/js/js.cookie.js"></script>
     <script type="text/javascript" src="/js/amazon-cognito-auth.min.js"></script>
+    <script type="text/javascript" src="/js/thankshell.js"></script>
     <script type="text/javascript" src="/js/auth.js"></script>
     <script>
     (async()=>{
@@ -22,15 +23,7 @@
 
             let session = await sessionController.getSession();
 
-            let response = await fetch('https://api.thankshell.com/dev/user/', {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json; charset=utf-8",
-                    Authorization: session.idToken.jwtToken
-                },
-            });
-
-            let userInfo = await response.json();
+            let userInfo = new ThankshellApi(session).getUser();
             if (userInfo.status == "UNREGISTERED") {
                 location.href = '/user/register';
             } else {
