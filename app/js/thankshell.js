@@ -19,6 +19,21 @@ class ThankshellApi {
         return await response.json();
     }
 
+    async createUser(userId) {
+        let response = await fetch(this.getUri('/user/'), {
+            method: "PUT",
+            headers: this.headers,
+            body: JSON.stringify({
+                id: userId,
+            }),
+        });
+
+        return {
+            status: response.status,
+            body: await response.json(),
+        };
+    }
+
     //-------------------------------------------------
     // Groups
 
@@ -136,6 +151,57 @@ class ThankshellApi {
 
         return (await response.json())[userId];
     };
+
+    //-------------------------------------------------
+    // Holdings
+
+    async getLinks() {
+        let response = await fetch(this.getUri('/user/link'), {
+            method: "GET",
+            headers: this.headers,
+        });
+
+        if (response.status !== 200) {
+            let result = await response.json();
+            throw new Error(result.message);
+        }
+
+        return await response.json();
+    }
+
+    async linkFacebook(fbLoginInfo) {
+        let response = await fetch(this.getUri('/user/link/Facebook'), {
+            method: "PUT",
+            headers: this.headers,
+            body: JSON.stringify({
+                'id': fbLoginInfo.authResponse.userID,
+                'token': fbLoginInfo.authResponse.accessToken,
+            }),
+        });
+
+        if (response.status !== 200) {
+            let result = await response.json();
+            throw new Error(result.message);
+        }
+
+        return await response.json();
+    }
+
+    async unlinkFacebook(fbLoginInfo) {
+        let response = await fetch(this.getUri('/user/link/Facebook'), {
+            method: "DELETE",
+            headers: this.headers,
+            body: JSON.stringify({
+                'id': fbLoginInfo.authResponse.userID,
+                'token': fbLoginInfo.authResponse.accessToken,
+            }),
+        });
+
+        if (response.status !== 200) {
+            let result = await response.json();
+            throw new Error(result.message);
+        }
+    }
 }
 
 class GroupInfo {
