@@ -2,7 +2,7 @@ $('#logoutButton').click(()=>(new SessionController()).close());
 
 let publish = async() => {
     let session = await (new SessionController()).getSession();
-    
+
     let data = {};
     $('#publish').find('input').each((index, input) => {
         if(input.name){
@@ -17,6 +17,7 @@ let publish = async() => {
     try {
         await (new ThankshellApi(session)).publish('sla_bank', data['amount']);
         $('#publish-message').text('発行しました');
+        location.reload();
     } catch(e) {
         $('#publish-message').text('ERROR: ' + e.message);
     }
@@ -54,9 +55,23 @@ let sendSelan = async() => {
     $('#send-selan-button').removeClass("disabled");
 };
 
-let acceptRequest = async(userId) => {
+let acceptRequest = async(userId, amount) => {
     let session = await (new SessionController()).getSession();
-    await (new ThankshellApi(session)).acceptGroupJoinRequest('sla', userId);
+    let api = new ThankshellApi(session);
+
+    let holdersInfo = await api.getHoldings();
+    let holding = holdersInfo['sla_bank'];
+    if (holding < amount) {
+        $('#request-message').text("銀行残高が不足しています");
+        return;
+    }
+
+    await api.acceptGroupJoinRequest('sla', userId);
+    await api.createTransaction({
+        from: 'sla_bank',
+        to: userId,
+        amount: amount,
+    });
     location.reload();
 }
 
@@ -73,7 +88,7 @@ class RequestTable {
         };
     }
     getButtonTag(userId) {
-        let jscode = "acceptRequest('" + userId + "')";
+        let jscode = "acceptRequest('" + userId + "', 10000)";
         return '<button class="btn btn-primary" type="button" onclick="' + jscode + '">承認する</button>';
     }
 }

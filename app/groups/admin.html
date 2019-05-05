@@ -58,7 +58,7 @@
             <div class="row">
               <div class="col form-group">
                 <label>送金先</label>
-                <input class="form-control" type="text" name="to_account" />
+                <input class="form-control" type="text" name="to" />
               </div>
               <div class="col form-group">
                 <label>金額</label>
@@ -108,6 +108,8 @@
           <h4>参加申請</h4>
         </div>
         <div class="card-body">
+          <p class="text-center text-danger" id="request-message"></p>
+          <p>初期付与金額は10000です</p>
           <table id='request-info' class="table mb-0">
             <thead>
               <tr>

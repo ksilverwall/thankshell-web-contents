@@ -108,6 +108,12 @@ class ThankshellApi {
                 amount: amount,
             }),
         });
+
+        let data = await response.json();
+
+        if (response.status != 200) {
+            throw new Error(response.status + ":" + data.message);
+        }
     }
 
     //-------------------------------------------------
