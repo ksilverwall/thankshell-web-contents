@@ -23,6 +23,13 @@ footer a {
     height: 90%;
 }
 
+@media screen and (max-width:380px) {
+    .hero {
+        background-image: url("/images/hero-mobile.png");
+        background-position: 50% 100%;
+    }
+}
+
 .hero div {
     position: relative;
     height: 100%;
