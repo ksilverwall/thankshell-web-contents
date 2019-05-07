@@ -8,6 +8,19 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/thankshell.css">
+    <style>
+      .modal-area {
+        display: none;
+        position: fixed;
+        z-index: 10;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding: 10%;
+        background: #000000c0;
+      }
+    </style>
   </head>
   <body>
     <header>
@@ -39,20 +52,16 @@
         </section>
 
         <section>
-          <div class="row">
-            <div class="col-6 col-sm-2 offset-3 offset-sm-5">
-              <img src="/groups/sla/logo" class="img-fluid" alt="selan-logo">
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col">
-              <h1 class="text-right">残高<u><span id=carried>---</span> Selan</u></h1>
-            </div>
-          </div>
+          <img src="/groups/sla/logo" class="row col-6 col-sm-2 offset-3 offset-sm-5 img-fluid" alt="selan-logo">
+          <h1 class="text-right">残高<u><span id=carried>---</span> Selan</u></h1>
         </section>
 
         <section>
+          <p class="text-center text-danger" id="send-selan-message">送金後の取り消しはできませんのでご注意ください</p>
+          <button class="btn btn-primary" id="send-token-button">送る</button>
+        </section>
+
+        <section id="send-token-modal" class="modal-area">
           <div class="card mb-3">
             <div class="card-header">
               <h4>Selanを送る</h4>
@@ -77,17 +86,18 @@
 
                 <div class="row justify-content-around">
                   <div class="col-2">
-                    <input id='send-selan-button' class="btn-primary" type="button" value="送金" />
+                    <input id='send-token-commit-button' class="btn-primary" type="button" value="送金" />
+                    <input id='send-token-cancel-button' class="btn-primary" type="button" value="キャンセル" />
                   </div>
                 </div>
               </form>
               <br>
-              <p class="text-center text-danger" id="send-selan-message">送金後の取り消しはできませんのでご注意ください</p>
+              <p class="text-center text-danger">送金後の取り消しはできませんのでご注意ください</p>
             </div>
           </div>
-
-
         </section>
+
+
         <section>
           <div class="card mx-auto">
             <div class="card-header">

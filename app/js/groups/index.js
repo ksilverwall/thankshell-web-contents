@@ -1,8 +1,14 @@
 $('#groupManagerButton').click(()=>{location.href='/groups/sla/admin';});
 
-let sendSelan = async() => {
+$("#send-token-button").click(() => {
+    $("#send-token-modal").fadeIn();
+});
+
+$('#send-token-commit-button').click(async() => {
+    $("#send-token-modal").fadeOut();
+
     let session = await (new SessionController()).getSession();
-    if($('#send-selan-button').prop("disabled")) {
+    if($('#send-token-commit-button').prop("disabled")) {
         return;
     }
 
@@ -17,8 +23,8 @@ let sendSelan = async() => {
     });
     data['from'] = userInfo.user_id;
     
-    $('#send-selan-button').prop("disabled", true);
-    $('#send-selan-button').addClass("disabled");
+    $('#send-token-button').prop("disabled", true);
+    $('#send-token-button').addClass("disabled");
     $('#send-selan-message').text('送金中');
 
     try {
@@ -28,9 +34,14 @@ let sendSelan = async() => {
         $('#send-selan-message').text('ERROR: ' + e.message);
     }
 
-    $('#send-selan-button').prop("disabled", false);
-    $('#send-selan-button').removeClass("disabled");
-};
+    $('#send-token-button').prop("disabled", false);
+    $('#send-token-button').removeClass("disabled");
+});
+
+$('#send-token-cancel-button').click(() => {
+    $("#send-selan")[0].reset();
+    $("#send-token-modal").fadeOut();
+});
 
 (async() => {
     let session = await (new SessionController()).getSession();
@@ -69,7 +80,6 @@ let sendSelan = async() => {
         } catch(e) {
             $('#history-message').text('ERROR: ' + getErrorMessage(e));
         }
-        $('#send-selan-button').click(() => { sendSelan(); });
     } else {
         $("#loading-view").hide();
         $("#visitor-view").show();
