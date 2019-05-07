@@ -20,6 +20,11 @@
         padding: 10%;
         background: #000000c0;
       }
+      .transaction-log {
+        padding: 10px;
+        background: white;
+        border-radius: .25rem;
+      }
     </style>
   </head>
   <body>
@@ -97,31 +102,23 @@
           </div>
         </section>
 
-
-        <section>
-          <div class="card mx-auto">
-            <div class="card-header">
-              <h4>取引履歴</h4>
-            </div>
-            <div class="card-body">
-              <p class="text-center text-danger" id="history-message"></p>
-              <table id="transaction-list" class="table">
-                <thead>
-                  <tr>
-                    <th scope="col" class="text-right">取引ID</th>
-                    <th scope="col">取引日時</th>
-                    <th scope="col">FROM</th>
-                    <th scope="col">TO</th>
-                    <th scope="col" class="text-right">金額(selan)</th>
-                    <th scope="col" class="text-left">コメント</th>
-                  </tr>
-                </thead>
-                <tbody id="history">
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="row"></div>
+        <section class="transaction-log">
+          <h3>取引履歴</h3>
+          <p class="text-center text-danger" id="history-message"></p>
+          <table id="transaction-list" class="table">
+            <thead>
+              <tr>
+                <th scope="col" class="text-right">取引ID</th>
+                <th scope="col">取引日時</th>
+                <th scope="col">FROM</th>
+                <th scope="col">TO</th>
+                <th scope="col" class="text-right">金額(selan)</th>
+                <th scope="col" class="text-left">コメント</th>
+              </tr>
+            </thead>
+            <tbody id="history">
+            </tbody>
+          </table>
         </section>
       </article>
     </main>
