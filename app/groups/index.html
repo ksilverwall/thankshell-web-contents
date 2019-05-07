@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
   <head>
     <meta charset="utf-8"/>
@@ -10,96 +10,111 @@
     <link rel="stylesheet" href="/css/thankshell.css">
   </head>
   <body>
-    <nav class="navbar navbar-expand navbar-light bg-light">
-      <div class="navbar-nav">
-        <a class="nav-item nav-link" href="/groups/sla">ホーム </a>
-        <a class="nav-item nav-link" href="/user/config">設定</a>
-      </div>
-    </nav>
-
-    <div class="container-fluid" id="loading-view">
-      <p>読み込み中...</p>
-    </div>
-    <div class="container-fluid" id="visitor-view" style="display:none">
-      <p class="row" id="visitor-text">このグループに参加していません</p>
-      <button class="row btn btn-primary" id="request-button">参加リクエスト</button>
-    </div>
-    <div class="container-fluid" id="member-view" style="display:none">
-      <a class="row" href="https://sketch-life-academy.com/selan-help/">ヘルプ</a>
-      <button class="row btn my-2 my-sm-0" id="groupManagerButton" onclick="location.href='/groups/sla/admin';">管理ページへ</button>
-
-      <div class="row">
-        <div class="col-6 col-sm-2 offset-3 offset-sm-5">
-          <img src="/groups/sla/logo" class="img-fluid" alt="selan-logo">
+    <header>
+      <nav class="navbar navbar-expand navbar-light bg-light">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" href="/groups/sla">ホーム </a>
+          <a class="nav-item nav-link" href="/user/config">設定</a>
         </div>
-      </div>
+      </nav>
+    </header>
 
-      <div class="row">
-        <div class="col">
-          <h1 class="text-right">残高<u><span id=carried>---</span> Selan</u></h1>
-        </div>
-      </div>
 
-      <div class="card mb-3">
-        <div class="card-header">
-          <h4>Selanを送る</h4>
-        </div>
-        <div class="card-body">
-          <form class="form-horizontal" id="send-selan">
+    <main>
+      <article class="container-fluid" id="loading-view">
+        <p>読み込み中...</p>
+      </article>
 
-            <div class="row">
-              <div class="col-xs-12 col-sm-6 col-md-4 form-group">
-                <label>送金先</label>
-                <input class="form-control" type="text" name="to" />
-              </div>
-              <div class="col-xs-12 col-sm-6 col-md-4 form-group">
-                <label>金額</label>
-                <input class="form-control" type="number" min="1" name="amount" value='1000'/>
-              </div>
-              <div class="col-xs-12 col-sm-12 col-md-4 form-group">
-                <label>コメント</label>
-                <input class="form-control" type="text" name="comment"/>
-              </div>
+
+      <article class="container-fluid" id="visitor-view" style="display:none">
+        <p class="row" id="visitor-text">このグループに参加していません</p>
+        <button class="row btn btn-primary" id="request-button">参加リクエスト</button>
+      </article>
+
+
+      <article class="container-fluid" id="member-view" style="display:none">
+        <section>
+          <a class="row" href="https://sketch-life-academy.com/selan-help/">ヘルプ</a>
+          <button class="row btn my-2 my-sm-0" id="groupManagerButton" onclick="location.href='/groups/sla/admin';">管理ページへ</button>
+        </section>
+
+        <section>
+          <div class="row">
+            <div class="col-6 col-sm-2 offset-3 offset-sm-5">
+              <img src="/groups/sla/logo" class="img-fluid" alt="selan-logo">
             </div>
+          </div>
 
-            <div class="row justify-content-around">
-              <div class="col-2">
-                <input id='send-selan-button' class="btn-primary" type="button" value="送金" />
-              </div>
+          <div class="row">
+            <div class="col">
+              <h1 class="text-right">残高<u><span id=carried>---</span> Selan</u></h1>
             </div>
-          </form>
-          <br>
-          <p class="text-center text-danger" id="send-selan-message">送金後の取り消しはできませんのでご注意ください</p>
-        </div>
-      </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="card mb-3">
+            <div class="card-header">
+              <h4>Selanを送る</h4>
+            </div>
+            <div class="card-body">
+              <form class="form-horizontal" id="send-selan">
+
+                <div class="row">
+                  <div class="col-xs-12 col-sm-6 col-md-4 form-group">
+                    <label>送金先</label>
+                    <input class="form-control" type="text" name="to" />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-4 form-group">
+                    <label>金額</label>
+                    <input class="form-control" type="number" min="1" name="amount" value='1000'/>
+                  </div>
+                  <div class="col-xs-12 col-sm-12 col-md-4 form-group">
+                    <label>コメント</label>
+                    <input class="form-control" type="text" name="comment"/>
+                  </div>
+                </div>
+
+                <div class="row justify-content-around">
+                  <div class="col-2">
+                    <input id='send-selan-button' class="btn-primary" type="button" value="送金" />
+                  </div>
+                </div>
+              </form>
+              <br>
+              <p class="text-center text-danger" id="send-selan-message">送金後の取り消しはできませんのでご注意ください</p>
+            </div>
+          </div>
 
 
-      <div class="card mx-auto">
-        <div class="card-header">
-          <h4>取引履歴</h4>
-        </div>
-        <div class="card-body">
-          <p class="text-center text-danger" id="history-message"></p>
-          <table id="transaction-list" class="table">
-            <thead>
-              <tr>
-                <th scope="col" class="text-right">取引ID</th>
-                <th scope="col">取引日時</th>
-                <th scope="col">FROM</th>
-                <th scope="col">TO</th>
-                <th scope="col" class="text-right">金額(selan)</th>
-                <th scope="col" class="text-left">コメント</th>
-              </tr>
-            </thead>
-            <tbody id="history">
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-
-      <div class="row"></div>
-    </div>
+        </section>
+        <section>
+          <div class="card mx-auto">
+            <div class="card-header">
+              <h4>取引履歴</h4>
+            </div>
+            <div class="card-body">
+              <p class="text-center text-danger" id="history-message"></p>
+              <table id="transaction-list" class="table">
+                <thead>
+                  <tr>
+                    <th scope="col" class="text-right">取引ID</th>
+                    <th scope="col">取引日時</th>
+                    <th scope="col">FROM</th>
+                    <th scope="col">TO</th>
+                    <th scope="col" class="text-right">金額(selan)</th>
+                    <th scope="col" class="text-left">コメント</th>
+                  </tr>
+                </thead>
+                <tbody id="history">
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="row"></div>
+        </section>
+      </article>
+    </main>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
