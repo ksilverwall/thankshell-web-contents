@@ -67,9 +67,8 @@ $('#send-token-cancel-button').click(() => {
             let history = await api.loadTransactions(userInfo.user_id);
 
             $('#history').empty();
-            history.forEach(record => {
+            history.sort((a, b) => { return b.timestamp - a.timestamp; }).forEach(record => {
                 $('<tr>')
-                    .append($('<th scope="row" class="text-right">').text(record.transaction_id))
                     .append($('<td>').text(getTimeString(record.timestamp)))
                     .append($('<td>').text(record.from_account))
                     .append($('<td>').text(record.to_account))
@@ -78,7 +77,7 @@ $('#send-token-cancel-button').click(() => {
                     .appendTo('#history');
             });
         } catch(e) {
-            $('#history-message').text('ERROR: ' + getErrorMessage(e));
+            $('#history-message').text('ERROR: ' + e.message);
         }
     } else {
         $("#loading-view").hide();

@@ -9,7 +9,7 @@ function getTimeString(timestamp) {
     let min   = ( d.getMinutes() < 10 ) ? '0' + d.getMinutes() : d.getMinutes();
     let sec   = ( d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
 
-    return ( year + '年' + month + '月' + day + '日' + hour + ':' + min + ':' + sec );
+    return ( year + '/' + month + '/' + day + ' ' + hour + ':' + min + ':' + sec );
 }
 
 function getErrorMessage(xhr) {
