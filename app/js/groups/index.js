@@ -43,6 +43,49 @@ $('#send-token-cancel-button').click(() => {
     $("#send-token-modal").fadeOut();
 });
 
+class HistoryTableTag {
+    constructor(history) {
+        $('#history').empty();
+        let tableHeadTag = $('<thead>')
+            .append($('<th scope="col">').text('取引日時'))
+            .append($('<th scope="col">').text('FROM'))
+            .append($('<th scope="col">').text('TO'))
+            .append($('<th scope="col" class="text-right">').text('金額(selan)'))
+            .append($('<th scope="col" class="text-left">').text('コメント'))
+            ;
+
+        let tableBodyTag = $('<tbody>');
+        history.sort((a, b) => { return b.timestamp - a.timestamp; }).forEach(record => {
+            $('<tr>')
+                .append($('<td>').text(getTimeString(record.timestamp)))
+                .append($('<td>').text(record.from_account))
+                .append($('<td>').text(record.to_account))
+                .append($('<td class="text-right">').text(record.amount.toLocaleString()))
+                .append($('<td class="text-left">').text(record.comment ? record.comment : ''))
+                .appendTo(tableBodyTag);
+        });
+
+        this.tableTag= $('<table>').addClass('table');
+        this.tableTag.append(tableHeadTag);
+        this.tableTag.append(tableBodyTag);
+    }
+
+    renderTo(target) {
+        this.tableTag.appendTo(target);
+    }
+}
+
+class TransactionLogSectionTag {
+    async init(api, userInfo) {
+        try {
+            let history = await api.loadTransactions(userInfo.user_id);
+            (new HistoryTableTag(history)).renderTo($('.transaction-log'));
+        } catch(e) {
+            $('#history-message').text('ERROR: ' + e.message);
+        }
+    }
+}
+
 (async() => {
     let session = await (new SessionController()).getSession();
     let api = new ThankshellApi(session);
@@ -63,22 +106,8 @@ $('#send-token-cancel-button').click(() => {
         let holding = await api.getHolding(userInfo.user_id);
         $("#carried").text(holding.toLocaleString());
 
-        try {
-            let history = await api.loadTransactions(userInfo.user_id);
-
-            $('#history').empty();
-            history.sort((a, b) => { return b.timestamp - a.timestamp; }).forEach(record => {
-                $('<tr>')
-                    .append($('<td>').text(getTimeString(record.timestamp)))
-                    .append($('<td>').text(record.from_account))
-                    .append($('<td>').text(record.to_account))
-                    .append($('<td class="text-right">').text(record.amount.toLocaleString()))
-                    .append($('<td class="text-left">').text(record.comment ? record.comment : ''))
-                    .appendTo('#history');
-            });
-        } catch(e) {
-            $('#history-message').text('ERROR: ' + e.message);
-        }
+        let section = new TransactionLogSectionTag();
+        section.init(api, userInfo);
     } else {
         $("#loading-view").hide();
         $("#visitor-view").show();
