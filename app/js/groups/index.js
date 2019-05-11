@@ -43,9 +43,47 @@ $('#send-token-cancel-button').click(() => {
     $("#send-token-modal").fadeOut();
 });
 
+class HistoryListTag {
+    constructor(history, userId) {
+        this.tableTag = $('<dl>').addClass('transaction-history-list');
+        history.sort((a, b) => { return b.timestamp - a.timestamp; }).forEach(record => {
+            let partner;
+            let amount;
+            if (record.to_account == userId) {
+                partner = record.from_account;
+                amount = '+' + record.amount.toLocaleString()
+            } else {
+                partner = record.to_account;
+                amount = '-' + record.amount.toLocaleString()
+            }
+
+            let tableBody = $('<tbody>').append(
+                $('<tr>').append($('<td colspan="2">').text(getTimeString(record.timestamp)))
+            ).append(
+                $('<tr>')
+                    .append($('<td>').text(partner))
+                    .append($('<td class="text-right">').text(amount))
+            );
+
+            if (record.comment) {
+                tableBody.append($('<tr>').append($('<td colspan="2">').text(record.comment)))
+            }
+
+            this.tableTag.append(
+                $('<dt>').append(
+                    $('<table>').append(tableBody)
+                )
+            );
+        });
+    }
+
+    renderTo(target) {
+        this.tableTag.appendTo(target);
+    }
+}
+
 class HistoryTableTag {
-    constructor(history) {
-        $('#history').empty();
+    constructor(history, userId) {
         let tableHeadTag = $('<thead>')
             .append($('<th scope="col">').text('取引日時'))
             .append($('<th scope="col">').text('FROM'))
@@ -79,7 +117,11 @@ class TransactionLogSectionTag {
     async init(api, userInfo) {
         try {
             let history = await api.loadTransactions(userInfo.user_id);
-            (new HistoryTableTag(history)).renderTo($('.transaction-log'));
+            if($(window).width() > 600) {
+                (new HistoryTableTag(history, userInfo.user_id)).renderTo($('.transaction-log'));
+            } else {
+                (new HistoryListTag(history, userInfo.user_id)).renderTo($('.transaction-log'));
+            }
         } catch(e) {
             $('#history-message').text('ERROR: ' + e.message);
         }
