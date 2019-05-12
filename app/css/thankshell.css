@@ -47,3 +47,39 @@ footer a {
     left: 50%;
     -webkit-transform: translate(-50%);
 }
+
+.transaction-history-list dt {
+    border-top-style: groove;
+}
+
+.transaction-history-list dt table {
+    width: 100%;
+}
+
+.transaction-datetime {
+    color: cadetblue;
+}
+
+.transaction-partner {
+    font-size: 1.5em;
+    width: 50%;
+    color: black;
+}
+
+.transaction-amount-in {
+    font-size: 1.5em;
+    width: 50%;
+    text-align: right;
+    color: limegreen;
+}
+
+.transaction-amount-out {
+    font-size: 1.5em;
+    width: 50%;
+    text-align: right;
+    color: red;
+}
+
+.transaction-message {
+    color: darkgray;
+}

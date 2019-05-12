@@ -49,24 +49,28 @@ class HistoryListTag {
         history.sort((a, b) => { return b.timestamp - a.timestamp; }).forEach(record => {
             let partner;
             let amount;
+            let amountClass;
+
             if (record.to_account == userId) {
                 partner = record.from_account;
                 amount = '+' + record.amount.toLocaleString()
+                amountClass = 'transaction-amount-in';
             } else {
                 partner = record.to_account;
-                amount = '-' + record.amount.toLocaleString()
+                amount = '-' + record.amount.toLocaleString();
+                amountClass = 'transaction-amount-out';
             }
 
             let tableBody = $('<tbody>').append(
-                $('<tr>').append($('<td colspan="2">').text(getTimeString(record.timestamp)))
+                $('<tr>').append($('<td colspan="2">').addClass('transaction-datetime').text(getTimeString(record.timestamp)))
             ).append(
                 $('<tr>')
-                    .append($('<td>').text(partner))
-                    .append($('<td class="text-right">').text(amount))
+                    .append($('<td>').addClass('transaction-partner').text(partner))
+                    .append($('<td>').addClass(amountClass).text(amount))
             );
 
             if (record.comment) {
-                tableBody.append($('<tr>').append($('<td colspan="2">').text(record.comment)))
+                tableBody.append($('<tr>').append($('<td colspan="2">').addClass('transaction-message').text(record.comment)))
             }
 
             this.tableTag.append(
