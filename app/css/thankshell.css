@@ -18,12 +18,13 @@ footer a {
 
 .hero {
     background-image: url("/images/hero.png");
+    background-position: 0% 100%;
     background-size: cover;
     padding: 30px;
     height: 90%;
 }
 
-@media screen and (max-width:380px) {
+@media screen and (max-width:460px) {
     .hero {
         background-image: url("/images/hero-mobile.png");
         background-position: 50% 100%;
@@ -39,6 +40,8 @@ footer a {
     position: absolute;
     top: 30%;
     max-width: 500px;
+    -webkit-text-stroke: 0.8px #ffffff;
+    font-weight: bolder;
 }
 
 .hero div button {
@@ -46,6 +49,12 @@ footer a {
     bottom: 0px;
     left: 50%;
     -webkit-transform: translate(-50%);
+    width: 130;
+    height: 60;
+    background-color: #7fffd4;
+    color: black;
+    font-weight: bolder;
+    font-size: larger;
 }
 
 .transaction-history-list dt {
