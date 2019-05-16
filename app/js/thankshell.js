@@ -8,7 +8,7 @@ class ThankshellApi {
     }
 
     getUri(path) {
-        return 'https://api.thankshell.com/dev' + path;
+        return 'https://api.thankshell.com/v1' + path;
     }
 
     async getUser() {
