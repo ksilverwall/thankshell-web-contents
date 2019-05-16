@@ -88,6 +88,21 @@ class ThankshellApi {
     }
 
     async loadTransactions(userId) {
+        let response = await fetch(this.getUri('/token/selan/transactions?user_id=' + userId), {
+            method: "GET",
+            headers: this.headers,
+        });
+
+        let data = await response.json();
+
+        if (response.status != 200) {
+            throw new Error(response.status + ":" + data.message);
+        }
+
+        return data.history.Items;
+    }
+
+    async loadAllTransactions() {
         let response = await fetch(this.getUri('/token/selan/transactions'), {
             method: "GET",
             headers: this.headers,

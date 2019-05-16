@@ -135,7 +135,7 @@ class RequestTable {
 
         // history list
         try {
-            let history = await api.loadTransactions('sla_bank');
+            let history = await api.loadAllTransactions();
 
             $('#history').empty();
             history.forEach(record => {
