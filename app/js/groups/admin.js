@@ -95,6 +95,11 @@ class RequestTable {
 
 (async()=>{
     let session = await (new SessionController()).getSession();
+    if (!session) {
+        $("#load-message").text("セッションの読み込みに失敗しました。再読込してください")
+        return;
+    }
+
     let api = new ThankshellApi(session);
     let userInfo = await api.getUser();
 
