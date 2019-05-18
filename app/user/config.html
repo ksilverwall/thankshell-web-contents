@@ -32,8 +32,6 @@
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.263.1.min.js"></script>
     <script src="/js/aws-cognito-sdk.min.js"></script>
     <script src="/js/amazon-cognito-identity.min.js"></script>
-    <script src="/js/auth.js"></script>
-    <script src="/js/bank.js"></script>
     <script src="/js/thankshell.js"></script>
 
     <script type="text/javascript" src="/js/amazon-cognito-auth.min.js"></script>
@@ -78,7 +76,7 @@
             let fbConnector = new FacebookConnector();
             let fbLoginInfo = await fbConnector.login();
 
-            await (new ThankshellApi(session)).unlinkFacebook(fbLoginInfo);
+            await (new ThankshellApi(session, getConfig().apiVersion)).unlinkFacebook(fbLoginInfo);
 
             location.reload();
         } catch(e) {
@@ -95,7 +93,7 @@
 
             switch(fbLoginInfo.status) {
             case 'connected':
-                await (new ThankshellApi(session)).linkFacebook(fbLoginInfo);
+                await (new ThankshellApi(session, getConfig().apiVersion)).linkFacebook(fbLoginInfo);
                 break;
             case 'not_authorized':
             case 'unknown':
@@ -113,7 +111,7 @@
         $('#logoutButton').click(()=>(new SessionController()).close());
         try {
             let session = await (new SessionController()).getSession();
-            let api = new ThankshellApi(session);
+            let api = new ThankshellApi(session, getConfig().apiVersion);
 
             let userInfo = await api.getUser();
             $("#user-name").text(userInfo.user_id ? userInfo.user_id : '---');

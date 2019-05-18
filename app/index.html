@@ -22,10 +22,10 @@
         <a href="/privacy-policy">プライバシーポリシー</a>
     </footer>
 
-    <script src="/js/auth.js"></script>
+    <script src="/js/thankshell.js"></script>
     <script>
       document.getElementById("signin-button").onclick = function() {
-        location.href = getLoginUri();
+        location.href = getConfig().loginUrl;
       }
     </script>
   </body>

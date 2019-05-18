@@ -10,7 +10,6 @@
     <script type="text/javascript" src="/js/js.cookie.js"></script>
     <script type="text/javascript" src="/js/amazon-cognito-auth.min.js"></script>
     <script type="text/javascript" src="/js/thankshell.js"></script>
-    <script type="text/javascript" src="/js/auth.js"></script>
     <script>
     (async()=>{
         try {
@@ -23,7 +22,7 @@
 
             let session = await sessionController.getSession();
 
-            let userInfo = new ThankshellApi(session).getUser();
+            let userInfo = new ThankshellApi(session, getConfig().apiVersion).getUser();
             if (userInfo.status == "UNREGISTERED") {
                 location.href = '/user/register';
             } else {

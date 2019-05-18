@@ -10,7 +10,7 @@ $('#send-token-commit-button').click(async() => {
         return;
     }
 
-    let api = new ThankshellApi(session);
+    let api = new ThankshellApi(session, getConfig().apiVersion);
     let userInfo = await api.getUser();
 
     let data = {};
@@ -56,7 +56,7 @@ let publish = async() => {
     $('#publish-message').text('発行中');
 
     try {
-        await (new ThankshellApi(session)).publish('sla_bank', data['amount']);
+        await (new ThankshellApi(session, getConfig().apiVersion)).publish('sla_bank', data['amount']);
         $('#publish-message').text('発行しました');
         location.reload();
     } catch(e) {
@@ -66,7 +66,7 @@ let publish = async() => {
 
 let acceptRequest = async(userId, amount) => {
     let session = await (new SessionController()).getSession();
-    let api = new ThankshellApi(session);
+    let api = new ThankshellApi(session, getConfig().apiVersion);
 
     let holdersInfo = await api.getHoldings();
     let holding = holdersInfo['sla_bank'];
@@ -199,7 +199,7 @@ class MainTag {
             return;
         }
 
-        let api = new ThankshellApi(session);
+        let api = new ThankshellApi(session, getConfig().apiVersion);
         let userInfo = await api.getUser();
 
         if(userInfo.status == 'UNREGISTERED') {

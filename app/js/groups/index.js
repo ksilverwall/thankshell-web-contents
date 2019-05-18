@@ -12,7 +12,7 @@ $('#send-token-commit-button').click(async() => {
         return;
     }
 
-    let api = new ThankshellApi(session);
+    let api = new ThankshellApi(session, getConfig().apiVersion);
     let userInfo = await api.getUser();
 
     let data = {};
@@ -140,7 +140,7 @@ class MainTag {
             return;
         }
 
-        let api = new ThankshellApi(session);
+        let api = new ThankshellApi(session, getConfig().apiVersion);
         let userInfo = await api.getUser();
 
         if(userInfo.status == 'UNREGISTERED') {
@@ -150,7 +150,7 @@ class MainTag {
 
         $("#user-name").text(userInfo.user_id ? userInfo.user_id : '---');
 
-        let groupInfo = await (new ThankshellApi(session)).getGroup('sla');
+        let groupInfo = await api.getGroup('sla');
         if (groupInfo.getMembers().includes(userInfo.user_id)) {
             $("#loading-view").hide();
             $("#member-view").show();
@@ -169,7 +169,7 @@ class MainTag {
                 $("#request-button").click(async() => {
                     $("#request-button").prop("disabled",true);
                     let session = await (new SessionController()).getSession();
-                    let groupInfo = await (new ThankshellApi(session)).cancelGroupJoinRequest('sla', userInfo.user_id);
+                    let groupInfo = await (new ThankshellApi(session, getConfig().apiVersion)).cancelGroupJoinRequest('sla', userInfo.user_id);
                     location.reload();
                 });
             } else {
@@ -178,7 +178,7 @@ class MainTag {
                 $("#request-button").click(async() => {
                     $("#request-button").prop("disabled",true);
                     let session = await (new SessionController()).getSession();
-                    let groupInfo = await (new ThankshellApi(session)).sendGroupJoinRequest('sla', userInfo.user_id);
+                    let groupInfo = await (new ThankshellApi(session, getConfig().apiVersion)).sendGroupJoinRequest('sla', userInfo.user_id);
                     location.reload();
                 });
             }
