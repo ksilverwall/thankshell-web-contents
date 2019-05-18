@@ -4,150 +4,146 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SLA Bank Manager</title>
+    <link rel="shortcut icon" href="/groups/sla/icon" type="image/x-icon">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css"/>
+    <link rel="stylesheet" href="/css/thankshell.css">
   </head>
   <body>
-    <nav class="navbar navbar-expand navbar-light bg-light">
-      <div class="navbar-nav">
-        <a class="nav-item nav-link" href="/groups/sla">ホーム </a>
-        <a class="nav-item nav-link" href="/user/config">設定</a>
-      </div>
-    </nav>
+    <header>
+      <nav class="navbar navbar-expand navbar-light bg-light">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" href="/groups/sla">ホーム </a>
+          <a class="nav-item nav-link" href="/user/config">設定</a>
+        </div>
+      </nav>
+    </header>
 
-    <div id='loading-view' class="container-fluid">
-      <p id="load-message">読み込み中...</p>
-    </div>
-    <div id='visitor-view' class="container-fluid" style='display:none'>
-      <p>管理者のみアクセス可能なページです</p>
-    </div>
-    <div id='admin-view' class="container-fluid" style='display:none'>
-      <div class="row">
-        <div class="col">
+
+    <main>
+      <article id='loading-view' class="container-fluid">
+        <p id="load-message">読み込み中...</p>
+      </article>
+
+
+      <article id='visitor-view' class="container-fluid" style='display:none'>
+        <p>管理者のみアクセス可能なページです</p>
+      </article>
+
+
+      <article id='admin-view' class="container-fluid" style='display:none'>
+        <h1>管理フォーム</h1>
+
+        <section>
           <h4 class="text-right">総発行量 <u><span id=published>---</span> Selan</u></h4>
           <h4 class="text-right">銀行保有量 <u><span id=carried>---</span> Selan</u></h4>
           <h4 class="text-right">流通量 <u><span id=currency>---</span> Selan</u></h4>
-        </div>
-      </div>
+        </section>
 
-      <h1>管理フォーム</h1>
+        <section class="card bg-light mb-3" style="max-width: 40rem;">
+          <div class="card-header">
+	        <h4>Selanを増刷する</h4>
+          </div>
+          <div class="card-body">
+            <form id='publish'>
+              <div class="form-group">
+                <input id='publish-amount'class="form-control text-right" type="number" name="amount" min="1000" value="1000" />
+                <input id='publish-button' class="btn btn-primary" type="button" value="新規発行" />
+              </div>
+            </form>
+            <br/>
+            <p class="text-center text-danger" id="publish-message">削除未実装のためご注意ください</p>
+          </div>
+        </section>
 
-      <div class="card bg-light mb-3" style="max-width: 40rem;">
-        <div class="card-header">
-	      <h4>Selanを増刷する</h4>
-        </div>
-        <div class="card-body">
-          <form id='publish'>
-            <div class="form-group">
-              <input id='publish-amount'class="form-control text-right" type="number" name="amount" min="1000" value="1000" />
-              <input id='publish-button' class="btn btn-primary" type="button" value="新規発行" />
-            </div>
-          </form>
-          <br/>
-          <p class="text-center text-danger" id="publish-message">削除未実装のためご注意ください</p>
-        </div>
-      </div>
-
-      <div class="card mb-3">
-        <div class="card-header">
-	      <h4>Selanを送る</h4>
-        </div>
-        <div class="card-body">
-          <form class="form-horizontal" id="send-selan">
-            <div class="row">
-              <div class="col form-group">
-                <label>送金先</label>
-                <input class="form-control" type="text" name="to" />
-              </div>
-              <div class="col form-group">
-                <label>金額</label>
-                <input class="form-control" type="number" min="1" name="amount" value='1000'/>
-              </div>
-              <div class="col form-group">
-                <label>コメント</label>
-                <input class="form-control" type="text" name="comment"/>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-5">
-              </div>
-              <div class="col-2">
-                <input id='send-selan-button' class="btn-block btn-primary" type="button" value="送金" />
-              </div>
-              <div class="col-5">
-              </div>
-            </div>
-          </form>
-          <br/>
+        <section>
           <p class="text-center text-danger" id="send-selan-message">送金後の取り消しはできませんのでご注意ください</p>
-        </div>
-      </div>
+          <button class="btn btn-primary" id="send-token-button">送る</button>
+        </section>
 
-      <div class="card mb-3">
-        <div class="card-header">
-          <h4>保有状況</h4>
-        </div>
-        <div class="card-body">
-          <table id='account-info' class="table mb-0">
-            <thead>
-              <tr>
-                <th scope="col" class="text-left">アカウント</th>
-                <th scope="col" class="text-left">ステータス</th>
-                <th scope="col" class="text-right">金額(selan)</th>
-              </tr>
-            </thead>
-            <tbody id="carried-list">
-            </tbody>
-          </table>
-        </div>
-      </div>
+        <section id="send-token-modal" class="modal-area">
+          <div class="card mb-3">
+            <div class="card-header">
+              <h4>Selanを送る</h4>
+            </div>
+            <div class="card-body">
+              <form class="form-horizontal" id="send-selan">
 
-      <div class="card mb-3">
-        <div class="card-header">
-          <h4>参加申請</h4>
-        </div>
-        <div class="card-body">
-          <p class="text-center text-danger" id="request-message"></p>
-          <p>初期付与金額は10000です</p>
-          <table id='request-info' class="table mb-0">
-            <thead>
-              <tr>
-                <th scope="col" class="text-left">アカウント</th>
-                <th scope="col" class="text-left">承認ボタン</th>
-              </tr>
-            </thead>
-            <tbody id="request-list">
-            </tbody>
-          </table>
-        </div>
-      </div>
+                <div class="row">
+                  <div class="col-xs-12 col-sm-6 col-md-4 form-group">
+                    <label>送金先</label>
+                    <input class="form-control" type="text" name="to" />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-4 form-group">
+                    <label>金額</label>
+                    <input class="form-control" type="number" min="1" name="amount" value='1000'/>
+                  </div>
+                  <div class="col-xs-12 col-sm-12 col-md-4 form-group">
+                    <label>コメント</label>
+                    <input class="form-control" type="text" name="comment"/>
+                  </div>
+                </div>
 
-      <div class="card mb-3">
-        <div class="card-header">
-          <h4>取引履歴</h4>
-        </div>
-        <div class="card-body">
+                <div class="row justify-content-around">
+                  <div class="col-2">
+                    <input id='send-token-commit-button' class="btn-primary" type="button" value="送金" />
+                    <input id='send-token-cancel-button' class="btn-primary" type="button" value="キャンセル" />
+                  </div>
+                </div>
+              </form>
+              <br>
+              <p class="text-center text-danger">送金後の取り消しはできませんのでご注意ください</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card mb-3">
+          <div class="card-header">
+            <h4>保有状況</h4>
+          </div>
+          <div class="card-body">
+            <table id='account-info' class="table mb-0">
+              <thead>
+                <tr>
+                  <th scope="col" class="text-left">アカウント</th>
+                  <th scope="col" class="text-left">ステータス</th>
+                  <th scope="col" class="text-right">金額(selan)</th>
+                </tr>
+              </thead>
+              <tbody id="carried-list">
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card mb-3">
+          <div class="card-header">
+            <h4>参加申請</h4>
+          </div>
+          <div class="card-body">
+            <p class="text-center text-danger" id="request-message"></p>
+            <p>初期付与金額は10000です</p>
+            <table id='request-info' class="table mb-0">
+              <thead>
+                <tr>
+                  <th scope="col" class="text-left">アカウント</th>
+                  <th scope="col" class="text-left">承認ボタン</th>
+                </tr>
+              </thead>
+              <tbody id="request-list">
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="transaction-log">
+          <h3>取引履歴</h3>
           <p class="text-center text-danger" id="history-message"></p>
-          <table id="transaction-list" class="table mb-0">
-            <thead>
-              <tr>
-                <th scope="col" class="text-right">取引ID</th>
-                <th scope="col">取引日時</th>
-                <th scope="col">FROM</th>
-                <th scope="col">TO</th>
-                <th scope="col" class="text-right">金額(selan)</th>
-                <th scope="col" class="text-left">コメント</th>
-              </tr>
-            </thead>
-            <tbody id="history">
-            </tbody>
-          </table>
-        </div>
-      </div>
+        </section>
+      </article>
+    </main>
 
-      <div class="row"></div>
-   </div>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

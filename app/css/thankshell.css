@@ -92,3 +92,21 @@ footer a {
 .transaction-message {
     color: darkgray;
 }
+
+.transaction-log {
+    padding: 10px;
+    background: white;
+    border-radius: .25rem;
+}
+
+.modal-area {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 10%;
+    background: #000000c0;
+}
