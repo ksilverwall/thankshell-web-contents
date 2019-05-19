@@ -44,43 +44,35 @@
         </section>
 
         <section>
-          <p class="text-center text-danger" id="send-selan-message">送金後の取り消しはできませんのでご注意ください</p>
+          <p class="warning-text" id="send-selan-message">送金後の取り消しはできませんのでご注意ください</p>
           <button class="btn btn-primary" id="send-token-button">送る</button>
         </section>
 
         <section id="send-token-modal" class="modal-area">
-          <div class="card mb-3">
-            <div class="card-header">
-              <h4>Selanを送る</h4>
-            </div>
-            <div class="card-body">
-              <form class="form-horizontal" id="send-selan">
-
-                <div class="row">
-                  <div class="col-xs-12 col-sm-6 col-md-4 form-group">
-                    <label>送金先</label>
-                    <input class="form-control" type="text" name="to" />
-                  </div>
-                  <div class="col-xs-12 col-sm-6 col-md-4 form-group">
-                    <label>金額</label>
-                    <input class="form-control" type="number" min="1" name="amount" value='1000'/>
-                  </div>
-                  <div class="col-xs-12 col-sm-12 col-md-4 form-group">
-                    <label>コメント</label>
-                    <input class="form-control" type="text" name="comment"/>
-                  </div>
+          <div class="send-token-modal">
+            <h4>Selanを送る</h4>
+            <form class="send-token-modal-form" id="send-selan">
+              <div class="send-map">
+                <div class="from-block" colspan=2 id="send-token-from">--</div>
+                <div class="arrow">
+                  ↓
+                  <input class="amount form-condivol" type="number" min="1" name="amount" value='1000'/>
                 </div>
-
-                <div class="row justify-content-around">
-                  <div class="col-2">
-                    <input id='send-token-commit-button' class="btn-primary" type="button" value="送金" />
-                    <input id='send-token-cancel-button' class="btn-primary" type="button" value="キャンセル" />
-                  </div>
+                <div class="to-block">
+                  <input class="form-condivol" type="text" name="to" placeholder="TO"/>
                 </div>
-              </form>
-              <br>
-              <p class="text-center text-danger">送金後の取り消しはできませんのでご注意ください</p>
-            </div>
+              </div>
+
+              <div>
+                <label>コメント</label>
+                <input class="form-control" type="text" name="comment"/>
+              </div>
+              <div style="text-align: center;">
+                <button id='send-token-commit-button' class="btn btn-primary"   type="button">送る</button>
+                <button id='send-token-cancel-button' class="btn btn-secondary" type="button">キャンセル</button>
+              </div>
+              <p class="warning-text">送金後の取り消しはできませんのでご注意ください</p>
+            </form>
           </div>
         </section>
 

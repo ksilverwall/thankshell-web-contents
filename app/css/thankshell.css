@@ -110,3 +110,49 @@ footer a {
     padding: 10%;
     background: #000000c0;
 }
+
+.send-token-modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+.send-token-modal button {
+    margin: 5px;
+    width: 120px;
+}
+
+.send-token-modal .send-map {
+    width: 200px;
+    margin: auto;
+    position: relative;
+    background-color: honeydew;
+    border-radius: 10px;
+}
+
+.send-token-modal .send-map div {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+}
+
+.send-token-modal .send-map .amount {
+    position: absolute;
+    left: 60%;
+    width: 30%;
+}
+
+.button-submit {
+    background-color: blue;
+    border-radius: 5px;
+}
+
+.button-cancel {
+    background-color: red;
+    border-radius: 5px;
+}
+
+.warning-text {
+    color: red;
+}

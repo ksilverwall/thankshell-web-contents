@@ -148,7 +148,7 @@ class MainTag {
             return;
         }
 
-        $("#user-name").text(userInfo.user_id ? userInfo.user_id : '---');
+        $("#send-token-from").text(userInfo.user_id ? userInfo.user_id : '---');
 
         let groupInfo = await api.getGroup('sla');
         if (groupInfo.getMembers().includes(userInfo.user_id)) {
