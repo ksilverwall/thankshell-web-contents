@@ -118,9 +118,19 @@ class SessionController {
 
     commitLogin(path) {
         return new Promise((resolve, reject) => {
+            if(this.auth.isUserSignedIn()) {
+                resolve(null);
+                return;
+            }
+
             this.auth.userhandler = {
                 onSuccess: resolve,
-                onFailure: reject,
+                onFailure: (json) => {
+                    let data = JSON.parse(json);
+                    reject({
+                        message: "認証リクエストに失敗しました(" + data.error + ")",
+                    });
+                },
             };
 
             this.auth.useCodeGrantFlow();
