@@ -134,57 +134,61 @@ class TransactionLogSectionTag {
 
 class MainTag {
     async render() {
-        let session = await (new SessionController()).getSession();
-        if (!session) {
-            $("#load-message").text("セッションの読み込みに失敗しました。再読込してください")
-            return;
-        }
-
-        let api = new ThankshellApi(session, getConfig().apiVersion);
-        let userInfo = await api.getUser();
-
-        if(userInfo.status == 'UNREGISTERED') {
-            location.href = '/user/register';
-            return;
-        }
-
-        $("#send-token-from").text(userInfo.user_id ? userInfo.user_id : '---');
-
-        let groupInfo = await api.getGroup('sla');
-        if (groupInfo.getMembers().includes(userInfo.user_id)) {
-            $("#loading-view").hide();
-            $("#member-view").show();
-
-            let holding = await api.getHolding(userInfo.user_id);
-            $("#carried").text(holding.toLocaleString());
-
-            let section = new TransactionLogSectionTag();
-            section.render(api, userInfo);
-        } else {
-            $("#loading-view").hide();
-            $("#visitor-view").show();
-            if (groupInfo.getRequests().includes(userInfo.user_id)) {
-                $("#visitor-text").text("参加リクエスト中です");
-                $("#request-button").text("参加リクエストを取り消す");
-                $("#request-button").click(async() => {
-                    $("#request-button").prop("disabled",true);
-                    let session = await (new SessionController()).getSession();
-                    let groupInfo = await (new ThankshellApi(session, getConfig().apiVersion)).cancelGroupJoinRequest('sla', userInfo.user_id);
-                    location.reload();
-                });
-            } else {
-                $("#visitor-text").text("このグループに参加していません");
-                $("#request-button").text("参加リクエストを送る");
-                $("#request-button").click(async() => {
-                    $("#request-button").prop("disabled",true);
-                    let session = await (new SessionController()).getSession();
-                    let groupInfo = await (new ThankshellApi(session, getConfig().apiVersion)).sendGroupJoinRequest('sla', userInfo.user_id);
-                    location.reload();
-                });
+        try {
+            let session = await (new SessionController()).getSession();
+            if (!session) {
+                $("#load-message").text("セッションの読み込みに失敗しました。再読込してください")
+                return;
             }
-        }
 
-        console.log(userInfo);
+            let api = new ThankshellApi(session, getConfig().apiVersion);
+            let userInfo = await api.getUser();
+
+            if(userInfo.status == 'UNREGISTERED') {
+                location.href = '/user/register';
+                return;
+            }
+
+            $("#send-token-from").text(userInfo.user_id ? userInfo.user_id : '---');
+
+            let groupInfo = await api.getGroup('sla');
+            if (groupInfo.getMembers().includes(userInfo.user_id)) {
+                $("#loading-view").hide();
+                $("#member-view").show();
+
+                let holding = await api.getHolding(userInfo.user_id);
+                $("#carried").text(holding.toLocaleString());
+
+                let section = new TransactionLogSectionTag();
+                section.render(api, userInfo);
+            } else {
+                $("#loading-view").hide();
+                $("#visitor-view").show();
+                if (groupInfo.getRequests().includes(userInfo.user_id)) {
+                    $("#visitor-text").text("参加リクエスト中です");
+                    $("#request-button").text("参加リクエストを取り消す");
+                    $("#request-button").click(async() => {
+                        $("#request-button").prop("disabled",true);
+                        let session = await (new SessionController()).getSession();
+                        let groupInfo = await (new ThankshellApi(session, getConfig().apiVersion)).cancelGroupJoinRequest('sla', userInfo.user_id);
+                        location.reload();
+                    });
+                } else {
+                    $("#visitor-text").text("このグループに参加していません");
+                    $("#request-button").text("参加リクエストを送る");
+                    $("#request-button").click(async() => {
+                        $("#request-button").prop("disabled",true);
+                        let session = await (new SessionController()).getSession();
+                        let groupInfo = await (new ThankshellApi(session, getConfig().apiVersion)).sendGroupJoinRequest('sla', userInfo.user_id);
+                        location.reload();
+                    });
+                }
+            }
+
+            console.log(userInfo);
+        } catch(e) {
+            $("#load-message").text("ERROR:" + e.message);
+        }
     }
 }
 

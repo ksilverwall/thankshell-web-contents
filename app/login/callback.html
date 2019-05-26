@@ -3,24 +3,44 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ログイン処理中 - Thankshell</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/thankshell.css">
   </head>
   <body>
-    <p>ログイン処理中...</p>
-    <script type="text/javascript" src="/js/js.cookie.js"></script>
-    <script type="text/javascript" src="/js/amazon-cognito-auth.min.js"></script>
-    <script type="text/javascript" src="/js/thankshell.js"></script>
+    <header>
+      <nav class="navbar navbar-expand navbar-light bg-light">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" href="/groups/sla">ホーム </a>
+          <a class="nav-item nav-link" href="/user/config">設定</a>
+        </div>
+      </nav>
+    </header>
+
+
+    <main>
+      <article>
+        <p id='message'>ログイン処理中...</p>
+        <p style="color: red">一部のユーザーで画面が当画面から切り替わらない不具合が報告されています。数秒以内に切り替わらない場合、Facebookで常見まで報告をお願いいたします。</p>
+      </article>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.263.1.min.js"></script>
+    <script src="/js/js.cookie.js"></script>
+    <script src="/js/amazon-cognito-auth.min.js"></script>
+    <script src="/js/thankshell.js"></script>
     <script>
     (async()=>{
         try {
             let sessionController = new SessionController();
 
-            try {
-                await sessionController.commitLogin(location.href);
-            } catch (e) {
-            }
+            await sessionController.commitLogin(location.href);
 
             let session = await sessionController.getSession();
+            if (!session) {
+                throw new Error('セッションの読み込みに失敗しました。再読込してください。');
+            }
 
             let userInfo = new ThankshellApi(session, getConfig().apiVersion).getUser();
             if (userInfo.status == "UNREGISTERED") {
@@ -29,7 +49,7 @@
                 location.href = '/groups/sla';
             }
         } catch(e) {
-            alert(e.message);
+            $('#message').text(e.message)
         }
     })();
     </script>
