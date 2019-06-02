@@ -4,8 +4,8 @@ let getConfig = () => {
     let mode = (document.domain == 'thankshell.com') ? 'production' : 'develop';
     if (mode == 'production') {
         let cognitoInfo = {
-            ClientId : '1opllluc6ruh50h0qc74395k1i',
-            AppWebDomain : 'auth.thankshell.com',
+            ClientId : 'dodes0n9dnt7llvaq2od4mif4',
+            AppWebDomain : 'auth2.thankshell.com',
             TokenScopesArray : ['profile', 'email', 'openid', 'aws.cognito.signin.user.admin', 'phone'],
             RedirectUriSignIn : 'https://thankshell.com/login/callback',
             RedirectUriSignOut : 'https://thankshell.com/',
@@ -14,21 +14,21 @@ let getConfig = () => {
         return {
             apiVersion: 'v1',
             cognitoInfo: cognitoInfo,
-            loginUrl: "https://auth.thankshell.com/login?response_type=code&client_id=" + cognitoInfo.ClientId + "&redirect_uri=" + cognitoInfo.RedirectUriSignIn,
+            loginUrl: "https://" + cognitoInfo.AppWebDomain + "/login?response_type=code&client_id=" + cognitoInfo.ClientId + "&redirect_uri=" + cognitoInfo.RedirectUriSignIn,
         };
     } else {
         let cognitoInfo = {
-            ClientId : '2kbm6ejg25gk7q3r681nci4b2h',
-            AppWebDomain : 'auth.thankshell.com',
+            ClientId : '1rq85hp3c2pii4k294297b28ef',
+            AppWebDomain : 'auth2.thankshell.com',
             TokenScopesArray : ['profile', 'email', 'openid', 'aws.cognito.signin.user.admin', 'phone'],
             RedirectUriSignIn : 'https://develop.thankshell.com/login/callback',
             RedirectUriSignOut : 'https://develop.thankshell.com/',
         };
 
         return {
-            apiVersion: 'dev',
+            apiVersion: 'v1',
             cognitoInfo: cognitoInfo,
-            loginUrl: "https://auth.thankshell.com/login?response_type=code&client_id=" + cognitoInfo.ClientId + "&redirect_uri=" + cognitoInfo.RedirectUriSignIn,
+            loginUrl: "https://" + cognitoInfo.AppWebDomain + "/login?response_type=code&client_id=" + cognitoInfo.ClientId + "&redirect_uri=" + cognitoInfo.RedirectUriSignIn,
         };
     }
 }
@@ -296,6 +296,12 @@ class ThankshellApi {
             headers: this.headers,
         });
 
+        let json = await response.json();
+
+        if (response.status != 200) {
+            throw new Error(json.message)
+        }
+
         return await response.json();
     };
 
@@ -305,7 +311,13 @@ class ThankshellApi {
             headers: this.headers,
         });
 
-        return (await response.json())[userId];
+        let json = await response.json();
+
+        if (response.status != 200) {
+            throw new Error(json.message)
+        }
+
+        return json[userId];
     };
 
     //-------------------------------------------------
