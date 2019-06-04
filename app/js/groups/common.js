@@ -6,7 +6,7 @@ $('#send-token-commit-button').click(async() => {
     $("#send-token-modal").fadeOut();
 
     let session = await (new SessionController()).getSession();
-    if($('#send-selan-button').prop("disabled")) {
+    if($('#send-token-commit-button').prop("disabled")) {
         return;
     }
 
@@ -19,10 +19,10 @@ $('#send-token-commit-button').click(async() => {
             data[input.name] = input.value;
         }
     });
-    data['from'] = 'sla_bank';
-
-    $('#send-selan-button').prop("disabled", true);
-    $('#send-selan-button').addClass("disabled");
+    data['from'] = $("#send-token-from").text();
+    
+    $('#send-token-button').prop("disabled", true);
+    $('#send-token-button').addClass("disabled");
     $('#send-selan-message').text('送金中');
 
     try {
@@ -32,14 +32,16 @@ $('#send-token-commit-button').click(async() => {
         $('#send-selan-message').text('ERROR: ' + e.message);
     }
 
-    $('#send-selan-button').prop("disabled", false);
-    $('#send-selan-button').removeClass("disabled");
+    $('#send-token-button').prop("disabled", false);
+    $('#send-token-button').removeClass("disabled");
 });
 
 $('#send-token-cancel-button').click(() => {
     $("#send-selan")[0].reset();
     $("#send-token-modal").fadeOut();
 });
+
+$('#groupManagerButton').click(()=>{location.href='/groups/sla/admin';});
 
 let publish = async() => {
     let session = await (new SessionController()).getSession();
@@ -82,7 +84,7 @@ let acceptRequest = async(userId, amount) => {
         amount: amount,
     });
     location.reload();
-}
+};
 
 class RequestTable {
     constructor(requests) {
@@ -99,6 +101,17 @@ class RequestTable {
     getButtonTag(userId) {
         let jscode = "acceptRequest('" + userId + "', 10000)";
         return '<button class="btn btn-primary" type="button" onclick="' + jscode + '">承認する</button>';
+    }
+}
+
+class AllTransactionLogSectionTag {
+    async render(api) {
+        try {
+            let history = await api.loadAllTransactions();
+            (new HistoryTableTag(history, 'sla_bank')).renderTo($('.transaction-log'));
+        } catch(e) {
+            $('#history-message').text('ERROR: ' + e.message);
+        }
     }
 }
 
@@ -145,6 +158,21 @@ class HistoryListTag {
     }
 }
 
+class TransactionLogSectionTag {
+    async render(api, userInfo) {
+        try {
+            let history = await api.loadTransactions(userInfo.user_id);
+            if($(window).width() > 600) {
+                (new HistoryTableTag(history, userInfo.user_id)).renderTo($('.transaction-log'));
+            } else {
+                (new HistoryListTag(history, userInfo.user_id)).renderTo($('.transaction-log'));
+            }
+        } catch(e) {
+            $('#history-message').text('ERROR: ' + e.message);
+        }
+    }
+}
+
 class HistoryTableTag {
     constructor(history, userId) {
         let tableHeadTag = $('<thead>')
@@ -176,38 +204,47 @@ class HistoryTableTag {
     }
 }
 
-class TransactionLogSectionTag {
-    async render(api) {
-        try {
-            let history = await api.loadAllTransactions();
-            //if($(window).width() > 600) {
-                (new HistoryTableTag(history, 'sla_bank')).renderTo($('.transaction-log'));
-            //} else {
-            //    (new HistoryListTag(history, 'sla_bank')).renderTo($('.transaction-log'));
-            //}
-        } catch(e) {
-            $('#history-message').text('ERROR: ' + e.message);
+class MainTag {
+    async renderIndexPage(api, userInfo) {
+        $("#send-token-from").text(userInfo.user_id ? userInfo.user_id : '---');
+
+        let groupInfo = await api.getGroup('sla');
+        if (groupInfo.getMembers().includes(userInfo.user_id)) {
+            $("#loading-view").hide();
+            $("#member-view").show();
+
+            let holding = await api.getHolding(userInfo.user_id);
+            $("#carried").text(holding.toLocaleString());
+
+            let section = new TransactionLogSectionTag();
+            section.render(api, userInfo);
+        } else {
+            $("#loading-view").hide();
+            $("#visitor-view").show();
+            if (groupInfo.getRequests().includes(userInfo.user_id)) {
+                $("#visitor-text").text("参加リクエスト中です");
+                $("#request-button").text("参加リクエストを取り消す");
+                $("#request-button").click(async() => {
+                    $("#request-button").prop("disabled",true);
+                    let session = await (new SessionController()).getSession();
+                    let groupInfo = await (new ThankshellApi(session, getConfig().apiVersion)).cancelGroupJoinRequest('sla', userInfo.user_id);
+                    location.reload();
+                });
+            } else {
+                $("#visitor-text").text("このグループに参加していません");
+                $("#request-button").text("参加リクエストを送る");
+                $("#request-button").click(async() => {
+                    $("#request-button").prop("disabled",true);
+                    let session = await (new SessionController()).getSession();
+                    let groupInfo = await (new ThankshellApi(session, getConfig().apiVersion)).sendGroupJoinRequest('sla', userInfo.user_id);
+                    location.reload();
+                });
+            }
         }
     }
-}
 
-class MainTag {
-    async render() {
-        let session = await (new SessionController()).getSession();
-        if (!session) {
-            $("#load-message").text("セッションの読み込みに失敗しました。再読込してください")
-            return;
-        }
-
-        let api = new ThankshellApi(session, getConfig().apiVersion);
-        let userInfo = await api.getUser();
-
-        if(userInfo.status == 'UNREGISTERED') {
-            location.href = '/user/register';
-            return;
-        }
-
-        $("#user-name").text(userInfo.user_id ? userInfo.user_id : '---');
+    async renderAdminPage(api, userInfo) {
+        $("#send-token-from").text('sla_bank');
 
         let groupInfo = await api.getGroup('sla');
         if (groupInfo.getAdmins().includes(userInfo.user_id)) {
@@ -237,18 +274,42 @@ class MainTag {
 
             let requestTable = new RequestTable(groupInfo.getRequests());
 
-            let section = new TransactionLogSectionTag();
+            let section = new AllTransactionLogSectionTag();
             section.render(api);
 
             $('#publish-button').click(function(){ publish(); });
-            $('#send-selan-button').click(function() { sendSelan(); });
         } else {
             $("#loading-view").hide();
             $("#visitor-view").show();
         }
+    }
 
-        console.log(userInfo);
+    async render(path) {
+        try {
+            let session = await (new SessionController()).getSession();
+            if (!session) {
+                $("#load-message").text("セッションの読み込みに失敗しました。再読込してください")
+                return;
+            }
+
+            let api = new ThankshellApi(session, getConfig().apiVersion);
+            let userInfo = await api.getUser();
+
+            if(userInfo.status == 'UNREGISTERED') {
+                location.href = '/user/register';
+                return;
+            }
+
+            let pathInfo = path.split('/');
+            if (pathInfo[1] == 'groups' && pathInfo[3] == 'admin') {
+                await this.renderAdminPage(api, userInfo);
+            } else {
+                await this.renderIndexPage(api, userInfo);
+            }
+        } catch(e) {
+            $("#load-message").text("ERROR:" + e.message);
+        }
     }
 }
 
-(new MainTag()).render();
+(new MainTag()).render(location.pathname);

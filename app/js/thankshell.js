@@ -26,7 +26,7 @@ let getConfig = () => {
         };
 
         return {
-            apiVersion: 'v1',
+            apiVersion: 'dev',
             cognitoInfo: cognitoInfo,
             loginUrl: "https://" + cognitoInfo.AppWebDomain + "/login?response_type=code&client_id=" + cognitoInfo.ClientId + "&redirect_uri=" + cognitoInfo.RedirectUriSignIn,
         };
