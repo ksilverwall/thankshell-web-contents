@@ -302,7 +302,7 @@ class ThankshellApi {
             throw new Error(json.message)
         }
 
-        return await response.json();
+        return json;
     };
 
     async getHolding(userId) {
