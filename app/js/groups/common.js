@@ -2,44 +2,93 @@ $("#send-token-button").click(() => {
     $("#send-token-modal").fadeIn();
 });
 
-$('#send-token-commit-button').click(async() => {
-    $("#send-token-modal").fadeOut();
+class UserSendTokenModal {
+    render(userId) {
+        $("#send-token-from").text(userId);
+        $('#send-token-commit-button').click(async() => {
+            $("#send-token-modal").fadeOut();
 
-    let session = await (new SessionController()).getSession();
-    if($('#send-token-commit-button').prop("disabled")) {
-        return;
+            let session = await (new SessionController()).getSession();
+            if($('#send-token-commit-button').prop("disabled")) {
+                return;
+            }
+
+            let api = new ThankshellApi(session, getConfig().apiVersion);
+            let userInfo = await api.getUser();
+
+            let data = {};
+            $('#send-selan').find('input').each((index, input) => {
+                if(input.name){
+                    data[input.name] = input.value;
+                }
+            });
+            data['from'] = $("#send-token-from").text();
+            
+            $('#send-token-button').prop("disabled", true);
+            $('#send-token-button').addClass("disabled");
+            $('#send-selan-message').text('送金中');
+
+            try {
+                await api.createTransaction(data);
+                $('#send-selan-message').text('送金が完了しました');
+            } catch(e) {
+                $('#send-selan-message').text('ERROR: ' + e.message);
+            }
+
+            $('#send-token-button').prop("disabled", false);
+            $('#send-token-button').removeClass("disabled");
+        });
+
+        $('#send-token-cancel-button').click(() => {
+            $("#send-selan")[0].reset();
+            $("#send-token-modal").fadeOut();
+        });
     }
+}
 
-    let api = new ThankshellApi(session, getConfig().apiVersion);
-    let userInfo = await api.getUser();
+class AdminSendTokenModal {
+    render(userId) {
+        $("#send-token-from").val(userId);
+        $('#send-token-commit-button').click(async() => {
+            $("#send-token-modal").fadeOut();
 
-    let data = {};
-    $('#send-selan').find('input').each((index, input) => {
-        if(input.name){
-            data[input.name] = input.value;
-        }
-    });
-    data['from'] = $("#send-token-from").text();
-    
-    $('#send-token-button').prop("disabled", true);
-    $('#send-token-button').addClass("disabled");
-    $('#send-selan-message').text('送金中');
+            let session = await (new SessionController()).getSession();
+            if($('#send-token-commit-button').prop("disabled")) {
+                return;
+            }
 
-    try {
-        await api.createTransaction(data);
-        $('#send-selan-message').text('送金が完了しました');
-    } catch(e) {
-        $('#send-selan-message').text('ERROR: ' + e.message);
+            let api = new ThankshellApi(session, getConfig().apiVersion);
+            let userInfo = await api.getUser();
+
+            let data = {};
+            $('#send-selan').find('input').each((index, input) => {
+                if(input.name){
+                    data[input.name] = input.value;
+                }
+            });
+            data['from'] = $("#send-token-from").val();
+            
+            $('#send-token-button').prop("disabled", true);
+            $('#send-token-button').addClass("disabled");
+            $('#send-selan-message').text('送金中');
+
+            try {
+                await api.createTransaction(data);
+                $('#send-selan-message').text('送金が完了しました');
+            } catch(e) {
+                $('#send-selan-message').text('ERROR: ' + e.message);
+            }
+
+            $('#send-token-button').prop("disabled", false);
+            $('#send-token-button').removeClass("disabled");
+        });
+
+        $('#send-token-cancel-button').click(() => {
+            $("#send-selan")[0].reset();
+            $("#send-token-modal").fadeOut();
+        });
     }
-
-    $('#send-token-button').prop("disabled", false);
-    $('#send-token-button').removeClass("disabled");
-});
-
-$('#send-token-cancel-button').click(() => {
-    $("#send-selan")[0].reset();
-    $("#send-token-modal").fadeOut();
-});
+}
 
 $('#groupManagerButton').click(()=>{location.href='/groups/sla/admin';});
 
@@ -206,7 +255,7 @@ class HistoryTableTag {
 
 class MainTag {
     async renderIndexPage(api, userInfo) {
-        $("#send-token-from").text(userInfo.user_id ? userInfo.user_id : '---');
+        await (new UserSendTokenModal()).render(userInfo.user_id)
 
         let groupInfo = await api.getGroup('sla');
         if (groupInfo.getMembers().includes(userInfo.user_id)) {
@@ -244,7 +293,7 @@ class MainTag {
     }
 
     async renderAdminPage(api, userInfo) {
-        $("#send-token-from").text('sla_bank');
+        await (new AdminSendTokenModal()).render('sla_bank')
 
         let groupInfo = await api.getGroup('sla');
         if (groupInfo.getAdmins().includes(userInfo.user_id)) {
@@ -302,9 +351,9 @@ class MainTag {
 
             let pathInfo = path.split('/');
             if (pathInfo[1] == 'groups' && pathInfo[3] == 'admin') {
-                await this.renderAdminPage(api, userInfo);
+                this.renderAdminPage(api, userInfo);
             } else {
-                await this.renderIndexPage(api, userInfo);
+                this.renderIndexPage(api, userInfo);
             }
         } catch(e) {
             $("#load-message").text("ERROR:" + e.message);
