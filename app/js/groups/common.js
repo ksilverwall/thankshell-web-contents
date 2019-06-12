@@ -300,6 +300,18 @@ class MainTag {
             $("#loading-view").hide();
             $("#admin-view").show();
 
+            $("#invitation-send").click(async()=>{
+                try{
+                    let session = await (new SessionController()).getSession();
+                    api = await (new ThankshellApi(session, getConfig().apiVersion));
+                    $("#invitation-message").text("送信中...");
+                    await api.invitation('sla', $("#invitation-email").val());
+                    $("#invitation-message").text("送信しました");
+                } catch(e) {
+                    $("#invitation-message").text("送信に失敗しました: " + e.message);
+                }
+            });
+
             let published = await api.getPublished();
             let holdersInfo = await api.getHoldings();
             let holding = holdersInfo['sla_bank'];

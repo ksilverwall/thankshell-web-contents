@@ -9,6 +9,13 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css"/>
     <link rel="stylesheet" href="/css/thankshell.css">
+    <style>
+      .invitation {
+        background-color: white;
+        padding: 20px;
+        border-radius: 15px;
+      }
+    </style>
   </head>
   <body>
     <header>
@@ -39,6 +46,15 @@
           <h4 class="text-right">総発行量 <u><span id=published>---</span> Selan</u></h4>
           <h4 class="text-right">銀行保有量 <u><span id=carried>---</span> Selan</u></h4>
           <h4 class="text-right">流通量 <u><span id=currency>---</span> Selan</u></h4>
+        </section>
+
+        <section class="invitation" style="max-width: 40rem;">
+          <p>招待コードを送る</p>
+          <div>
+            <input id="invitation-email"/>
+            <button id="invitation-send">送信</button>
+            <p id="invitation-message"></p>
+          </div>
         </section>
 
         <section class="card bg-light mb-3" style="max-width: 40rem;">

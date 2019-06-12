@@ -212,6 +212,20 @@ class ThankshellApi {
         console.log(data);
     }
 
+    async invitation(groupName, email) {
+        let response = await fetch(this.basePath + '/groups/' + groupName + '/invitation', {
+            method: "POST",
+            headers: this.headers,
+            body: JSON.stringify({'email': email}),
+        });
+
+        let json = await response.json();
+
+        if (response.status != 200) {
+            throw new Error(json.message)
+        }
+    };
+
     //-------------------------------------------------
     // Transactions
 
