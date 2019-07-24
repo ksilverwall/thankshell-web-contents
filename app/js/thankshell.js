@@ -382,7 +382,7 @@ class GroupInfo {
             return [];
         }
 
-        return this.data.admins.values;
+        return this.data.admins;
     }
 
     getMembers() {
@@ -390,7 +390,7 @@ class GroupInfo {
             return [];
         }
 
-        return this.data.members.values;
+        return this.data.members;
     }
 
     getRequests() {
@@ -398,6 +398,6 @@ class GroupInfo {
             return [];
         }
 
-        return this.data.requests.values;
+        return this.data.requests;
     }
 }
